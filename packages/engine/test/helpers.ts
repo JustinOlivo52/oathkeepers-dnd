@@ -1,0 +1,35 @@
+import type { Creature } from "../src/index.js";
+
+export function makeCreature(overrides: Partial<Creature> & Pick<Creature, "id">): Creature {
+  return {
+    name: overrides.id,
+    side: "party",
+    kind: "character",
+    level: 1,
+    abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+    proficiencyBonus: 2,
+    saveProficiencies: [],
+    skillProficiencies: [],
+    ac: 10,
+    maxHp: 10,
+    hp: 10,
+    tempHp: 0,
+    speedFt: 30,
+    initiativeBonus: 0,
+    initiativeAdvantage: false,
+    critRange: 20,
+    attacks: [{ id: "club", name: "Club", kind: "melee", attackBonus: 2, damage: "1d4", damageType: "bludgeoning" }],
+    resistances: [],
+    vulnerabilities: [],
+    immunities: [],
+    conditions: [],
+    features: [],
+    resources: {},
+    effects: [],
+    deathSaves: { successes: 0, failures: 0 },
+    stable: false,
+    dead: false,
+    xp: 0,
+    ...overrides,
+  };
+}

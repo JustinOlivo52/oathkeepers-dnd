@@ -1,0 +1,5 @@
+[
+  { "id": "chain-mail", "name": "Chain Mail", "category": "heavy", "baseAc": 16, "strengthRequirement": 13, "stealthDisadvantage": true },
+  { "id": "leather", "name": "Leather Armor", "category": "light", "baseAc": 11 },
+  { "id": "shield", "name": "Shield", "category": "shield", "baseAc": 2 }
+]

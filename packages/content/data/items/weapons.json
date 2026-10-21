@@ -1,0 +1,34 @@
+[
+  {
+    "id": "longsword",
+    "name": "Longsword",
+    "category": "martial",
+    "kind": "melee",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "properties": ["versatile"],
+    "versatileDamage": "1d10",
+    "mastery": "sap"
+  },
+  {
+    "id": "scimitar",
+    "name": "Scimitar",
+    "category": "martial",
+    "kind": "melee",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "properties": ["finesse", "light"],
+    "mastery": "nick"
+  },
+  {
+    "id": "shortbow",
+    "name": "Shortbow",
+    "category": "simple",
+    "kind": "ranged",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["ammunition", "two-handed"],
+    "rangeFt": [80, 320],
+    "mastery": "vex"
+  }
+]

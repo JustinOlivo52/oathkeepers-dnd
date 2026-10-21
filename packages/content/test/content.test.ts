@@ -1,0 +1,61 @@
+import { describe, expect, it } from "vitest";
+import { buildCharacter, buildMonster, CharacterSchema, loadContent, MonsterSchema, unimplementedFeatures } from "../src/index.js";
+
+const content = loadContent();
+const bramData = content.characters.find((c) => c.id === "bram-holloway")!;
+const goblinData = content.monsters.find((m) => m.id === "goblin-warrior")!;
+
+describe("content validation", () => {
+  it("loads all data files", () => {
+    expect(content.classes.map((c) => c.id)).toContain("fighter");
+    expect(content.monsters.map((m) => m.id)).toContain("goblin-warrior");
+  });
+
+  it("rejects bad data with a clear message", () => {
+    const bad = { ...goblinData, attacks: [{ ...goblinData.attacks[0], damage: "lots" }] };
+    const result = MonsterSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+    expect(CharacterSchema.safeParse({ ...bramData, level: 21 }).success).toBe(false);
+  });
+});
+
+describe("buildCharacter: level 3 Champion Fighter", () => {
+  const bram = buildCharacter(content, bramData);
+
+  it("derives stats from the 2024 rules", () => {
+    expect(bram).toMatchObject({
+      level: 3,
+      proficiencyBonus: 2,
+      maxHp: 28, // 10 + 2, then 2 x (6 + 2)
+      ac: 18, // chain mail 16 + shield 2
+      initiativeBonus: 1,
+      initiativeAdvantage: true, // Remarkable Athlete
+      critRange: 19, // Improved Critical
+      saveProficiencies: ["str", "con"],
+    });
+  });
+
+  it("builds a longsword attack with Dueling and the Sap mastery", () => {
+    expect(bram.attacks).toEqual([
+      expect.objectContaining({ id: "longsword", attackBonus: 5, damage: "1d8+5", damageType: "slashing", mastery: "sap" }),
+    ]);
+  });
+
+  it("tracks class resources", () => {
+    expect(bram.resources).toEqual({
+      "second-wind": { current: 2, max: 2, recharge: "long" },
+      "action-surge": { current: 1, max: 1, recharge: "short" },
+    });
+  });
+
+  it("reports features that are not implemented yet", () => {
+    expect(unimplementedFeatures(bram)).toEqual(["tactical-mind"]);
+  });
+});
+
+describe("buildMonster: Goblin Warrior", () => {
+  it("uses the stat block", () => {
+    const g = buildMonster(goblinData, "goblin-1");
+    expect(g).toMatchObject({ id: "goblin-1", ac: 15, maxHp: 10, xp: 50, side: "enemies", skillBonuses: { stealth: 6 } });
+  });
+});

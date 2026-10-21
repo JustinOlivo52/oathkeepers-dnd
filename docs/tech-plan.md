@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: proposed. Companion to `design.md`.
+Status: Phase 1 in progress. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -103,3 +103,20 @@ The rules engine, tested, with no visuals:
 - A text-only combat between them that runs to completion in tests
 
 Done when: a Fighter vs Goblin fight runs start to finish in tests, following 5e rules, with every roll logged.
+
+### Phase 1 progress
+
+Done:
+- Dice notation, advantage and disadvantage, critical dice, seeded RNG for repeatable fights
+- Ability modifiers, proficiency, ability checks, skill checks, saving throws
+- Damage with resistance, vulnerability, immunity and temp HP
+- Dropping to 0 HP, death saves, massive damage, healing back up
+- Combat: initiative (ties by Dex), turns, action economy, attacks, crits, auto-crit on downed targets
+- Fighter features: Second Wind, Action Surge, Weapon Mastery (Sap), Dueling, Champion (Improved Critical, initiative advantage from Remarkable Athlete)
+- Content as validated JSON: Fighter class, Goblin Warrior, longsword, scimitar, shortbow, armor, a premade level 3 Fighter
+- Milestone test: Fighter vs Goblin runs to completion with every die roll logged
+
+Not yet:
+- Tactical Mind, Remarkable Athlete's Athletics bonus, other weapon masteries
+- Goblin Nimble Escape (needs movement and the grid)
+- Rests, conditions beyond unconscious, reactions, spells

@@ -1,0 +1,21 @@
+{
+  "id": "goblin-warrior",
+  "name": "Goblin Warrior",
+  "size": "small",
+  "type": "fey",
+  "cr": 0.25,
+  "xp": 50,
+  "proficiencyBonus": 2,
+  "ac": 15,
+  "hp": { "average": 10, "formula": "3d6" },
+  "speedFt": 30,
+  "initiativeBonus": 2,
+  "abilities": { "str": 8, "dex": 15, "con": 10, "int": 10, "wis": 8, "cha": 8 },
+  "skillBonuses": { "stealth": 6 },
+  "senses": { "darkvisionFt": 60, "passivePerception": 9 },
+  "attacks": [
+    { "id": "scimitar", "name": "Scimitar", "kind": "melee", "attackBonus": 4, "damage": "1d6+2", "damageType": "slashing", "reachFt": 5 },
+    { "id": "shortbow", "name": "Shortbow", "kind": "ranged", "attackBonus": 4, "damage": "1d6+2", "damageType": "piercing", "rangeFt": [80, 320] }
+  ],
+  "features": ["nimble-escape"]
+}
