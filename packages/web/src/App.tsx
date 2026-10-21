@@ -28,7 +28,7 @@ export function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app ${tab === "battle" ? "app-battle" : ""}`}>
       <header className="top">
         <h1>Oathkeepers</h1>
         <nav className="tabs" aria-label="Sections">

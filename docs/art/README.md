@@ -1,23 +1,40 @@
-# Art Trial
+# Game Art
 
-![Art trial sprite sheet](art-trial.png)
-
-Rows, top to bottom: hero in four tabard colors (martial, expert, arcane, divine), goblin, then tiles (three floor variants, wall, rubble).
-Frames, left to right: idle (2), walk (4), attack (3), hit, down.
+Current art: **Codex art trial** (chosen over Claude's first pass). Preview: [`art-trial-codex.png`](art-trial-codex.png).
+Claude's original 16x16 version is kept for reference in [`art-trial.png`](art-trial.png).
 
 ## How it's made
 
-The sprites are drawn as text in `packages/web/art/sprites.ts`: one character per pixel, `.` for transparent.
-`npm run sprites -w @oathkeepers/web` exports them as PNG sprite sheets plus a manifest, and redraws this preview.
+1. Original artwork is generated with an image model (Codex used image generation).
+2. The raw images live in `packages/web/art/codex/source/`.
+3. Python scripts in `packages/web/art/codex/` crop, clean transparency, line up each frame and pack the sprite sheets. They don't draw anything.
+4. Rebuild with `npm run sprites -w @oathkeepers/web` (needs Python 3 and Pillow: `pip install pillow`).
 
-## Swapping in other art (Codex, an asset pack, an artist)
+The old text-art exporter is still in `packages/web/scripts/export-legacy-sprites.ts`. Running it overwrites the current sheets with Claude's original art.
 
-The game only reads `packages/web/public/assets/sprites/`. Replacement art needs:
+## Sheet format
 
-- One PNG per sheet: `hero-martial.png`, `hero-expert.png`, `hero-arcane.png`, `hero-divine.png`, `goblin.png`, `tiles.png`
-- Frames laid out left to right, all the same size (16x16 now; change `frameWidth` and `frameHeight` in `sprites.json` for other sizes)
-- Characters facing right
-- `sprites.json` listing which frames make each animation: `idle`, `walk`, `attack`, `hit`, `down`
-- For `tiles.png`, the `named` entry says which frames are `floor`, `wall` and `rubble`
+Everything the game loads is in `packages/web/public/assets/sprites/`.
 
-No code changes are needed as long as the sheet names and animation names stay the same.
+| Sheet | Frames | Size |
+|---|---|---|
+| `hero-martial.png`, `hero-expert.png`, `hero-arcane.png`, `hero-divine.png`, `goblin.png` | 11, left to right | 192x192, feet at (96, 166) |
+| `tiles.png` | floor x3, wall, rubble | 128x128 |
+| `props.png` | brazier, column, arch, ivy (2x2 grid) | 128x128 |
+
+Character frames: 0-1 idle, 2-5 walk, 6-8 attack (wind up, swing, follow through), 9 hit, 10 down. Characters face right and are mirrored to face left.
+
+`sprites.json` lists each sheet's frame size and animations. Sheet names and animation names (`idle`, `walk`, `attack`, `hit`, `down`) must stay the same for the game to load new art without code changes.
+
+The battle board draws each square at 96 world pixels (`TILE` in `packages/web/src/battle/scene.ts`).
+
+## Known gaps
+
+- Only left and right facing; no up or down sheets
+- One attack animation per hero type; no separate bow, thrown or spell animations
+- Every new monster needs its own sheet
+- Purely AI-generated images generally can't be copyrighted in the US. Fine for a game among friends; revisit before anything commercial.
+
+## Requesting new art
+
+Use [`CODEX_BRIEF.md`](CODEX_BRIEF.md) as the template: name the sheets, frames, size and style, work on a branch, and have the result tested in the browser before it's merged.

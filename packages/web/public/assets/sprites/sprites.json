@@ -1,8 +1,8 @@
 {
   "hero-martial": {
     "image": "hero-martial.png",
-    "frameWidth": 16,
-    "frameHeight": 16,
+    "frameWidth": 192,
+    "frameHeight": 192,
     "animations": {
       "idle": {
         "frames": [
@@ -29,7 +29,7 @@
           8,
           0
         ],
-        "fps": 10,
+        "fps": 8,
         "loop": false
       },
       "hit": {
@@ -51,8 +51,8 @@
   },
   "hero-expert": {
     "image": "hero-expert.png",
-    "frameWidth": 16,
-    "frameHeight": 16,
+    "frameWidth": 192,
+    "frameHeight": 192,
     "animations": {
       "idle": {
         "frames": [
@@ -79,7 +79,7 @@
           8,
           0
         ],
-        "fps": 10,
+        "fps": 8,
         "loop": false
       },
       "hit": {
@@ -101,8 +101,8 @@
   },
   "hero-arcane": {
     "image": "hero-arcane.png",
-    "frameWidth": 16,
-    "frameHeight": 16,
+    "frameWidth": 192,
+    "frameHeight": 192,
     "animations": {
       "idle": {
         "frames": [
@@ -129,7 +129,7 @@
           8,
           0
         ],
-        "fps": 10,
+        "fps": 8,
         "loop": false
       },
       "hit": {
@@ -151,8 +151,8 @@
   },
   "hero-divine": {
     "image": "hero-divine.png",
-    "frameWidth": 16,
-    "frameHeight": 16,
+    "frameWidth": 192,
+    "frameHeight": 192,
     "animations": {
       "idle": {
         "frames": [
@@ -179,7 +179,7 @@
           8,
           0
         ],
-        "fps": 10,
+        "fps": 8,
         "loop": false
       },
       "hit": {
@@ -201,8 +201,8 @@
   },
   "goblin": {
     "image": "goblin.png",
-    "frameWidth": 16,
-    "frameHeight": 16,
+    "frameWidth": 192,
+    "frameHeight": 192,
     "animations": {
       "idle": {
         "frames": [
@@ -229,7 +229,7 @@
           8,
           0
         ],
-        "fps": 10,
+        "fps": 8,
         "loop": false
       },
       "hit": {
@@ -251,8 +251,8 @@
   },
   "tiles": {
     "image": "tiles.png",
-    "frameWidth": 16,
-    "frameHeight": 16,
+    "frameWidth": 128,
+    "frameHeight": 128,
     "animations": {},
     "named": {
       "floor": [

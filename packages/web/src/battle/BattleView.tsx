@@ -1,10 +1,12 @@
+import "./art.css";
+import { abbeyBattlefield } from "./abbey";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
 import { Combat, EventLog, generateDungeon, isConscious, mathRng, seededRng, type Creature } from "@oathkeepers/engine";
 import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController } from "./controller";
-import { BattleScene, TILE } from "./scene";
+import { BattleScene } from "./scene";
 
 const PALETTE_BY_CLASS: Record<string, "martial" | "expert" | "arcane" | "divine"> = {
   barbarian: "martial",
@@ -25,10 +27,12 @@ interface Setup {
   character: CharacterData;
   goblins: number;
   seed: number;
+  id: number;
+  battlefield: "abbey" | "generated";
 }
 
-function createBattle({ character, goblins, seed }: Setup) {
-  const gen = generateDungeon(seededRng(seed));
+function createBattle({ character, goblins, seed, battlefield }: Setup) {
+  const gen = battlefield === "abbey" ? abbeyBattlefield() : generateDungeon(seededRng(seed));
   const hero = buildCharacter(content, character);
   hero.position = gen.partySpawns[0];
   const enemies = Array.from({ length: goblins }, (_, i) => {
@@ -45,15 +49,20 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
   const [goblins, setGoblins] = useState(3);
   const [seedText, setSeedText] = useState("");
+  const [battlefield, setBattlefield] = useState<"abbey" | "generated">("abbey");
   const [setup, setSetup] = useState<Setup | null>(null);
+  const battleId = useRef(0);
 
   const start = () => {
     const seed = seedText ? Number(seedText) : Math.floor(Math.random() * 1_000_000);
-    setSetup({ character, goblins, seed });
+    setSetup({ character, goblins, seed, id: ++battleId.current, battlefield });
   };
 
   return (
     <main className="battle">
+      <div className="battle-heading"><div><p className="eyebrow">TACTICAL ENCOUNTERS · 5 FEET PER SQUARE</p><h2>The Fallen Abbey</h2></div><p className="encounter-subtitle">Steel, stone, and the oath you keep.</p></div>
+      <details className="encounter-options" open={setup ? undefined : true}>
+      <summary>Encounter setup</summary>
       <section className="controls">
         <label>
           Character
@@ -65,6 +74,7 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
             ))}
           </select>
         </label>
+        <label>Battlefield<select value={battlefield} onChange={(e) => setBattlefield(e.target.value as "abbey" | "generated")}><option value="abbey">Abbey ruins</option><option value="generated">Generated dungeon</option></select></label>
         <label>
           Goblins
           <select value={goblins} onChange={(e) => setGoblins(Number(e.target.value))}>
@@ -75,18 +85,17 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
         </label>
         <label>
           Map seed (optional)
-          <input type="number" placeholder="random" value={seedText} onChange={(e) => setSeedText(e.target.value)} />
+          <input disabled={battlefield !== "generated"} type="number" placeholder="random" value={seedText} onChange={(e) => setSeedText(e.target.value)} />
         </label>
         <button className="primary" onClick={start}>
           {setup ? "New battle" : "Start battle"}
         </button>
       </section>
+      </details>
       {setup ? (
-        <Battle key={`${setup.seed}-${setup.character.id}-${setup.goblins}-${Math.random()}`} setup={setup} onRestart={start} />
+        <Battle key={setup.id} setup={setup} onRestart={start} />
       ) : (
-        <p className="hint">
-          Pick a character and start a battle on a random dungeon map. Click a blue square to move, click an enemy to attack, then roll.
-        </p>
+        <section className="battle-intro"><p className="eyebrow">YOUR NEXT ENCOUNTER AWAITS</p><h3>Into the ruins</h3><p>Choose your adventurer and enter the ruined abbey or a generated dungeon. Move through the highlighted squares, find a clear line of attack, and let the dice decide.</p><p className="note">Stone walls block passage and sight. Rubble costs twice your movement.</p></section>
       )}
     </main>
   );
@@ -96,6 +105,9 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
   const battle = useMemo(() => createBattle(setup), [setup]);
   const { controller, combat, map } = battle;
   const host = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<BattleScene | null>(null);
+  const [boardReady, setBoardReady] = useState(false);
+  const [boardError, setBoardError] = useState<string | null>(null);
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   useEffect(() => controller.subscribe(rerender), [controller]);
 
@@ -103,22 +115,25 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
     const scene = new BattleScene(map, [...combat.creatures.values()], battle.sheetFor, {
       onHover: (p) => controller.onHover(p),
       onClick: (p) => void controller.onClick(p),
+      onLoadError: () => setBoardError("Artwork could not load. Reload the page to try again."),
     });
+    sceneRef.current = scene;
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: host.current!,
-      width: map.width * TILE,
-      height: map.height * TILE,
+      width: host.current!.clientWidth,
+      height: host.current!.clientHeight,
       pixelArt: true,
-      backgroundColor: "#121110",
-      scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
+      backgroundColor: "#101719",
+      scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
       scene: scene,
       banner: false,
     });
+    void scene.whenReady.then(() => setBoardReady(true));
     void controller.attach(scene);
     // Handle for automated browser tests and debugging in the console.
     (window as unknown as { oathkeepersBattle?: BattleController }).oathkeepersBattle = controller;
-    return () => game.destroy(true);
+    return () => { sceneRef.current = null; game.destroy(true); };
   }, [battle]);
 
   const me = [...combat.creatures.values()].find((c) => controller.playerIds.has(c.id))!;
@@ -129,17 +144,28 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
   const mode = controller.mode;
   const confirmTarget = mode.kind === "confirm" ? combat.get(mode.targetId) : undefined;
   const confirmAttack = mode.kind === "confirm" ? me.attacks.find((a) => a.id === mode.attackId) : undefined;
+  const heroSheet = `hero-${PALETTE_BY_CLASS[setup.character.class] ?? "martial"}`;
   const has = (f: string) => me.features.includes(f) && (me.resources[f]?.current ?? 0) > 0;
 
   return (
     <div className="battle-layout">
       <div className="board">
+        <div className="board-toolbar">
+          <span className="round-label">Round {combat.round || 1} <span> / {myTurn ? "Your turn" : controller.busy ? "In motion" : "Enemy turn"}</span></span>
+          <div className="camera-controls" aria-label="Board camera">
+            <button disabled={!boardReady} onClick={() => sceneRef.current?.zoomBy(-0.15)} aria-label="Zoom out">Zoom out</button>
+            <button disabled={!boardReady} onClick={() => sceneRef.current?.zoomBy(0.15)} aria-label="Zoom in">Zoom in</button>
+            <button disabled={!boardReady} onClick={() => sceneRef.current?.focusHero()}>Find hero</button>
+            <button disabled={!boardReady} onClick={() => sceneRef.current?.fitBoard()}>Whole map</button>
+          </div>
+        </div>
         <ol className="initiative" aria-label="Initiative order">
           {combat.order.map((id) => {
             const c = combat.get(id);
             return (
               <li key={id} className={`${turn?.creatureId === id ? "now" : ""} ${c.dead ? "dead" : ""} ${c.side}`}>
-                <span>{c.name}</span>
+                <span className="initiative-avatar" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${c.side === "enemies" ? "goblin" : heroSheet}.png)` }} />
+                <span>{c.name}{turn?.creatureId === id ? " · Active" : ""}</span>
                 <span className="hp">
                   <span style={{ width: `${(100 * c.hp) / c.maxHp}%` }} />
                 </span>
@@ -148,13 +174,16 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
           })}
         </ol>
         <div className="canvas-scroll">
-          <div className="canvas" ref={host} style={{ aspectRatio: `${map.width} / ${map.height}` }} />
+          <div className="canvas" ref={host} />
+          {!boardReady && <p className="board-loading" role="status">{boardError ?? "Preparing the battlefield…"}</p>}
+          {boardReady && boardError && <p className="board-loading" role="alert">{boardError}</p>}
         </div>
+        <p className="board-help">Scroll to zoom · Shift-drag or right-drag to pan · Arrow keys when board is focused · Gold: active · Blue: movement · Red: target</p>
         {combat.isOver && !controller.busy && (
           <div className={`banner ${combat.winner}`}>
             <strong>{combat.winner === "party" ? "Victory!" : "Defeat"}</strong>
             <span>
-              {combat.round} rounds. Map seed {setup.seed}.
+              {combat.round} rounds.{setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
             </span>
             <button className="primary" onClick={onRestart}>
               New battle
@@ -165,10 +194,8 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
 
       <aside className="panel">
         <div className="me">
-          <strong>{me.name}</strong>
-          <span>
-            HP {me.hp}/{me.maxHp} · AC {me.ac}
-          </span>
+          <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${heroSheet}.png)` }} />
+          <div><p className="eyebrow">{setup.character.class} · Level {setup.character.level}</p><strong>{me.name}</strong><div className="hero-health"><meter min={0} max={me.maxHp} value={Math.max(0, me.hp)} aria-label={`${me.name} hit points`} /><span>{me.hp}/{me.maxHp} HP · AC {me.ac}</span></div></div>
         </div>
 
         {myTurn && turn ? (
@@ -244,13 +271,13 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
         {warning && <p className="warning">{warning}</p>}
         {controller.lastRoll && <p className="roll">{controller.lastRoll}</p>}
 
-        <ol className="log battle-log">
+        <details className="battle-journal"><summary>Battle journal <span>{controller.lines.length} events</span></summary><ol className="log battle-log">
           {controller.lines.slice(-14).map((l, i) => (
             <li key={controller.lines.length - 14 + i} className={l.className}>
               {l.text}
             </li>
           ))}
-        </ol>
+        </ol></details>
         {!isConscious(me) && !combat.isOver && <p className="warning">You're down. Death saves roll at the start of your turns.</p>}
         <p className="note">Opportunity attacks you can make are taken automatically for now.</p>
       </aside>
