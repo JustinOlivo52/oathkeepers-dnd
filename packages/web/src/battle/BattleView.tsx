@@ -115,9 +115,9 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
     const scene = new BattleScene(map, [...combat.creatures.values()], battle.sheetFor, {
       onHover: (p) => controller.onHover(p),
       onClick: (p) => void controller.onClick(p),
+      onLoadError: () => setBoardError("Artwork could not load. Reload the page to try again."),
     });
     sceneRef.current = scene;
-    scene.load.on("loaderror", () => setBoardError("Artwork could not load. Reload the page to try again."));
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: host.current!,

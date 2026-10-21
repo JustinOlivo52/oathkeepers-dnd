@@ -3,7 +3,7 @@
   --bg: #0f1517; --panel: #172023; --panel-2: #1c282b; --text: #e6e0d2;
   --muted: #a4aeab; --border: #354246; --accent: #d8b777; --accent-text: #141b1d;
   --accent-soft: #293235; --hit: #8ec7da; --good: #92ba93; --bad: #e69b84; --warn: #e1bb77;
-  max-width: none; min-height: 100dvh; padding: 18px 28px 24px; background: var(--bg); color-scheme: dark;
+  max-width: none; min-height: 100dvh; padding: 18px 28px 24px; background: var(--bg); color: var(--text); color-scheme: dark;
 }
 .app-battle .top { margin-bottom: 24px; }
 .app-battle .top h1 { letter-spacing: .06em; font-weight: 500; }

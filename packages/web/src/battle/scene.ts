@@ -22,6 +22,7 @@ export interface Overlay {
 export interface SceneCallbacks {
   onHover(p: Point | null): void;
   onClick(p: Point): void;
+  onLoadError?(): void;
 }
 
 interface Token {
@@ -58,6 +59,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   preload(): void {
+    this.load.on("loaderror", () => this.callbacks.onLoadError?.());
     this.load.spritesheet("props", `${BASE}assets/sprites/props.png`, { frameWidth: 128, frameHeight: 128 });
     for (const [name, sheet] of Object.entries(manifest)) {
       this.load.spritesheet(name, `${BASE}assets/sprites/${sheet.image}`, {
@@ -228,7 +230,7 @@ export class BattleScene extends Phaser.Scene {
     const g = this.overlay.clear();
     const fill = (p: Point, color: number, alpha: number) => g.fillStyle(color, alpha).fillRect(p.x * TILE + 1, p.y * TILE + 1, TILE - 2, TILE - 2);
     const ring = (p: Point, color: number, width = 3) => g.lineStyle(width, color, 1).strokeRect(p.x * TILE + 2, p.y * TILE + 2, TILE - 4, TILE - 4);
-    for (const p of o.reach ?? []) fill(p, 0x529da8, 0.10);
+    for (const p of o.reach ?? []) fill(p, 0x529da8, 0.28);
     const danger = new Set((o.danger ?? []).map(key));
     for (const p of o.path ?? []) fill(p, danger.has(key(p)) ? 0xe0603a : 0x7fd0ff, 0.26);
     for (const t of o.targets ?? []) ring(t.point, t.ok ? 0xe0503a : 0x777777, t.ok ? 3 : 2);
