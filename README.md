@@ -17,9 +17,15 @@ Requires Node.js 22+.
 npm install
 npm test            # run all tests
 npm run typecheck   # TypeScript checks
+npm run dev         # browser test page at http://localhost:5173
+npm run build       # production build (what Netlify runs)
 npm run demo        # watch a random fight in the terminal
 npm run demo -- 7 3 # seed 7, three goblins
 ```
+
+## Deploy (Netlify)
+
+`netlify.toml` is set up: build command `npm run build`, publish folder `packages/web/dist`, Node 22.
 
 ## Layout
 
@@ -27,6 +33,7 @@ npm run demo -- 7 3 # seed 7, three goblins
 packages/
   engine/   Rules: dice, checks, damage, death saves, combat, tactics
   content/  Game data (classes, monsters, items, characters) + schemas and builders
+  web/      Browser client (currently an engine test page)
 docs/       Design and tech plan
 ```
 

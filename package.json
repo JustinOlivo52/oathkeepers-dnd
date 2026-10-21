@@ -6,6 +6,8 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "npm run dev -w @oathkeepers/web",
+    "build": "npm run build -w @oathkeepers/web",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc",

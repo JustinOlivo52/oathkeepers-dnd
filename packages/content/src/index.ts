@@ -8,6 +8,7 @@ import { ArmorSchema, CharacterSchema, ClassSchema, MonsterSchema, WeaponSchema 
 
 export * from "./schemas.js";
 export * from "./build.js";
+export * from "./narrate.js";
 
 /** Validate every data file at load time so bad data fails loudly, with the file and field named. */
 function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): z.infer<T> {

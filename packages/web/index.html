@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oathkeepers</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Oathkeepers</h1>
+        <p class="sub">Engine test: Phase 1 rules engine running in your browser</p>
+      </header>
+
+      <section class="controls">
+        <label>Goblins
+          <select id="goblins">
+            <option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option>
+          </select>
+        </label>
+        <label>Seed (optional)
+          <input id="seed" type="number" placeholder="random" />
+        </label>
+        <button id="fight">Run fight</button>
+      </section>
+
+      <section id="summary" class="summary" hidden></section>
+      <ol id="log" class="log"></ol>
+
+      <footer>
+        This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC,
+        available at <a href="https://www.dndbeyond.com/srd">dndbeyond.com/srd</a>. The SRD 5.2 is licensed under the
+        <a href="https://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons Attribution 4.0 International License</a>.
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

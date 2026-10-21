@@ -1,0 +1,63 @@
+:root {
+  --bg: #f6f3ec;
+  --panel: #ffffff;
+  --text: #22201c;
+  --muted: #6b665c;
+  --border: #ddd6c8;
+  --accent: #8a2b1f;
+  --hit: #2f5d8a;
+  --good: #2e6b3a;
+  --bad: #9a3b2c;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171614;
+    --panel: #211f1c;
+    --text: #ece7dc;
+    --muted: #a39d90;
+    --border: #3a3631;
+    --accent: #e0765f;
+    --hit: #7fb0e0;
+    --good: #7fc98c;
+    --bad: #e58c7a;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; color: var(--accent); letter-spacing: 0.02em; }
+.sub { margin: 4px 0 20px; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 16px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); }
+select, input, button {
+  font: inherit; padding: 8px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--panel); color: var(--text);
+}
+input { width: 140px; }
+button { background: var(--accent); color: #fff; border-color: var(--accent); cursor: pointer; font-weight: 600; }
+.summary { padding: 12px 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
+.log {
+  list-style: none; margin: 0; padding: 12px 14px; background: var(--panel);
+  border: 1px solid var(--border); border-radius: 8px;
+  font: 14px/1.6 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere;
+}
+.log li { padding-left: 16px; }
+.log .round { padding-left: 0; margin-top: 12px; font-weight: 700; color: var(--accent); }
+.log .round:first-of-type { margin-top: 0; }
+.log .turn { padding-left: 0; font-weight: 600; }
+.log .hit { color: var(--hit); }
+.log .crit { color: var(--hit); font-weight: 700; }
+.log .miss { color: var(--muted); }
+.log .good { color: var(--good); }
+.log .bad { color: var(--bad); }
+.log .victory, .log .defeat { padding-left: 0; margin-top: 12px; font-weight: 700; }
+.log .victory { color: var(--good); }
+.log .defeat { color: var(--bad); }
+footer { margin-top: 32px; font-size: 12px; color: var(--muted); }
+footer a { color: inherit; }

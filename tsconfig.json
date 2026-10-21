@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
   "include": ["packages/*/src", "packages/*/test", "packages/*/scripts", "vitest.config.ts"]
 }
