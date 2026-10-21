@@ -91,6 +91,8 @@ Features:
 
 ### Combat
 - Switches to a tactical grid map
+- Players act directly on the board: click to move, pick actions from an action bar, click targets, click to roll
+- Text or voice only for creative actions outside the action bar
 - Initiative, full 5e action economy (action, bonus action, reaction, movement)
 - Monsters use rule-based tactics, not the LLM
 - Returns to narration when combat ends

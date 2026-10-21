@@ -48,6 +48,24 @@ packages/
 
 ## 5. Combat
 
+### Controls: players act on the board, not by typing
+- Click your character to select it. Reachable squares light up.
+- Click a square to move. The path and any opportunity attack risk are shown first.
+- Action bar: Attack, Dash, Dodge, Disengage, Help, Hide, spells, items, class features. Spent actions grey out.
+- Targeting: click an enemy to attack. Range, area templates and affected creatures are previewed before you confirm.
+- Click to roll. Dice animate on screen with the real result.
+- Reactions pop up when triggered ("Goblin moves away. Opportunity attack?" / "You're hit. Cast Shield?").
+- End Turn button. Initiative order shown along the top.
+
+### Creative actions (optional text or voice)
+- For anything outside the action bar ("I kick the brazier onto the goblins", "I swing from the chandelier"), the player types or says it.
+- The DM decides the check and the engine resolves it, then the result plays out on the board.
+
+### DM in combat
+- Short narration of big moments (crits, kills, spells), not every move, to keep turns fast.
+- Monsters and companions act on the board using rule-based tactics.
+
+### Rules
 - Square grid, 5 ft per square
 - Movement, difficult terrain, opportunity attacks, cover, line of sight
 - Area templates for spells (cone, sphere, line, cube)
