@@ -118,8 +118,16 @@ Build a provider layer so the DM model can be swapped without changing the game.
 ## 6. Party, progression and homebrew
 
 ### Solo play and companions
-- True solo: one player, no companions. Encounters scale to party size and level (5e's encounter budget is per character).
-- Companions: solo players and small groups can recruit AI-controlled companions. They step aside when real players join. Treat as a test feature first.
+- At the start of a single player campaign, the player chooses: Solo or With Companions.
+- Solo: the adventure is scaled for one adventurer (encounters, puzzles, rewards).
+- Companions can be added or dismissed later, at natural breaks. Everything rebalances to the current party.
+- Scaling is always calculated from the party present at that moment, never locked at campaign start.
+- Solo safety rules (to tune in playtesting), because one bad roll can end a solo run:
+  - Fewer, stronger enemies instead of large groups (action economy)
+  - Extra protection against "lose your turn" effects (paralyzed, stunned, asleep), such as repeating the save each turn
+  - A once-per-rest second chance on a failed death save or a dropped-to-0 moment
+- Skill gaps: with no party to cover them, the DM offers alternate paths (no lockpicking means find the key, bribe the guard, break the door).
+- Companions: AI-controlled, recruited in the story. They step aside when real players join. Test feature first.
 
 ### Absent players
 - Absent characters earn a reduced XP share so the party stays close in level.
