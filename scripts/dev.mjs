@@ -5,7 +5,8 @@ const procs = [
   ["server", ["run", "start", "-w", "@oathkeepers/server"]],
   ["web", ["run", "dev", "-w", "@oathkeepers/web"]],
 ].map(([name, args]) => {
-  const p = spawn(process.platform === "win32" ? "npm.cmd" : "npm", args, { stdio: ["inherit", "pipe", "pipe"] });
+  // Windows needs a shell to run npm.cmd (newer Node versions refuse otherwise).
+  const p = spawn("npm", args, { stdio: ["inherit", "pipe", "pipe"], shell: process.platform === "win32" });
   const prefix = (chunk) => chunk.toString().split("\n").filter(Boolean).map((l) => `[${name}] ${l}`).join("\n") + "\n";
   p.stdout.on("data", (c) => process.stdout.write(prefix(c)));
   p.stderr.on("data", (c) => process.stderr.write(prefix(c)));
