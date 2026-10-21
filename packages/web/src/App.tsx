@@ -4,13 +4,14 @@ import { Builder } from "./builder/Builder";
 import { FightView } from "./fight/FightView";
 // Phaser is large, so the battle screen loads only when it's opened.
 const BattleView = lazy(() => import("./battle/BattleView").then((m) => ({ default: m.BattleView })));
+const AdventureView = lazy(() => import("./adventure/AdventureView").then((m) => ({ default: m.AdventureView })));
 import { content } from "./content";
 import { loadCharacters, saveCharacters } from "./storage";
 
-type Tab = "builder" | "battle" | "fight";
+type Tab = "adventure" | "builder" | "battle" | "fight";
 
 export function App() {
-  const [tab, setTab] = useState<Tab>("builder");
+  const [tab, setTab] = useState<Tab>("adventure");
   const [characters, setCharacters] = useState<CharacterData[]>(loadCharacters);
   const [fighterId, setFighterId] = useState<string>(content.characters[0]!.id);
 
@@ -28,10 +29,13 @@ export function App() {
   };
 
   return (
-    <div className={`app ${tab === "battle" ? "app-battle" : ""}`}>
+    <div className={`app ${tab === "battle" || tab === "adventure" ? "app-battle" : ""}`}>
       <header className="top">
         <h1>Oathkeepers</h1>
         <nav className="tabs" aria-label="Sections">
+          <button className={tab === "adventure" ? "active" : ""} onClick={() => setTab("adventure")}>
+            Adventure
+          </button>
           <button className={tab === "builder" ? "active" : ""} onClick={() => setTab("builder")}>
             Character Builder
           </button>
@@ -55,6 +59,10 @@ export function App() {
             setTab("battle");
           }}
         />
+      ) : tab === "adventure" ? (
+        <Suspense fallback={<p className="hint">Loading adventure…</p>}>
+          <AdventureView characters={[...content.characters, ...characters]} selectedId={fighterId} onSelect={setFighterId} />
+        </Suspense>
       ) : tab === "battle" ? (
         <Suspense fallback={<p className="hint">Loading battle…</p>}>
           <BattleView characters={[...content.characters, ...characters]} selectedId={fighterId} onSelect={setFighterId} />

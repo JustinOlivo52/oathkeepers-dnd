@@ -2,7 +2,7 @@ import "./art.css";
 import { abbeyBattlefield } from "./abbey";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
-import { Combat, EventLog, generateDungeon, isConscious, mathRng, seededRng, type Creature } from "@oathkeepers/engine";
+import { Combat, EventLog, explore, generateDungeon, isConscious, key, mathRng, seededRng, type Creature, type GridMap, type Point } from "@oathkeepers/engine";
 import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController } from "./controller";
@@ -23,26 +23,71 @@ const PALETTE_BY_CLASS: Record<string, "martial" | "expert" | "arcane" | "divine
   wizard: "arcane",
 };
 
-interface Setup {
+export interface EnemyGroup {
+  monsterId: string;
+  count: number;
+}
+
+export interface BattleSetup {
   character: CharacterData;
-  goblins: number;
+  enemies: EnemyGroup[];
   seed: number;
   id: number;
   battlefield: "abbey" | "generated";
+  /** HP to start at, when the hero is already hurt. Defaults to full. */
+  startingHp?: number;
 }
 
-function createBattle({ character, goblins, seed, battlefield }: Setup) {
+export interface BattleOutcome {
+  winner: "party" | "enemies";
+  rounds: number;
+  hp: Record<string, number>;
+  /** Monster ids of enemies killed, one per enemy. */
+  defeated: string[];
+}
+
+/** Spawn squares for `count` creatures: the map's own spawn points first, then the nearest open squares. */
+function spawnSquares(map: GridMap, preferred: Point[], count: number, taken: Set<string>): Point[] {
+  const out: Point[] = [];
+  const take = (p: Point) => {
+    if (out.length >= count || taken.has(key(p)) || !map.walkable(p)) return;
+    out.push(p);
+    taken.add(key(p));
+  };
+  preferred.forEach(take);
+  if (out.length < count && preferred[0]) {
+    [...explore(map, preferred[0], (p) => map.walkable(p)).values()].sort((a, b) => a.cost - b.cost).forEach((n) => take(n.point));
+  }
+  return out;
+}
+
+function createBattle({ character, enemies: groups, seed, battlefield, startingHp }: BattleSetup) {
   const gen = battlefield === "abbey" ? abbeyBattlefield() : generateDungeon(seededRng(seed));
   const hero = buildCharacter(content, character);
-  hero.position = gen.partySpawns[0];
-  const enemies = Array.from({ length: goblins }, (_, i) => {
-    const g = buildMonster(content.monsters[0]!, `goblin-${i + 1}`, `Goblin ${i + 1}`);
-    g.position = gen.enemySpawns[i % gen.enemySpawns.length];
-    return g;
+  if (startingHp !== undefined) hero.hp = Math.max(1, Math.min(hero.maxHp, startingHp));
+  const taken = new Set<string>();
+  hero.position = spawnSquares(gen.map, gen.partySpawns, 1, taken)[0];
+  const monsterOf = new Map<string, string>();
+  const list = groups.flatMap((g) => Array.from({ length: g.count }, () => g.monsterId));
+  const squares = spawnSquares(gen.map, gen.enemySpawns, list.length, taken);
+  const enemies = list.map((monsterId, i) => {
+    const data = content.monsters.find((m) => m.id === monsterId) ?? content.monsters[0]!;
+    const id = `${data.id}-${i + 1}`;
+    monsterOf.set(id, data.id);
+    const label = list.length > 1 ? `${data.name.replace(/ Warrior$/, "")} ${i + 1}` : data.name;
+    const m = buildMonster(data, id, label);
+    m.position = squares[i];
+    return m;
   });
   const combat = new Combat([hero, ...enemies], mathRng, new EventLog(), gen.map);
   const sheetFor = (c: Creature) => (c.side === "enemies" ? "goblin" : `hero-${PALETTE_BY_CLASS[character.class] ?? "martial"}`) as never;
-  return { combat, map: gen.map, controller: new BattleController(combat, new Set([hero.id])), sheetFor };
+  const outcome = (): BattleOutcome => ({
+    winner: combat.winner ?? "enemies",
+    rounds: combat.round,
+    hp: { [hero.id]: hero.hp },
+    defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
+  });
+  return { combat, map: gen.map, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
 }
 
 export function BattleView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void }) {
@@ -50,12 +95,12 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
   const [goblins, setGoblins] = useState(3);
   const [seedText, setSeedText] = useState("");
   const [battlefield, setBattlefield] = useState<"abbey" | "generated">("abbey");
-  const [setup, setSetup] = useState<Setup | null>(null);
+  const [setup, setSetup] = useState<BattleSetup | null>(null);
   const battleId = useRef(0);
 
   const start = () => {
     const seed = seedText ? Number(seedText) : Math.floor(Math.random() * 1_000_000);
-    setSetup({ character, goblins, seed, id: ++battleId.current, battlefield });
+    setSetup({ character, enemies: [{ monsterId: "goblin-warrior", count: goblins }], seed, id: ++battleId.current, battlefield });
   };
 
   return (
@@ -101,7 +146,8 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
   );
 }
 
-function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
+/** One battle on the grid. With `onFinish`, the end banner hands the outcome back (to the DM) instead of offering a rematch. */
+export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onRestart?: () => void; onFinish?: (outcome: BattleOutcome) => void }) {
   const battle = useMemo(() => createBattle(setup), [setup]);
   const { controller, combat, map } = battle;
   const host = useRef<HTMLDivElement>(null);
@@ -185,9 +231,15 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
             <span>
               {combat.round} rounds.{setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
             </span>
-            <button className="primary" onClick={onRestart}>
-              New battle
-            </button>
+            {onFinish ? (
+              <button className="primary" onClick={() => onFinish(battle.outcome())}>
+                Return to the story
+              </button>
+            ) : (
+              <button className="primary" onClick={onRestart}>
+                New battle
+              </button>
+            )}
           </div>
         )}
       </div>

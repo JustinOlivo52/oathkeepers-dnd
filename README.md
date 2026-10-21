@@ -10,6 +10,7 @@ A browser D&D 5e (2024 rules) game with an AI Dungeon Master and tactical grid c
 - Phase 1 (rules engine): done. Fighter vs Goblin combat runs end to end in tests.
 - Phase 2 (character builder): done. Build a level 3 character of any SRD class in the browser.
 - Phase 3 (grid combat): done. Turn-based battles on generated dungeon maps with pixel art.
+- Phase 4 (AI Dungeon Master): part 1 done. Story mode with an AI DM (Claude) or a free demo DM.
 
 ## Getting started
 
@@ -17,9 +18,10 @@ Requires Node.js 22+.
 
 ```sh
 npm install
+cp .env.example .env   # then add your ANTHROPIC_API_KEY (optional: leave empty for the demo DM)
+npm run dev            # game server + web app: open http://localhost:5173
 npm test            # run all tests
 npm run typecheck   # TypeScript checks
-npm run dev         # browser app at http://localhost:5173
 npm run build       # production build (what Netlify runs)
 npm run demo        # watch a random fight in the terminal
 npm run demo -- 7 3 # seed 7, three goblins
@@ -30,6 +32,7 @@ npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (needs Python 3 + P
 ## Deploy (Netlify)
 
 `netlify.toml` is set up: build command `npm run build`, publish folder `packages/web/dist`, Node 22.
+Netlify hosts the web app only. Without the game server, Adventure mode uses the offline demo DM.
 
 ## Layout
 
@@ -37,7 +40,9 @@ npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (needs Python 3 + P
 packages/
   engine/   Rules: dice, checks, damage, death saves, combat, tactics
   content/  Game data (classes, monsters, items, characters) + schemas and builders
-  web/      Browser client (React + Phaser): character builder and battles
+  dm/       AI Dungeon Master: provider layer, Director, tools, demo DM
+  server/   Game server: keeps API keys, runs the DM, saves adventures
+  web/      Browser client (React + Phaser): adventure, character builder, battles
 docs/       Design and tech plan
 ```
 

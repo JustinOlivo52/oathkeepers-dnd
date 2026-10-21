@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: Phases 1 to 3 done. Companion to `design.md`.
+Status: Phases 1 to 3 done, Phase 4 (AI DM) part 1 done. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -158,3 +158,26 @@ Not yet:
 - Cover, prone, grappling, hiding, Help action
 - Up and down facing sprites, separate ranged and spell attack animations
 - Spells and most class features in combat
+
+### Phase 4 progress (AI Dungeon Master)
+
+Part 1 done:
+- `packages/dm`: provider layer (any model can run the DM), the Director (DM loop), tools, system prompt, story state
+- DM tools: request_check, request_save, start_combat, grant_xp, give_item, give_gold, set_scene, update_npc, update_quest, whisper, long_rest
+- Every tool call is validated; bad input or unknown monsters go back to the model as errors instead of breaking the game
+- Rolls: the DM asks, the player clicks Roll, the engine rolls with the character's real modifiers, the result goes back to the DM
+- Battles: start_combat hands off to the grid battle with the DM's chosen enemies; HP, XP (from monster XP) and the outcome come back to the story
+- `packages/server`: Node server holding the API key, Claude provider (Sonnet 5.5, medium effort, prompt caching, refusal fallback), adventures saved as JSON, monthly spending cap
+- Demo DM: scripted, free, no key; runs on the server or entirely in the browser (so a static Netlify deploy still plays)
+- Adventure screen: story feed, typed actions, roll and battle prompts, quests, NPCs, inventory, gold, AI cost, resume saved adventure
+
+Part 2 (next):
+- Real-key playtest with Claude, then tune the prompt
+- AI image generation (NPC portraits, scene art) through the server, with its own budget
+- Streaming narration so text appears as it's written
+- Session recaps and long-term memory (Haiku 5.5)
+
+Known limits:
+- Combat results are reported by the browser; Phase 6 moves battles to the server for multiplayer
+- Level-up is announced but not applied yet (Phase 5)
+- Only goblins exist as monsters until more content is added

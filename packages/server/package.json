@@ -1,0 +1,15 @@
+{
+  "name": "@oathkeepers/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=../../.env --import tsx src/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "*",
+    "@oathkeepers/content": "*",
+    "@oathkeepers/dm": "*",
+    "@oathkeepers/engine": "*"
+  }
+}
