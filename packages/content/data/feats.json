@@ -1,0 +1,10 @@
+[
+  { "id": "alert", "name": "Alert", "category": "origin", "repeatable": false, "summary": "Add your proficiency bonus to initiative, and you can swap initiative with a willing ally." },
+  { "id": "magic-initiate", "name": "Magic Initiate", "category": "origin", "repeatable": true, "summary": "Learn two cantrips and one level 1 spell from the Cleric, Druid or Wizard list." },
+  { "id": "savage-attacker", "name": "Savage Attacker", "category": "origin", "repeatable": false, "summary": "Once per turn, roll a weapon's damage dice twice and use either result." },
+  { "id": "skilled", "name": "Skilled", "category": "origin", "repeatable": true, "summary": "Gain proficiency in any three skills or tools." },
+  { "id": "archery", "name": "Archery", "category": "fighting-style", "repeatable": false, "summary": "+2 to attack rolls with ranged weapons." },
+  { "id": "defense", "name": "Defense", "category": "fighting-style", "repeatable": false, "summary": "+1 AC while wearing armor." },
+  { "id": "great-weapon-fighting", "name": "Great Weapon Fighting", "category": "fighting-style", "repeatable": false, "summary": "With two-handed melee weapons, treat damage dice rolls of 1 or 2 as 3." },
+  { "id": "two-weapon-fighting", "name": "Two-Weapon Fighting", "category": "fighting-style", "repeatable": false, "summary": "Add your ability modifier to the damage of your extra light weapon attack." }
+]

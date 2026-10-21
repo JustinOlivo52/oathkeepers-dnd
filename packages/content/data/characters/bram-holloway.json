@@ -2,14 +2,18 @@
   "id": "bram-holloway",
   "name": "Bram Holloway",
   "species": "human",
+  "size": "medium",
   "background": "soldier",
   "class": "fighter",
   "subclass": "champion",
   "level": 3,
   "abilities": { "str": 17, "dex": 13, "con": 15, "int": 10, "wis": 12, "cha": 8 },
   "skills": ["athletics", "intimidation", "perception", "survival", "insight"],
-  "fightingStyle": "dueling",
-  "weaponMasteries": ["longsword", "scimitar", "shortbow"],
-  "equipment": { "armor": "chain-mail", "shield": true, "weapons": ["longsword"] },
-  "speedFt": 30
+  "feats": [{ "id": "savage-attacker" }, { "id": "alert" }],
+  "fightingStyle": "defense",
+  "weaponMasteries": ["longsword", "handaxe", "longbow"],
+  "equipment": { "armor": "chain-mail", "shield": true, "weapons": ["longsword", "handaxe"] },
+  "languages": ["Common", "Dwarvish", "Giant"],
+  "tools": ["Gaming Set"],
+  "alignment": "Neutral Good"
 }

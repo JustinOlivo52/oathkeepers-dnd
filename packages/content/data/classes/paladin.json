@@ -1,0 +1,107 @@
+{
+  "id": "paladin",
+  "name": "Paladin",
+  "hitDie": 10,
+  "primaryAbilities": [
+    "str",
+    "cha"
+  ],
+  "savingThrows": [
+    "wis",
+    "cha"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "athletics",
+      "insight",
+      "intimidation",
+      "medicine",
+      "persuasion",
+      "religion"
+    ]
+  },
+  "armorProficiencies": [
+    "light",
+    "medium",
+    "heavy",
+    "shield"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple",
+      "martial"
+    ]
+  },
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "half"
+  },
+  "weaponMastery": {
+    "count": 2
+  },
+  "features": [
+    {
+      "level": 1,
+      "id": "lay-on-hands",
+      "name": "Lay On Hands"
+    },
+    {
+      "level": 1,
+      "id": "spellcasting",
+      "name": "Spellcasting"
+    },
+    {
+      "level": 1,
+      "id": "weapon-mastery",
+      "name": "Weapon Mastery"
+    },
+    {
+      "level": 2,
+      "id": "fighting-style",
+      "name": "Fighting Style"
+    },
+    {
+      "level": 2,
+      "id": "paladins-smite",
+      "name": "Paladin's Smite"
+    },
+    {
+      "level": 3,
+      "id": "channel-divinity",
+      "name": "Channel Divinity"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Paladin Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "channel-divinity",
+      "recharge": "short",
+      "usesByLevel": {
+        "3": 2
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "oath-of-devotion",
+      "name": "Oath of Devotion",
+      "features": [
+        {
+          "level": 3,
+          "id": "oath-of-devotion-spells",
+          "name": "Oath of Devotion Spells"
+        },
+        {
+          "level": 3,
+          "id": "sacred-weapon",
+          "name": "Sacred Weapon"
+        }
+      ]
+    }
+  ]
+}

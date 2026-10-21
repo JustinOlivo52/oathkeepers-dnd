@@ -2,31 +2,109 @@
   "id": "fighter",
   "name": "Fighter",
   "hitDie": 10,
-  "primaryAbilities": ["str", "dex"],
-  "savingThrows": ["str", "con"],
+  "primaryAbilities": [
+    "str",
+    "dex"
+  ],
+  "savingThrows": [
+    "str",
+    "con"
+  ],
   "skillChoices": {
     "count": 2,
-    "from": ["acrobatics", "animalHandling", "athletics", "history", "insight", "intimidation", "persuasion", "perception", "survival"]
+    "from": [
+      "acrobatics",
+      "animalHandling",
+      "athletics",
+      "history",
+      "insight",
+      "intimidation",
+      "persuasion",
+      "perception",
+      "survival"
+    ]
+  },
+  "armorProficiencies": [
+    "light",
+    "medium",
+    "heavy",
+    "shield"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple",
+      "martial"
+    ]
+  },
+  "weaponMastery": {
+    "count": 3
   },
   "features": [
-    { "level": 1, "id": "fighting-style", "name": "Fighting Style" },
-    { "level": 1, "id": "second-wind", "name": "Second Wind" },
-    { "level": 1, "id": "weapon-mastery", "name": "Weapon Mastery" },
-    { "level": 2, "id": "action-surge", "name": "Action Surge" },
-    { "level": 2, "id": "tactical-mind", "name": "Tactical Mind" },
-    { "level": 3, "id": "subclass", "name": "Fighter Subclass" }
+    {
+      "level": 1,
+      "id": "fighting-style",
+      "name": "Fighting Style"
+    },
+    {
+      "level": 1,
+      "id": "second-wind",
+      "name": "Second Wind"
+    },
+    {
+      "level": 1,
+      "id": "weapon-mastery",
+      "name": "Weapon Mastery"
+    },
+    {
+      "level": 2,
+      "id": "action-surge",
+      "name": "Action Surge"
+    },
+    {
+      "level": 2,
+      "id": "tactical-mind",
+      "name": "Tactical Mind"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Fighter Subclass"
+    }
   ],
   "resources": [
-    { "id": "second-wind", "recharge": "long", "usesByLevel": { "1": 2, "4": 3, "10": 4 } },
-    { "id": "action-surge", "recharge": "short", "usesByLevel": { "2": 1, "17": 2 } }
+    {
+      "id": "second-wind",
+      "recharge": "long",
+      "usesByLevel": {
+        "1": 2,
+        "4": 3,
+        "10": 4
+      }
+    },
+    {
+      "id": "action-surge",
+      "recharge": "short",
+      "usesByLevel": {
+        "2": 1,
+        "17": 2
+      }
+    }
   ],
   "subclasses": [
     {
       "id": "champion",
       "name": "Champion",
       "features": [
-        { "level": 3, "id": "improved-critical", "name": "Improved Critical" },
-        { "level": 3, "id": "remarkable-athlete", "name": "Remarkable Athlete" }
+        {
+          "level": 3,
+          "id": "improved-critical",
+          "name": "Improved Critical"
+        },
+        {
+          "level": 3,
+          "id": "remarkable-athlete",
+          "name": "Remarkable Athlete"
+        }
       ]
     }
   ]

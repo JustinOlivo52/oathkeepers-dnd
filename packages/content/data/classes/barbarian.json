@@ -1,0 +1,99 @@
+{
+  "id": "barbarian",
+  "name": "Barbarian",
+  "hitDie": 12,
+  "primaryAbilities": [
+    "str"
+  ],
+  "savingThrows": [
+    "str",
+    "con"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "animalHandling",
+      "athletics",
+      "intimidation",
+      "nature",
+      "perception",
+      "survival"
+    ]
+  },
+  "armorProficiencies": [
+    "light",
+    "medium",
+    "shield"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple",
+      "martial"
+    ]
+  },
+  "unarmoredDefense": "con",
+  "weaponMastery": {
+    "count": 2,
+    "meleeOnly": true
+  },
+  "features": [
+    {
+      "level": 1,
+      "id": "rage",
+      "name": "Rage"
+    },
+    {
+      "level": 1,
+      "id": "unarmored-defense",
+      "name": "Unarmored Defense"
+    },
+    {
+      "level": 1,
+      "id": "weapon-mastery",
+      "name": "Weapon Mastery"
+    },
+    {
+      "level": 2,
+      "id": "danger-sense",
+      "name": "Danger Sense"
+    },
+    {
+      "level": 2,
+      "id": "reckless-attack",
+      "name": "Reckless Attack"
+    },
+    {
+      "level": 3,
+      "id": "primal-knowledge",
+      "name": "Primal Knowledge"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Barbarian Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "rage",
+      "recharge": "long",
+      "usesByLevel": {
+        "1": 2,
+        "3": 3
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "path-of-the-berserker",
+      "name": "Path of the Berserker",
+      "features": [
+        {
+          "level": 3,
+          "id": "frenzy",
+          "name": "Frenzy"
+        }
+      ]
+    }
+  ]
+}

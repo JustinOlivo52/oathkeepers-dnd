@@ -1,0 +1,105 @@
+{
+  "id": "rogue",
+  "name": "Rogue",
+  "hitDie": 8,
+  "primaryAbilities": [
+    "dex"
+  ],
+  "savingThrows": [
+    "dex",
+    "int"
+  ],
+  "skillChoices": {
+    "count": 4,
+    "from": [
+      "acrobatics",
+      "athletics",
+      "deception",
+      "insight",
+      "intimidation",
+      "investigation",
+      "perception",
+      "persuasion",
+      "sleightOfHand",
+      "stealth"
+    ]
+  },
+  "armorProficiencies": [
+    "light"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ],
+    "martialWithProperties": [
+      "finesse",
+      "light"
+    ]
+  },
+  "tools": "Thieves' Tools",
+  "weaponMastery": {
+    "count": 2
+  },
+  "expertise": [
+    {
+      "level": 1,
+      "count": 2
+    }
+  ],
+  "features": [
+    {
+      "level": 1,
+      "id": "expertise",
+      "name": "Expertise"
+    },
+    {
+      "level": 1,
+      "id": "sneak-attack",
+      "name": "Sneak Attack"
+    },
+    {
+      "level": 1,
+      "id": "thieves-cant",
+      "name": "Thieves' Cant"
+    },
+    {
+      "level": 1,
+      "id": "weapon-mastery",
+      "name": "Weapon Mastery"
+    },
+    {
+      "level": 2,
+      "id": "cunning-action",
+      "name": "Cunning Action"
+    },
+    {
+      "level": 3,
+      "id": "steady-aim",
+      "name": "Steady Aim"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Rogue Subclass"
+    }
+  ],
+  "resources": [],
+  "subclasses": [
+    {
+      "id": "thief",
+      "name": "Thief",
+      "features": [
+        {
+          "level": 3,
+          "id": "fast-hands",
+          "name": "Fast Hands"
+        },
+        {
+          "level": 3,
+          "id": "second-story-work",
+          "name": "Second-Story Work"
+        }
+      ]
+    }
+  ]
+}

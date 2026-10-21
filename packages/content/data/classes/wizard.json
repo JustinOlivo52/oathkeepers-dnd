@@ -1,0 +1,102 @@
+{
+  "id": "wizard",
+  "name": "Wizard",
+  "hitDie": 6,
+  "primaryAbilities": [
+    "int"
+  ],
+  "savingThrows": [
+    "int",
+    "wis"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "arcana",
+      "history",
+      "insight",
+      "investigation",
+      "medicine",
+      "nature",
+      "religion"
+    ]
+  },
+  "armorProficiencies": [],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ]
+  },
+  "spellcasting": {
+    "ability": "int",
+    "progression": "full"
+  },
+  "expertise": [
+    {
+      "level": 2,
+      "count": 1,
+      "from": [
+        "arcana",
+        "history",
+        "investigation",
+        "medicine",
+        "nature",
+        "religion"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "level": 1,
+      "id": "spellcasting",
+      "name": "Spellcasting"
+    },
+    {
+      "level": 1,
+      "id": "ritual-adept",
+      "name": "Ritual Adept"
+    },
+    {
+      "level": 1,
+      "id": "arcane-recovery",
+      "name": "Arcane Recovery"
+    },
+    {
+      "level": 2,
+      "id": "scholar",
+      "name": "Scholar"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Wizard Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "arcane-recovery",
+      "recharge": "long",
+      "usesByLevel": {
+        "1": 1
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "evoker",
+      "name": "Evoker",
+      "features": [
+        {
+          "level": 3,
+          "id": "evocation-savant",
+          "name": "Evocation Savant"
+        },
+        {
+          "level": 3,
+          "id": "potent-cantrip",
+          "name": "Potent Cantrip"
+        }
+      ]
+    }
+  ]
+}

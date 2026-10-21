@@ -1,0 +1,77 @@
+{
+  "id": "warlock",
+  "name": "Warlock",
+  "hitDie": 8,
+  "primaryAbilities": [
+    "cha"
+  ],
+  "savingThrows": [
+    "wis",
+    "cha"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "arcana",
+      "deception",
+      "history",
+      "intimidation",
+      "investigation",
+      "nature",
+      "religion"
+    ]
+  },
+  "armorProficiencies": [
+    "light"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ]
+  },
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "pact"
+  },
+  "features": [
+    {
+      "level": 1,
+      "id": "eldritch-invocations",
+      "name": "Eldritch Invocations"
+    },
+    {
+      "level": 1,
+      "id": "pact-magic",
+      "name": "Pact Magic"
+    },
+    {
+      "level": 2,
+      "id": "magical-cunning",
+      "name": "Magical Cunning"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Warlock Subclass"
+    }
+  ],
+  "resources": [],
+  "subclasses": [
+    {
+      "id": "fiend-patron",
+      "name": "Fiend Patron",
+      "features": [
+        {
+          "level": 3,
+          "id": "dark-ones-blessing",
+          "name": "Dark One's Blessing"
+        },
+        {
+          "level": 3,
+          "id": "fiend-spells",
+          "name": "Fiend Spells"
+        }
+      ]
+    }
+  ]
+}

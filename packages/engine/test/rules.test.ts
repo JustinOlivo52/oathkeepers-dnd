@@ -140,3 +140,16 @@ describe("death saves", () => {
     expect(c).toMatchObject({ hp: 4, conditions: [] });
   });
 });
+
+describe("expertise and Jack of All Trades", () => {
+  it("doubles proficiency with Expertise", () => {
+    const c = makeCreature({ id: "c", proficiencyBonus: 2, skillProficiencies: ["stealth"], skillExpertise: ["stealth"] });
+    expect(abilityCheck(scriptedRng([10]), new EventLog(), c, { skill: "stealth", dc: 10 }).roll.total).toBe(14);
+  });
+
+  it("adds half proficiency to unproficient checks with Jack of All Trades", () => {
+    const c = makeCreature({ id: "c", proficiencyBonus: 3, features: ["jack-of-all-trades"] });
+    expect(abilityCheck(scriptedRng([10]), new EventLog(), c, { skill: "arcana", dc: 10 }).roll.total).toBe(11);
+    expect(abilityCheck(scriptedRng([10]), new EventLog(), c, { ability: "str", dc: 10 }).roll.total).toBe(11);
+  });
+});

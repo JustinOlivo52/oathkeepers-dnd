@@ -9,7 +9,17 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node", "vite/client"]
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "jsx": "react-jsx"
   },
-  "include": ["packages/*/src", "packages/*/test", "packages/*/scripts", "vitest.config.ts"]
+  "include": [
+    "packages/*/src",
+    "packages/*/test",
+    "packages/*/scripts",
+    "vitest.config.ts",
+    "packages/web/vite.config.ts"
+  ]
 }

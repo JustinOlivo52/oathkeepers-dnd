@@ -56,6 +56,8 @@ export interface Creature {
   proficiencyBonus: number;
   saveProficiencies: Ability[];
   skillProficiencies: Skill[];
+  /** Skills with Expertise: proficiency bonus counts twice. */
+  skillExpertise?: Skill[];
   /** Fixed skill totals that override the calculation (monster stat blocks list these directly). */
   skillBonuses?: Partial<Record<Skill, number>>;
   ac: number;

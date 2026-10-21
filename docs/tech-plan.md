@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: Phase 1 in progress. Companion to `design.md`.
+Status: Phase 1 and Phase 2 done. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -122,3 +122,18 @@ Not yet:
 - Tactical Mind, Remarkable Athlete's Athletics bonus, other weapon masteries
 - Goblin Nimble Escape (needs movement and the grid)
 - Rests, conditions beyond unconscious, reactions, spells
+
+### Phase 2 progress (character builder)
+
+Done:
+- Content for all 12 SRD classes (levels 1 to 3, one subclass each), 9 species with lineages, 4 backgrounds, origin and fighting style feats, the full weapon and armor tables
+- Creation rules: standard array, point buy (27 points), 4d6 drop lowest; background +2/+1 or +1/+1/+1 (max 20); class, species, subclass and Skilled skill picks with no duplicates; Expertise; class choices (Divine Order, Primal Order); fighting styles; weapon mastery; armor, shield and weapon training; languages
+- Every rule is checked per step with plain-language messages, and a character only saves when every step is complete
+- Sheet math: HP by hit die, Unarmored Defense (Barbarian, Monk, Draconic Sorcerer), Martial Arts, Dwarven Toughness, lineage speed and resistances, heavy armor Strength penalty, Alert, Jack of All Trades, Expertise, Unarmed Strike
+- Browser builder with a live character sheet, saved characters, and "test in a fight"
+
+Simplified for now:
+- Equipment: pick any trained gear instead of official starting packages and gold
+- Spells: casters are flagged; spell choice arrives with the spell system
+- Many class features show on the sheet as "coming soon" until combat supports them
+- Dueling is not in the SRD, so the premade Fighter now uses Defense

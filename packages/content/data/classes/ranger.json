@@ -1,0 +1,101 @@
+{
+  "id": "ranger",
+  "name": "Ranger",
+  "hitDie": 10,
+  "primaryAbilities": [
+    "dex",
+    "wis"
+  ],
+  "savingThrows": [
+    "str",
+    "dex"
+  ],
+  "skillChoices": {
+    "count": 3,
+    "from": [
+      "animalHandling",
+      "athletics",
+      "insight",
+      "investigation",
+      "nature",
+      "perception",
+      "stealth",
+      "survival"
+    ]
+  },
+  "armorProficiencies": [
+    "light",
+    "medium",
+    "shield"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple",
+      "martial"
+    ]
+  },
+  "spellcasting": {
+    "ability": "wis",
+    "progression": "half"
+  },
+  "weaponMastery": {
+    "count": 2
+  },
+  "expertise": [
+    {
+      "level": 2,
+      "count": 1
+    }
+  ],
+  "features": [
+    {
+      "level": 1,
+      "id": "spellcasting",
+      "name": "Spellcasting"
+    },
+    {
+      "level": 1,
+      "id": "favored-enemy",
+      "name": "Favored Enemy"
+    },
+    {
+      "level": 1,
+      "id": "weapon-mastery",
+      "name": "Weapon Mastery"
+    },
+    {
+      "level": 2,
+      "id": "deft-explorer",
+      "name": "Deft Explorer"
+    },
+    {
+      "level": 2,
+      "id": "fighting-style",
+      "name": "Fighting Style"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Ranger Subclass"
+    }
+  ],
+  "resources": [],
+  "subclasses": [
+    {
+      "id": "hunter",
+      "name": "Hunter",
+      "features": [
+        {
+          "level": 3,
+          "id": "hunters-lore",
+          "name": "Hunter's Lore"
+        },
+        {
+          "level": 3,
+          "id": "hunters-prey",
+          "name": "Hunter's Prey"
+        }
+      ]
+    }
+  ]
+}

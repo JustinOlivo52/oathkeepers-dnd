@@ -1,0 +1,90 @@
+{
+  "id": "sorcerer",
+  "name": "Sorcerer",
+  "hitDie": 6,
+  "primaryAbilities": [
+    "cha"
+  ],
+  "savingThrows": [
+    "con",
+    "cha"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "arcana",
+      "deception",
+      "insight",
+      "intimidation",
+      "persuasion",
+      "religion"
+    ]
+  },
+  "armorProficiencies": [],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ]
+  },
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "full"
+  },
+  "features": [
+    {
+      "level": 1,
+      "id": "spellcasting",
+      "name": "Spellcasting"
+    },
+    {
+      "level": 1,
+      "id": "innate-sorcery",
+      "name": "Innate Sorcery"
+    },
+    {
+      "level": 2,
+      "id": "font-of-magic",
+      "name": "Font of Magic"
+    },
+    {
+      "level": 2,
+      "id": "metamagic",
+      "name": "Metamagic"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Sorcerer Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "sorcery-points",
+      "recharge": "long",
+      "usesByLevel": {
+        "2": 2,
+        "3": 3
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "draconic-sorcery",
+      "name": "Draconic Sorcery",
+      "unarmoredDefense": "cha",
+      "hpPerLevel": 1,
+      "features": [
+        {
+          "level": 3,
+          "id": "draconic-resilience",
+          "name": "Draconic Resilience"
+        },
+        {
+          "level": 3,
+          "id": "draconic-spells",
+          "name": "Draconic Spells"
+        }
+      ]
+    }
+  ]
+}

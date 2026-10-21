@@ -1,0 +1,126 @@
+{
+  "id": "druid",
+  "name": "Druid",
+  "hitDie": 8,
+  "primaryAbilities": [
+    "wis"
+  ],
+  "savingThrows": [
+    "int",
+    "wis"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "arcana",
+      "animalHandling",
+      "insight",
+      "medicine",
+      "nature",
+      "perception",
+      "religion",
+      "survival"
+    ]
+  },
+  "armorProficiencies": [
+    "light",
+    "shield"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ]
+  },
+  "tools": "Herbalism Kit",
+  "spellcasting": {
+    "ability": "wis",
+    "progression": "full"
+  },
+  "choices": [
+    {
+      "id": "primal-order",
+      "name": "Primal Order",
+      "level": 1,
+      "options": [
+        {
+          "id": "magician",
+          "name": "Magician",
+          "summary": "An extra cantrip and a bonus to Arcana and Nature checks.",
+          "grants": {}
+        },
+        {
+          "id": "warden",
+          "name": "Warden",
+          "summary": "Medium armor and martial weapon training.",
+          "grants": {
+            "armor": [
+              "medium"
+            ],
+            "weapons": [
+              "martial"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "features": [
+    {
+      "level": 1,
+      "id": "spellcasting",
+      "name": "Spellcasting"
+    },
+    {
+      "level": 1,
+      "id": "druidic",
+      "name": "Druidic"
+    },
+    {
+      "level": 1,
+      "id": "primal-order",
+      "name": "Primal Order"
+    },
+    {
+      "level": 2,
+      "id": "wild-shape",
+      "name": "Wild Shape"
+    },
+    {
+      "level": 2,
+      "id": "wild-companion",
+      "name": "Wild Companion"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Druid Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "wild-shape",
+      "recharge": "short",
+      "usesByLevel": {
+        "2": 2
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "circle-of-the-land",
+      "name": "Circle of the Land",
+      "features": [
+        {
+          "level": 3,
+          "id": "circle-of-the-land-spells",
+          "name": "Circle of the Land Spells"
+        },
+        {
+          "level": 3,
+          "id": "lands-aid",
+          "name": "Land's Aid"
+        }
+      ]
+    }
+  ]
+}

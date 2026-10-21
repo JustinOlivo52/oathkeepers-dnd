@@ -1,0 +1,110 @@
+[
+  {
+    "id": "dragonborn", "name": "Dragonborn", "sizes": ["medium"], "speedFt": 30, "darkvisionFt": 60,
+    "traits": [
+      { "id": "breath-weapon", "name": "Breath Weapon" },
+      { "id": "draconic-damage-resistance", "name": "Damage Resistance" }
+    ],
+    "lineageLabel": "Draconic Ancestry",
+    "lineages": [
+      { "id": "black", "name": "Black (Acid)", "resistances": ["acid"] },
+      { "id": "blue", "name": "Blue (Lightning)", "resistances": ["lightning"] },
+      { "id": "brass", "name": "Brass (Fire)", "resistances": ["fire"] },
+      { "id": "bronze", "name": "Bronze (Lightning)", "resistances": ["lightning"] },
+      { "id": "copper", "name": "Copper (Acid)", "resistances": ["acid"] },
+      { "id": "gold", "name": "Gold (Fire)", "resistances": ["fire"] },
+      { "id": "green", "name": "Green (Poison)", "resistances": ["poison"] },
+      { "id": "red", "name": "Red (Fire)", "resistances": ["fire"] },
+      { "id": "silver", "name": "Silver (Cold)", "resistances": ["cold"] },
+      { "id": "white", "name": "White (Cold)", "resistances": ["cold"] }
+    ]
+  },
+  {
+    "id": "dwarf", "name": "Dwarf", "sizes": ["medium"], "speedFt": 30, "darkvisionFt": 120, "resistances": ["poison"], "hpPerLevel": 1,
+    "traits": [
+      { "id": "dwarven-resilience", "name": "Dwarven Resilience" },
+      { "id": "dwarven-toughness", "name": "Dwarven Toughness" },
+      { "id": "stonecunning", "name": "Stonecunning" }
+    ]
+  },
+  {
+    "id": "elf", "name": "Elf", "sizes": ["medium"], "speedFt": 30, "darkvisionFt": 60,
+    "traits": [
+      { "id": "fey-ancestry", "name": "Fey Ancestry" },
+      { "id": "keen-senses", "name": "Keen Senses" },
+      { "id": "trance", "name": "Trance" }
+    ],
+    "skillChoice": { "count": 1, "from": ["insight", "perception", "survival"] },
+    "lineageLabel": "Elven Lineage",
+    "lineages": [
+      { "id": "drow", "name": "Drow", "darkvisionFt": 120 },
+      { "id": "high-elf", "name": "High Elf" },
+      { "id": "wood-elf", "name": "Wood Elf", "speedFt": 35 }
+    ]
+  },
+  {
+    "id": "gnome", "name": "Gnome", "sizes": ["small"], "speedFt": 30, "darkvisionFt": 60,
+    "traits": [{ "id": "gnomish-cunning", "name": "Gnomish Cunning" }],
+    "lineageLabel": "Gnomish Lineage",
+    "lineages": [
+      { "id": "forest-gnome", "name": "Forest Gnome" },
+      { "id": "rock-gnome", "name": "Rock Gnome" }
+    ]
+  },
+  {
+    "id": "goliath", "name": "Goliath", "sizes": ["medium"], "speedFt": 35,
+    "traits": [
+      { "id": "giant-ancestry", "name": "Giant Ancestry" },
+      { "id": "large-form", "name": "Large Form" },
+      { "id": "powerful-build", "name": "Powerful Build" }
+    ],
+    "lineageLabel": "Giant Ancestry",
+    "lineages": [
+      { "id": "cloud", "name": "Cloud Giant" },
+      { "id": "fire", "name": "Fire Giant" },
+      { "id": "frost", "name": "Frost Giant" },
+      { "id": "hill", "name": "Hill Giant" },
+      { "id": "stone", "name": "Stone Giant" },
+      { "id": "storm", "name": "Storm Giant" }
+    ]
+  },
+  {
+    "id": "halfling", "name": "Halfling", "sizes": ["small"], "speedFt": 30,
+    "traits": [
+      { "id": "brave", "name": "Brave" },
+      { "id": "halfling-nimbleness", "name": "Halfling Nimbleness" },
+      { "id": "luck", "name": "Luck" },
+      { "id": "naturally-stealthy", "name": "Naturally Stealthy" }
+    ]
+  },
+  {
+    "id": "human", "name": "Human", "sizes": ["medium", "small"], "speedFt": 30,
+    "traits": [
+      { "id": "resourceful", "name": "Resourceful" },
+      { "id": "skillful", "name": "Skillful" },
+      { "id": "versatile", "name": "Versatile" }
+    ],
+    "skillChoice": { "count": 1, "from": "any" },
+    "originFeat": true
+  },
+  {
+    "id": "orc", "name": "Orc", "sizes": ["medium"], "speedFt": 30, "darkvisionFt": 120,
+    "traits": [
+      { "id": "adrenaline-rush", "name": "Adrenaline Rush" },
+      { "id": "relentless-endurance", "name": "Relentless Endurance" }
+    ]
+  },
+  {
+    "id": "tiefling", "name": "Tiefling", "sizes": ["medium", "small"], "speedFt": 30, "darkvisionFt": 60,
+    "traits": [
+      { "id": "fiendish-legacy", "name": "Fiendish Legacy" },
+      { "id": "otherworldly-presence", "name": "Otherworldly Presence" }
+    ],
+    "lineageLabel": "Fiendish Legacy",
+    "lineages": [
+      { "id": "abyssal", "name": "Abyssal", "resistances": ["poison"] },
+      { "id": "chthonic", "name": "Chthonic", "resistances": ["necrotic"] },
+      { "id": "infernal", "name": "Infernal", "resistances": ["fire"] }
+    ]
+  }
+]

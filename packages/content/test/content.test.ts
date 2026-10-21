@@ -7,7 +7,9 @@ const goblinData = content.monsters.find((m) => m.id === "goblin-warrior")!;
 
 describe("content validation", () => {
   it("loads all data files", () => {
-    expect(content.classes.map((c) => c.id)).toContain("fighter");
+    expect(content.classes).toHaveLength(12);
+    expect(content.species).toHaveLength(9);
+    expect(content.backgrounds).toHaveLength(4);
     expect(content.monsters.map((m) => m.id)).toContain("goblin-warrior");
   });
 
@@ -27,17 +29,19 @@ describe("buildCharacter: level 3 Champion Fighter", () => {
       level: 3,
       proficiencyBonus: 2,
       maxHp: 28, // 10 + 2, then 2 x (6 + 2)
-      ac: 18, // chain mail 16 + shield 2
-      initiativeBonus: 1,
+      ac: 19, // chain mail 16 + shield 2 + Defense 1
+      initiativeBonus: 3, // Dex 1 + Alert (proficiency bonus)
       initiativeAdvantage: true, // Remarkable Athlete
       critRange: 19, // Improved Critical
       saveProficiencies: ["str", "con"],
     });
   });
 
-  it("builds a longsword attack with Dueling and the Sap mastery", () => {
+  it("builds weapon attacks with masteries, plus an Unarmed Strike", () => {
     expect(bram.attacks).toEqual([
-      expect.objectContaining({ id: "longsword", attackBonus: 5, damage: "1d8+5", damageType: "slashing", mastery: "sap" }),
+      expect.objectContaining({ id: "longsword", attackBonus: 5, damage: "1d8+3", damageType: "slashing", mastery: "sap" }),
+      expect.objectContaining({ id: "handaxe", attackBonus: 5, damage: "1d6+3", mastery: "vex", rangeFt: [20, 60] }),
+      expect.objectContaining({ id: "unarmed-strike", attackBonus: 5, damage: "4" }),
     ]);
   });
 

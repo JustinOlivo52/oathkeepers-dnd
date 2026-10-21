@@ -1,0 +1,118 @@
+{
+  "id": "cleric",
+  "name": "Cleric",
+  "hitDie": 8,
+  "primaryAbilities": [
+    "wis"
+  ],
+  "savingThrows": [
+    "wis",
+    "cha"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "history",
+      "insight",
+      "medicine",
+      "persuasion",
+      "religion"
+    ]
+  },
+  "armorProficiencies": [
+    "light",
+    "medium",
+    "shield"
+  ],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ]
+  },
+  "spellcasting": {
+    "ability": "wis",
+    "progression": "full"
+  },
+  "choices": [
+    {
+      "id": "divine-order",
+      "name": "Divine Order",
+      "level": 1,
+      "options": [
+        {
+          "id": "protector",
+          "name": "Protector",
+          "summary": "Heavy armor and martial weapon training.",
+          "grants": {
+            "armor": [
+              "heavy"
+            ],
+            "weapons": [
+              "martial"
+            ]
+          }
+        },
+        {
+          "id": "thaumaturge",
+          "name": "Thaumaturge",
+          "summary": "An extra cantrip and a bonus to Arcana and Religion checks.",
+          "grants": {}
+        }
+      ]
+    }
+  ],
+  "features": [
+    {
+      "level": 1,
+      "id": "spellcasting",
+      "name": "Spellcasting"
+    },
+    {
+      "level": 1,
+      "id": "divine-order",
+      "name": "Divine Order"
+    },
+    {
+      "level": 2,
+      "id": "channel-divinity",
+      "name": "Channel Divinity"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Cleric Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "channel-divinity",
+      "recharge": "short",
+      "usesByLevel": {
+        "2": 2
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "life-domain",
+      "name": "Life Domain",
+      "features": [
+        {
+          "level": 3,
+          "id": "disciple-of-life",
+          "name": "Disciple of Life"
+        },
+        {
+          "level": 3,
+          "id": "life-domain-spells",
+          "name": "Life Domain Spells"
+        },
+        {
+          "level": 3,
+          "id": "preserve-life",
+          "name": "Preserve Life"
+        }
+      ]
+    }
+  ]
+}

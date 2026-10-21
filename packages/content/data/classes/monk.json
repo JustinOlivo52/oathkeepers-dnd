@@ -1,0 +1,95 @@
+{
+  "id": "monk",
+  "name": "Monk",
+  "hitDie": 8,
+  "primaryAbilities": [
+    "dex",
+    "wis"
+  ],
+  "savingThrows": [
+    "str",
+    "dex"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "from": [
+      "acrobatics",
+      "athletics",
+      "history",
+      "insight",
+      "religion",
+      "stealth"
+    ]
+  },
+  "armorProficiencies": [],
+  "weaponProficiencies": {
+    "categories": [
+      "simple"
+    ],
+    "martialWithProperties": [
+      "light"
+    ]
+  },
+  "tools": "One artisan's tool or musical instrument",
+  "unarmoredDefense": "wis",
+  "features": [
+    {
+      "level": 1,
+      "id": "martial-arts",
+      "name": "Martial Arts"
+    },
+    {
+      "level": 1,
+      "id": "unarmored-defense",
+      "name": "Unarmored Defense"
+    },
+    {
+      "level": 2,
+      "id": "monks-focus",
+      "name": "Monk's Focus"
+    },
+    {
+      "level": 2,
+      "id": "unarmored-movement",
+      "name": "Unarmored Movement"
+    },
+    {
+      "level": 2,
+      "id": "uncanny-metabolism",
+      "name": "Uncanny Metabolism"
+    },
+    {
+      "level": 3,
+      "id": "deflect-attacks",
+      "name": "Deflect Attacks"
+    },
+    {
+      "level": 3,
+      "id": "subclass",
+      "name": "Monk Subclass"
+    }
+  ],
+  "resources": [
+    {
+      "id": "focus-points",
+      "recharge": "short",
+      "usesByLevel": {
+        "2": 2,
+        "3": 3
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "warrior-of-the-open-hand",
+      "name": "Warrior of the Open Hand",
+      "features": [
+        {
+          "level": 3,
+          "id": "open-hand-technique",
+          "name": "Open Hand Technique"
+        }
+      ]
+    }
+  ]
+}
