@@ -71,7 +71,8 @@
   .panel .me { grid-row: auto; }
   .panel .turn-info, .action-bar { grid-column: 1; }
   .canvas, .canvas-scroll .canvas { height: 58dvh; min-height: 400px; }
-  .initiative { justify-content: start; top: 88px; left: 8px; right: 8px; }
+  /* On phones the order sits above the board instead of covering its top row. */
+  .initiative { position: static; justify-content: start; padding: 8px; background: var(--panel); border: 1px solid var(--border); border-bottom: 0; overflow-x: auto; }
   .initiative li { min-width: 90px; }
   .board-toolbar { min-height: 78px; }
   .board-help { line-height: 1.7; }

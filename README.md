@@ -24,7 +24,7 @@ npm run build       # production build (what Netlify runs)
 npm run demo        # watch a random fight in the terminal
 npm run demo -- 7 3 # seed 7, three goblins
 npm run balance -- 3 # win rate vs 3 goblins on generated maps
-npm run sprites -w @oathkeepers/web  # re-export pixel art
+npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (needs Python 3 + Pillow)
 ```
 
 ## Deploy (Netlify)

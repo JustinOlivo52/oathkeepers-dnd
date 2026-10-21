@@ -183,7 +183,7 @@ function Battle({ setup, onRestart }: { setup: Setup; onRestart: () => void }) {
           <div className={`banner ${combat.winner}`}>
             <strong>{combat.winner === "party" ? "Victory!" : "Defeat"}</strong>
             <span>
-              {combat.round} rounds. Map seed {setup.seed}.
+              {combat.round} rounds.{setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
             </span>
             <button className="primary" onClick={onRestart}>
               New battle
