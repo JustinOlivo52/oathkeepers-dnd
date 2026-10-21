@@ -11,11 +11,12 @@ A browser game that plays like a real D&D 5e campaign. An AI Dungeon Master runs
 ### Players and sessions
 | Decision | Choice |
 |---|---|
-| Modes | Single player and live online multiplayer |
+| Modes | Single player (true solo or with AI companions) and live online multiplayer |
 | Party size | Up to 6 players |
 | Session style | Drop in, drop out |
 | Campaign | One continuous campaign |
-| Absent player | Their character sits out |
+| Absent player | Their character sits out and earns a reduced XP share |
+| Joining | Only at natural breaks (scene change, rest, town). Never mid-combat |
 | Voice | Speech-to-text for players, text-to-speech for the DM |
 
 ### Dungeon Master
@@ -24,7 +25,7 @@ A browser game that plays like a real D&D 5e campaign. An AI Dungeon Master runs
 | Who DMs | AI only for now. Human DM mode is a future feature, so design for it |
 | Style | Mix of by-the-book and rule of cool |
 | Player freedom | True D&D: players can attempt anything |
-| Content | Mature. Can go as dark as a real campaign |
+| Content | Like a regular D&D campaign. It gets dark when the story calls for it |
 
 ### Rules
 | Decision | Choice |
@@ -33,7 +34,7 @@ A browser game that plays like a real D&D 5e campaign. An AI Dungeon Master runs
 | Optional rules | None for now |
 | Death | Standard death saving throws |
 | Dice | Players click to roll their own |
-| Homebrew | None |
+| Homebrew | Original subclasses inspired by classic 5e subclass concepts, with our own names and features (see section 6) |
 
 ### Characters
 | Decision | Choice |
@@ -45,7 +46,7 @@ A browser game that plays like a real D&D 5e campaign. An AI Dungeon Master runs
 ### World and story
 | Decision | Choice |
 |---|---|
-| Setting | Original, classic D&D feel (TBD, see open questions) |
+| Setting | The Western Marches (see section 7) |
 | Structure | Mix: written key story beats, AI improvises in between |
 | Tone | High adventure |
 | First adventure | Decide later |
@@ -61,7 +62,7 @@ A browser game that plays like a real D&D 5e campaign. An AI Dungeon Master runs
 ### Practical
 | Decision | Choice |
 |---|---|
-| AI provider | Claude API, with local AI as an option (see section 5) |
+| AI provider | Any capable hosted model to start (Claude, GPT, etc.), local open-source models as backup (see section 5) |
 | Hosting | Free tier to start |
 | Platform | Browser first, desktop and mobile later |
 
@@ -100,34 +101,51 @@ The AI tells the story. The code enforces the rules.
 
 The DM never does dice math or tracks HP. It calls engine functions such as `request_check`, `start_combat`, `grant_xp` or `give_item`, and the rules engine resolves them. All game state lives in the engine, not in the AI's memory.
 
-## 5. AI provider: Claude vs local
+## 5. AI provider
 
-Build an AI provider layer so the DM model can be swapped.
+Build a provider layer so the DM model can be swapped without changing the game.
 
-| | Claude API | Local model |
+- Start: whichever hosted model (Claude, GPT, etc.) handles the DM role best. Pick by testing real sessions, mainly on storytelling and calling game functions correctly.
+- Backup: open-source models run locally. Explore later, including GPU requirements.
+
+| | Hosted model | Local model |
 |---|---|---|
 | Cost | Pay per use | Free after hardware |
-| DM quality | Strong storytelling and tool use | Noticeably weaker, varies by model |
+| DM quality | Strong storytelling and tool use | Usually weaker, varies by model |
 | Hardware | None | Needs a strong GPU on the host machine |
-| Content limits | Handles dark fantasy, has usage policy limits | Fewer limits |
 | Online play | Works from any server | Host must run the model |
 
-Plan: build on Claude first, add local as an option once the game works.
+## 6. Party, progression and homebrew
 
-## 6. Recommended defaults (pending confirmation)
+### Solo play and companions
+- True solo: one player, no companions. Encounters scale to party size and level (5e's encounter budget is per character).
+- Companions: solo players and small groups can recruit AI-controlled companions. They step aside when real players join. Treat as a test feature first.
 
-- AI companions: 5e is balanced for about 4 characters. Solo players and small groups can recruit AI-controlled companions to fill the party. Companions leave or step back when real players join.
-- Absent players and XP: absent characters fall behind on XP. Option: absent characters earn a reduced share, or the party levels together.
-- Drop-in timing: new or returning players join at a natural break (scene change, rest, town), not mid-combat.
-- Subclasses: SRD 5.2 includes all 12 classes but one subclass each. With no homebrew, each class has one subclass option.
-- Voice: start with the browser's built-in speech tools (free), upgrade to a paid voice service if quality is not good enough.
+### Absent players
+- Absent characters earn a reduced XP share so the party stays close in level.
+- Exact share to be tuned in playtesting.
 
-## 7. Open questions
+### Joining
+- Players join only at natural breaks: scene change, rest, town. Never mid-combat.
 
-- Setting (see options in chat)
+### Homebrew subclasses
+- SRD 5.2 gives one subclass per class. We add original subclasses to fill out each class.
+- Inspired by classic subclass concepts, but with our own names, flavor and features.
+- Guardrails: never copy official text, names or feature wording. Write our own features and tweak the mechanics, rather than renaming an existing subclass one to one.
+
+## 7. Setting: The Western Marches
+
+- A frontier kingdom at the edge of a wild, unexplored land full of ruins, dungeons and the remains of old empires.
+- Players start from a home-base town, head out on expeditions and come back to rest, trade and plan.
+- Built for rotating players: each expedition is a self-contained trip, which fits drop in, drop out.
+- Long-running mysteries and story beats tie expeditions into one continuous campaign.
+- Tone: high adventure, dark when the story calls for it.
+
+### Open questions
 - Title
 - First adventure
-- Confirm the recommended defaults in section 6
+- Home-base town, frontier regions and main threat
+- Companion design (who they are, how they're recruited)
 
 ## 8. Build phases
 
