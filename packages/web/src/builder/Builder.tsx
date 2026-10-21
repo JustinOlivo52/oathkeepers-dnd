@@ -514,7 +514,7 @@ export function Builder(props: {
         <Sheet draft={draft} character={finished} issueCount={issues.length} />
         <div className="actions">
           <button className="primary" disabled={!finished} onClick={() => save(true)}>
-            Save and test in a fight
+            Save and battle
           </button>
           <button className="secondary" disabled={!finished} onClick={() => save(false)}>
             Save character

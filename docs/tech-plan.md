@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: Phase 1 and Phase 2 done. Companion to `design.md`.
+Status: Phases 1 to 3 done. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -137,3 +137,24 @@ Simplified for now:
 - Spells: casters are flagged; spell choice arrives with the spell system
 - Many class features show on the sheet as "coming soon" until combat supports them
 - Dueling is not in the SRD, so the premade Fighter now uses Defense
+
+### Phase 3 progress (grid combat)
+
+Done:
+- Art trial: pixel sprites drawn as text, exported as standard sprite sheets (see `docs/art/README.md`)
+- Grid rules: 5 ft squares with 5 ft diagonals, difficult terrain, no corner cutting, walls block line of sight
+- Movement: pathfinding, speed limits, pass through allies but not enemies, can't end on an occupied square
+- Reach and range: melee needs reach, thrown weapons work at range, long range and adjacent enemies give ranged disadvantage
+- Opportunity attacks when leaving reach, one reaction per round, prevented by Disengage
+- Actions: Dash, Disengage, Dodge, plus Goblin Nimble Escape (bonus action Disengage)
+- Map generator: seeded rooms and corridors, rubble patches, separate party and enemy spawn rooms, always connected
+- Monster tactics on the grid: shoot when possible, close in and melee, Dash when out of reach, wounded skirmishers back off
+- Battle screen (Phaser): click a blue square to move (path preview warns about opportunity attacks), click an enemy to attack, then press Roll d20
+- Animations play from the event log: walking, attacks, arrows, hit flashes, damage numbers, downed and dead creatures
+- Balance check script: `npm run balance -- 3` (Bram beats 3 goblins about 70% of the time)
+
+Not yet:
+- Player choice on reactions (opportunity attacks are taken automatically)
+- Cover, prone, grappling, hiding, Help action
+- Camera pan and zoom (on phones the map scrolls sideways instead)
+- Spells and most class features in combat

@@ -1,0 +1,267 @@
+{
+  "hero-martial": {
+    "image": "hero-martial.png",
+    "frameWidth": 16,
+    "frameHeight": 16,
+    "animations": {
+      "idle": {
+        "frames": [
+          0,
+          1
+        ],
+        "fps": 2,
+        "loop": true
+      },
+      "walk": {
+        "frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "fps": 8,
+        "loop": true
+      },
+      "attack": {
+        "frames": [
+          6,
+          7,
+          8,
+          0
+        ],
+        "fps": 10,
+        "loop": false
+      },
+      "hit": {
+        "frames": [
+          9,
+          0
+        ],
+        "fps": 6,
+        "loop": false
+      },
+      "down": {
+        "frames": [
+          10
+        ],
+        "fps": 1,
+        "loop": false
+      }
+    }
+  },
+  "hero-expert": {
+    "image": "hero-expert.png",
+    "frameWidth": 16,
+    "frameHeight": 16,
+    "animations": {
+      "idle": {
+        "frames": [
+          0,
+          1
+        ],
+        "fps": 2,
+        "loop": true
+      },
+      "walk": {
+        "frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "fps": 8,
+        "loop": true
+      },
+      "attack": {
+        "frames": [
+          6,
+          7,
+          8,
+          0
+        ],
+        "fps": 10,
+        "loop": false
+      },
+      "hit": {
+        "frames": [
+          9,
+          0
+        ],
+        "fps": 6,
+        "loop": false
+      },
+      "down": {
+        "frames": [
+          10
+        ],
+        "fps": 1,
+        "loop": false
+      }
+    }
+  },
+  "hero-arcane": {
+    "image": "hero-arcane.png",
+    "frameWidth": 16,
+    "frameHeight": 16,
+    "animations": {
+      "idle": {
+        "frames": [
+          0,
+          1
+        ],
+        "fps": 2,
+        "loop": true
+      },
+      "walk": {
+        "frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "fps": 8,
+        "loop": true
+      },
+      "attack": {
+        "frames": [
+          6,
+          7,
+          8,
+          0
+        ],
+        "fps": 10,
+        "loop": false
+      },
+      "hit": {
+        "frames": [
+          9,
+          0
+        ],
+        "fps": 6,
+        "loop": false
+      },
+      "down": {
+        "frames": [
+          10
+        ],
+        "fps": 1,
+        "loop": false
+      }
+    }
+  },
+  "hero-divine": {
+    "image": "hero-divine.png",
+    "frameWidth": 16,
+    "frameHeight": 16,
+    "animations": {
+      "idle": {
+        "frames": [
+          0,
+          1
+        ],
+        "fps": 2,
+        "loop": true
+      },
+      "walk": {
+        "frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "fps": 8,
+        "loop": true
+      },
+      "attack": {
+        "frames": [
+          6,
+          7,
+          8,
+          0
+        ],
+        "fps": 10,
+        "loop": false
+      },
+      "hit": {
+        "frames": [
+          9,
+          0
+        ],
+        "fps": 6,
+        "loop": false
+      },
+      "down": {
+        "frames": [
+          10
+        ],
+        "fps": 1,
+        "loop": false
+      }
+    }
+  },
+  "goblin": {
+    "image": "goblin.png",
+    "frameWidth": 16,
+    "frameHeight": 16,
+    "animations": {
+      "idle": {
+        "frames": [
+          0,
+          1
+        ],
+        "fps": 2,
+        "loop": true
+      },
+      "walk": {
+        "frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "fps": 8,
+        "loop": true
+      },
+      "attack": {
+        "frames": [
+          6,
+          7,
+          8,
+          0
+        ],
+        "fps": 10,
+        "loop": false
+      },
+      "hit": {
+        "frames": [
+          9,
+          0
+        ],
+        "fps": 6,
+        "loop": false
+      },
+      "down": {
+        "frames": [
+          10
+        ],
+        "fps": 1,
+        "loop": false
+      }
+    }
+  },
+  "tiles": {
+    "image": "tiles.png",
+    "frameWidth": 16,
+    "frameHeight": 16,
+    "animations": {},
+    "named": {
+      "floor": [
+        0,
+        1,
+        2
+      ],
+      "wall": 3,
+      "rubble": 4
+    }
+  }
+}

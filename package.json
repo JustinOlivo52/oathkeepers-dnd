@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc",
-    "demo": "tsx packages/content/scripts/demo-fight.ts"
+    "demo": "tsx packages/content/scripts/demo-fight.ts",
+    "balance": "tsx packages/content/scripts/grid-stats.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

@@ -20,6 +20,7 @@
     "packages/*/test",
     "packages/*/scripts",
     "vitest.config.ts",
-    "packages/web/vite.config.ts"
+    "packages/web/vite.config.ts",
+    "packages/web/art"
   ]
 }

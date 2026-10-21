@@ -1,6 +1,7 @@
 import type { D20Roll, DiceRoll } from "./dice.js";
 import type { Ability, Skill } from "./abilities.js";
 import type { DamageType, Side } from "./creature.js";
+import type { Point } from "./grid.js";
 
 export type GameEvent =
   | { type: "combat_start"; creatureIds: string[] }
@@ -30,6 +31,9 @@ export type GameEvent =
     }
   | { type: "heal"; targetId: string; roll?: DiceRoll; amount: number; hpAfter: number }
   | { type: "feature_used"; creatureId: string; featureId: string }
+  | { type: "move"; creatureId: string; path: Point[]; costFt: number }
+  | { type: "action"; creatureId: string; action: "dash" | "disengage" | "dodge"; bonus?: boolean }
+  | { type: "reaction"; creatureId: string; reaction: "opportunity-attack"; targetId: string }
   | { type: "effect_applied"; targetId: string; effectId: string; sourceId: string }
   | { type: "effect_ended"; targetId: string; effectId: string }
   | {

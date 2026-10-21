@@ -7,3 +7,5 @@ export * from "./dice.js";
 export * from "./log.js";
 export * from "./rng.js";
 export * from "./tactics.js";
+export * from "./grid.js";
+export * from "./mapgen.js";

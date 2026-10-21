@@ -168,3 +168,42 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .log .defeat { color: var(--bad); }
 .legal { margin-top: 32px; font-size: 12px; color: var(--muted); }
 .legal a { color: inherit; }
+
+/* ---------- battle ---------- */
+.battle .controls { margin-bottom: 12px; }
+.battle-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+@media (max-width: 900px) { .battle-layout { grid-template-columns: minmax(0, 1fr); } }
+.board { position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.canvas-scroll { overflow-x: auto; border-radius: 8px; }
+@media (max-width: 700px) { .canvas-scroll .canvas { width: 680px; } }
+.canvas { width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #121110; }
+.canvas canvas { display: block; touch-action: manipulation; }
+.initiative { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; overflow-x: auto; }
+.initiative li { flex: 0 0 auto; display: flex; flex-direction: column; gap: 3px; padding: 5px 9px; border-radius: 6px; background: var(--panel); border: 1px solid var(--border); font-size: 12px; }
+.initiative li.now { border-color: #d7a64a; box-shadow: inset 0 0 0 1px #d7a64a; }
+.initiative li.dead { opacity: 0.4; text-decoration: line-through; }
+.initiative li.party span:first-child { color: var(--accent); font-weight: 600; }
+.initiative .hp { display: block; height: 4px; width: 64px; background: var(--panel-2); border-radius: 2px; overflow: hidden; }
+.initiative .hp span { display: block; height: 100%; background: var(--good); }
+.banner { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 26px; border-radius: 10px; background: var(--panel); border: 2px solid var(--good); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+.banner.enemies { border-color: var(--bad); }
+.banner strong { font-family: Georgia, serif; font-size: 28px; }
+.panel { display: flex; flex-direction: column; gap: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.panel .me { display: flex; justify-content: space-between; gap: 8px; }
+.turn-info { margin: 0; font-size: 13px; color: var(--muted); }
+.action-bar { display: flex; flex-wrap: wrap; gap: 6px; }
+.action-bar button { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel-2); cursor: pointer; font-size: 13px; }
+.action-bar button.on { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.action-bar button.end { margin-left: auto; border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.confirm { padding: 10px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent-soft); }
+.confirm p { margin: 0 0 8px; }
+.preview, .warning, .roll { margin: 0; font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--panel-2); }
+.warning { color: var(--warn); }
+.roll { border-left: 3px solid var(--accent); }
+.battle-log { max-height: 260px; overflow-y: auto; font-size: 12px; padding: 8px 10px; }
+.battle-log li { padding-left: 0; }
+.battle-log .round_start { color: var(--accent); font-weight: 700; margin-top: 6px; }
+.battle-log .turn_start { font-weight: 600; }
+.battle-log .damage, .battle-log .down, .battle-log .death { color: var(--bad); }
+.battle-log .heal { color: var(--good); }
+.battle-log .combat_end { font-weight: 700; }

@@ -1,4 +1,5 @@
 import type { Ability, AbilityScores, Skill } from "./abilities.js";
+import type { Point } from "./grid.js";
 
 export const DAMAGE_TYPES = [
   "acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic",
@@ -83,6 +84,8 @@ export interface Creature {
   dead: boolean;
   /** XP awarded for defeating this creature (monsters). */
   xp: number;
+  /** Square on the battle map, when fighting on a grid. */
+  position?: Point;
 }
 
 export function isConscious(c: Creature): boolean {

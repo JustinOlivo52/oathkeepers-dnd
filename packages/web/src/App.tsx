@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import type { CharacterData } from "@oathkeepers/content";
 import { Builder } from "./builder/Builder";
 import { FightView } from "./fight/FightView";
+// Phaser is large, so the battle screen loads only when it's opened.
+const BattleView = lazy(() => import("./battle/BattleView").then((m) => ({ default: m.BattleView })));
 import { content } from "./content";
 import { loadCharacters, saveCharacters } from "./storage";
 
-type Tab = "builder" | "fight";
+type Tab = "builder" | "battle" | "fight";
 
 export function App() {
   const [tab, setTab] = useState<Tab>("builder");
@@ -33,8 +35,11 @@ export function App() {
           <button className={tab === "builder" ? "active" : ""} onClick={() => setTab("builder")}>
             Character Builder
           </button>
+          <button className={tab === "battle" ? "active" : ""} onClick={() => setTab("battle")}>
+            Battle
+          </button>
           <button className={tab === "fight" ? "active" : ""} onClick={() => setTab("fight")}>
-            Test Fight
+            Auto Fight
           </button>
         </nav>
       </header>
@@ -47,9 +52,13 @@ export function App() {
           onTestFight={(c) => {
             saveCharacter(c);
             setFighterId(c.id);
-            setTab("fight");
+            setTab("battle");
           }}
         />
+      ) : tab === "battle" ? (
+        <Suspense fallback={<p className="hint">Loading battle…</p>}>
+          <BattleView characters={[...content.characters, ...characters]} selectedId={fighterId} onSelect={setFighterId} />
+        </Suspense>
       ) : (
         <FightView characters={[...content.characters, ...characters]} selectedId={fighterId} onSelect={setFighterId} />
       )}
