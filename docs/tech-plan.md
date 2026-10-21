@@ -84,6 +84,8 @@ packages/
 
 - Procedural generation: dungeons (rooms and corridors), caves, wilderness, towns
 - Pixel-art tilesets: start with a licensed asset pack, replace with custom art later
+- Art trial at the start of Phase 3: Claude builds sample pixel sprites (a character, a goblin, a tile set) with idle, walk and attack animations. Justin compares the result against Codex and asset packs before choosing the art source.
+- All rendering code uses a standard sprite sheet format, so the art source can change without code changes
 - The DM can ask for a map by type and theme ("ruined chapel, small, overgrown")
 
 ## 8. Multiplayer
