@@ -30,7 +30,7 @@ import {
   SpeciesSchema,
   WeaponSchema,
 } from "./schemas.js";
-import { ArtCatalogSchema } from "./art.js";
+import { ArtCatalogSchema, artCatalogIssues } from "./art.js";
 
 export * from "./schemas.js";
 export * from "./build.js";
@@ -48,6 +48,10 @@ function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): 
 const classFiles = { barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard };
 
 export function loadContent() {
+  const monsters = [validate(MonsterSchema, goblinWarrior, "monsters/goblin-warrior.json")];
+  const art = validate(ArtCatalogSchema, artCatalog, "art-catalog.json");
+  const issues = artCatalogIssues(art, monsters.map((m) => m.id));
+  if (issues.length) throw new Error(`Invalid art catalog links: ${issues.join("; ")}`);
   return {
     weapons: validate(z.array(WeaponSchema), weapons, "items/weapons.json"),
     armor: validate(z.array(ArmorSchema), armor, "items/armor.json"),
@@ -56,9 +60,9 @@ export function loadContent() {
     backgrounds: validate(z.array(BackgroundSchema), backgrounds, "backgrounds.json"),
     feats: validate(z.array(FeatSchema), feats, "feats.json"),
     languages: validate(z.array(z.string()), languages, "languages.json"),
-    monsters: [validate(MonsterSchema, goblinWarrior, "monsters/goblin-warrior.json")],
+    monsters,
     characters: [validate(CharacterSchema, bram, "characters/bram-holloway.json")],
-    art: validate(ArtCatalogSchema, artCatalog, "art-catalog.json"),
+    art,
   };
 }
 

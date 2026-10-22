@@ -136,3 +136,57 @@ Only these tags are allowed. The tests reject anything else, which keeps matchin
 - **Battles:** monster sprites by `monsterId`; boards by tags (`cave`, `forest`).
 - **Story:** the DM calls a tool to show a scene or a character, passing tags. The game shows the best match next to the narration.
 - **Code:** `pickArt(catalog, { kind, tags, monsterId, exclude }, rng)` in `packages/content/src/art.ts`.
+
+## Library 1 policy update (2026-10-22)
+
+These rules supersede conflicting examples above. The catalog is a development inventory as well as a runtime library: an asset may exist in the catalog before it is usable in the game.
+
+### Three independent readiness fields
+
+- `artStatus`: `draft` or `ready` (source and exported art inspected).
+- `mechanicsStatus`: `pending`, `ready`, or `not-required` (only non-monsters may use `not-required`).
+- `integrationStatus`: `pending` or `ready` (runtime mapping and browser playthrough complete).
+
+Missing fields default to draft/pending/pending. `integrationStatus: ready` requires ready art and supported mechanics. `isEncounterReady()` requires all applicable gates. Existing shipped assets have explicit ready values. New pilot assets remain integration-pending; monster mechanics remain pending until Claude implements their exact stat blocks and abilities.
+
+A monster's `monsterId` is required even for art-first work. It must resolve to a bestiary entry when mechanics are marked ready. Pending monster art is allowed without a stat block. Tests must not force placeholder creature rules just to admit artwork.
+
+### Matching and identity
+
+`pickArt()` defaults to encounter-ready assets. Location, setting, time, species and creature tags in `tags` are mandatory constraints; other tags are ranking preferences. `requiredTags` adds further mandatory constraints. Unknown tags or no compatible match return `undefined`; the caller can omit the illustration or choose an explicit narrative fallback, never display unrelated art silently.
+
+Match quality is decided before recent-image avoidance. Repetition avoidance happens only among equally suitable images. Repeating the correct crypt is preferable to a fresh tavern. `assetId` preserves a previously selected identity; save selected asset IDs with adventures/NPCs to prevent appearance changes. The selector supports this pinning but save/UI integration remains Claude's task.
+
+`readiness: art-ready` explicitly enables development review of reviewed but unintegrated assets. Do not expose this option to the DM during normal play.
+
+### Drawing size is not rules size
+
+The legacy `sprite.size` describes the canvas format only. Use independent fields:
+
+```json
+{
+  "file": "sprites/monster-ogre.png",
+  "frameWidth": 384,
+  "frameHeight": 384,
+  "size": "large",
+  "rulesSize": "large",
+  "footprint": { "width": 2, "height": 2 },
+  "anchor": { "x": 192, "y": 340 }
+}
+```
+
+Small and Medium creatures normally occupy1x1; Large2x2; Huge3x3; Gargantuan minimum4x4. The existing goblin is rules-size Small despite its192px canvas. Do not scale all creatures from frame width alone or assume every monster has humanoid height. Creature tags describe art matching, not authoritative rules taxonomy. `swarm` means an actual swarm depiction, not a single rat.
+
+A larger atlas does not implement occupancy, reach, movement clearance, targeting or area effects. Runtime `pickArt` allows only1x1 sprites unless the caller explicitly supplies `maxFootprint` after engine/renderer support exists. New Large pilot assets are NOT encounter-ready.
+
+### Board validation
+
+The schema checks rectangular rows, open and distinct party/enemy spawns, at least3 squares of separation between opposing1x1 anchors, in-bounds props and reachability of every open tile using the engine's existing diagonal/corner rules.
+
+Boards default to `supportedFootprints: ["1x1"]`. Declaring2x2 support requires `largePartySpawns` and `largeEnemySpawns`, each anchor having a clear2x2 area; Large slots cannot overlap each other and must connect through a2x2-clear route. Opposing Large anchors must be at least4 squares apart. Large spawn lists are alternative placement layouts; a runtime allocator must still prevent collisions when mixing creature sizes. This validator is asset geometry checking, not an implementation of Large-creature combat.
+
+Board catalog `tiles`, board JSON `tileset`, and the referenced tileset catalog ID must agree. Optional `props` on the tileset entry names its raster props sheet.
+
+### Player artwork
+
+Player appearance needs a separate compatible-body/equipment specification. The four existing hero sheets remain generic defaults. This batch does not implement layered character customization.

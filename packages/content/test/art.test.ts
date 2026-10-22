@@ -17,7 +17,7 @@ describe("art catalog", () => {
 
   it("points only at files that exist", () => {
     for (const e of content.art) {
-      for (const file of [e.sprite?.file, e.image, e.board, e.kind === "tileset" ? e.tiles : undefined]) {
+      for (const file of [e.sprite?.file, e.image, e.board, e.props, e.kind === "tileset" ? e.tiles : undefined]) {
         if (file) expect(existsSync(join(assets, file)), `${e.id}: ${file}`).toBe(true);
       }
     }
@@ -33,7 +33,7 @@ describe("art catalog", () => {
   });
 
   it("links monster art to a monster in the bestiary", () => {
-    for (const e of content.art.filter((x) => x.kind === "monster")) {
+    for (const e of content.art.filter((x) => x.kind === "monster" && x.mechanicsStatus === "ready")) {
       expect(content.monsters.some((m) => m.id === e.monsterId), `${e.id} -> ${e.monsterId}`).toBe(true);
     }
   });
@@ -42,6 +42,7 @@ describe("art catalog", () => {
     for (const e of content.art.filter((x) => x.kind === "board")) {
       const board = BoardSchema.safeParse(JSON.parse(readFileSync(join(assets, e.board!), "utf8")));
       expect(board.success, `${e.id}: ${board.success ? "" : board.error.message}`).toBe(true);
+      if (board.success) expect(board.data.tileset).toBe(e.tiles);
       expect(content.art.some((t) => t.kind === "tileset" && t.id === e.tiles), `${e.id} tileset ${e.tiles}`).toBe(true);
     }
   });
@@ -60,13 +61,13 @@ describe("art catalog", () => {
 
 describe("pickArt", () => {
   const entry = (id: string, tags: string[], kind: ArtEntry["kind"] = "scene"): ArtEntry =>
-    ({ id, kind, title: id, tags, image: `library/${id}.webp`, source: "claude-code", added: "2026-10-22" }) as ArtEntry;
+    ({ id, kind, title: id, tags, artStatus: "ready", mechanicsStatus: "not-required", integrationStatus: "ready", image: `library/${id}.webp`, source: "claude-code", added: "2026-10-22" }) as ArtEntry;
   const catalog = [
     entry("tavern-day", ["tavern", "day", "indoor", "calm"]),
     entry("tavern-night", ["tavern", "night", "indoor", "festive"]),
     entry("tavern-night-2", ["tavern", "night", "indoor", "tense"]),
     entry("crypt", ["crypt", "underground", "eerie"]),
-    entry("innkeeper", ["innkeeper", "dwarf"], "npc"),
+    entry("innkeeper", ["innkeeper", "dwarf", "tavern"], "npc"),
   ];
 
   it("prefers the entry matching the most tags", () => {
@@ -81,7 +82,7 @@ describe("pickArt", () => {
 
   it("only returns the requested kind, and avoids recently shown art when it can", () => {
     expect(pickArt(catalog, { kind: "npc", tags: ["tavern"] }, seededRng(1))?.id).toBe("innkeeper");
-    expect(pickArt(catalog, { kind: "scene", tags: ["crypt"], exclude: ["crypt"] }, seededRng(1))?.id).not.toBe("crypt");
+    expect(pickArt(catalog, { kind: "scene", tags: ["crypt"], exclude: ["crypt"] }, seededRng(1))?.id).toBe("crypt");
     expect(pickArt(catalog, { kind: "board" }, seededRng(1))).toBeUndefined();
   });
 
