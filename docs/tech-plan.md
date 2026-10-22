@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: Phases 1 to 3 done, Phase 4 (AI DM) part 1 done, art library batch 1 integrated. Companion to `design.md`.
+Status: Phases 1 to 3 done, Phase 4 (AI DM) parts 1 and 2 done except prompt tuning, art library batch 1 integrated. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -171,11 +171,14 @@ Part 1 done:
 - Demo DM: scripted, free, no key; runs on the server or entirely in the browser (so a static Netlify deploy still plays)
 - Adventure screen: story feed, typed actions, roll and battle prompts, quests, NPCs, inventory, gold, AI cost, resume saved adventure
 
+Part 2 done:
+- Streaming narration: the server streams DM text over SSE, the Adventure screen shows it as it's written (demo DM streams too)
+- Sessions: End session writes a recap with Haiku 5.5 (recap, open threads, NPC notes); the next session starts a fresh conversation with "Story so far" in the prompt, which keeps cost flat as the campaign grows
+- DM quality tests: 6 scenarios (routine action, uncertain climb, fight, unavailable monster, new location, trap) with automatic checks (rolls asked for and waited on, DC kept secret, short replies, valid tools, ready monsters only, scene art, no speaking for the player). `npm run eval:dm` runs them against Claude (about $0.10 to $0.30, capped at $1) and saves a report to `packages/server/data/evals/`
+
 Part 2 (next):
-- Real-key playtest with Claude, then tune the prompt
-- AI image generation (NPC portraits, scene art) through the server, with its own budget
-- Streaming narration so text appears as it's written
-- Session recaps and long-term memory (Haiku 5.5)
+- Real-key playtest with Claude, then tune the prompt using the eval results
+- AI image generation (only when the library has nothing that fits), with its own budget
 
 Known limits:
 - Combat results are reported by the browser; Phase 6 moves battles to the server for multiplayer

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node --import tsx src/index.ts",
-    "check": "node --import tsx src/check-setup.ts"
+    "check": "node --import tsx src/check-setup.ts",
+    "eval": "node --import tsx src/run-evals.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.137.0",

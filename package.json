@@ -15,7 +15,8 @@
     "balance": "tsx packages/content/scripts/grid-stats.ts",
     "dev:web": "npm run dev -w @oathkeepers/web",
     "server": "npm run start -w @oathkeepers/server",
-    "check-setup": "npm run check -w @oathkeepers/server --silent"
+    "check-setup": "npm run check -w @oathkeepers/server --silent",
+    "eval:dm": "npm run eval -w @oathkeepers/server --silent --"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
