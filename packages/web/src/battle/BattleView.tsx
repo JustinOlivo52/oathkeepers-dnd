@@ -39,6 +39,14 @@ export interface BattleSetup {
   startingHp?: number;
   /** Potions of Healing the hero carries into the fight. */
   potions?: number;
+  /** Party members run by the computer. */
+  companions?: CompanionSetup[];
+}
+
+export interface CompanionSetup {
+  character: CharacterData;
+  startingHp?: number;
+  potions?: number;
 }
 
 export interface BattleOutcome {
@@ -51,13 +59,20 @@ export interface BattleOutcome {
   potions: Record<string, number>;
 }
 
-function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions = 0 }: BattleSetup) {
+function buildPartyMember({ character, startingHp, potions = 0 }: CompanionSetup): Creature {
+  const c = buildCharacter(content, character);
+  if (startingHp !== undefined) c.hp = Math.max(1, Math.min(c.maxHp, startingHp));
+  if (potions > 0) c.resources[POTION] = { current: potions, max: potions, recharge: "long" };
+  return c;
+}
+
+function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions, companions = [] }: BattleSetup) {
   const field = loadBattlefield(battlefield, seed);
-  const hero = buildCharacter(content, character);
-  if (startingHp !== undefined) hero.hp = Math.max(1, Math.min(hero.maxHp, startingHp));
-  if (potions > 0) hero.resources[POTION] = { current: potions, max: potions, recharge: "long" };
+  const hero = buildPartyMember({ character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}) });
+  const allies = companions.map(buildPartyMember);
+  const party = [hero, ...allies];
   const taken = new Set<string>();
-  placeCreatures(field.map, [hero], field.partySpawns, [], taken);
+  placeCreatures(field.map, party, field.partySpawns, [], taken);
   const monsterOf = new Map<string, string>();
   const list = groups.flatMap((g) => Array.from({ length: g.count }, () => g.monsterId));
   const enemies = list.map((monsterId, i) => {
@@ -69,15 +84,15 @@ function createBattle({ character, enemies: groups, seed, battlefield, startingH
   });
   // Big creatures first, so they get the roomy spawn points.
   placeCreatures(field.map, [...enemies].sort((a, b) => (b.footprint ?? 1) - (a.footprint ?? 1)), field.enemySpawns, field.largeEnemySpawns, taken);
-  const combat = new Combat([hero, ...enemies], mathRng, new EventLog(), field.map);
-  const archetype = PALETTE_BY_CLASS[character.class] ?? "martial";
-  const sheetFor = (c: Creature) => spriteFor(c, archetype, monsterOf.get(c.id));
+  const combat = new Combat([...party, ...enemies], mathRng, new EventLog(), field.map);
+  const classOf = new Map([character, ...companions.map((x) => x.character)].map((ch) => [ch.id, ch.class]));
+  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", monsterOf.get(c.id));
   const outcome = (): BattleOutcome => ({
     winner: combat.winner ?? "enemies",
     rounds: combat.round,
-    hp: { [hero.id]: hero.hp },
+    hp: Object.fromEntries(party.map((c) => [c.id, c.hp])),
     defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
-    potions: { [hero.id]: hero.resources[POTION]?.current ?? 0 },
+    potions: Object.fromEntries(party.map((c) => [c.id, c.resources[POTION]?.current ?? 0])),
   });
   return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
 }
@@ -209,7 +224,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
     <div className="battle-layout">
       <div className="board">
         <div className="board-toolbar">
-          <span className="round-label">Round {combat.round || 1} <span> / {myTurn ? "Your turn" : controller.busy ? "In motion" : "Enemy turn"}</span></span>
+          <span className="round-label">Round {combat.round || 1} <span> / {myTurn ? "Your turn" : controller.busy ? "In motion" : turn && combat.current.side === "party" ? "Ally's turn" : "Enemy turn"}</span></span>
           <div className="camera-controls" aria-label="Board camera">
             <button disabled={!boardReady} onClick={() => sceneRef.current?.zoomBy(-0.15)} aria-label="Zoom out">Zoom out</button>
             <button disabled={!boardReady} onClick={() => sceneRef.current?.zoomBy(0.15)} aria-label="Zoom in">Zoom in</button>

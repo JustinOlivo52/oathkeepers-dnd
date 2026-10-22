@@ -182,6 +182,12 @@ Playtest round 1 changes:
 - Auto end turn once no action, movement or useful bonus action is left (Action Surge isn't counted); a checkbox turns it off
 - DM voice: the browser's built-in speech reads narration sentence by sentence as it streams; voice and speed settings; free, quality depends on the device
 - Dev server accepts GitHub Codespaces forwarded ports, for testing away from home
+- Straight-line movement: among equally cheap routes, paths follow the line to the target (players and monsters)
+- AI companions: choose up to 3 premade companions (Wren Ashdown, halfling rogue; Brother Odric Vale, dwarf paladin; Tamsin Reed, wood elf ranger) or your own saved characters. The DM voices them in the story; rule-based tactics fight for them (Second Wind, potions when badly hurt). They share XP and keep their own HP and potions
+
+Known limits for companions:
+- Only fighter features exist in combat so far; other classes fight with their weapons (no Sneak Attack, Rage or spells yet)
+- Companions of the same class family share a battle sprite (4 hero sprites exist)
 
 Part 2 (next):
 - Real-key playtest with Claude, then tune the prompt using the eval results

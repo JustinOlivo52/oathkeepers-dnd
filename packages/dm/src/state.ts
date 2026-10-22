@@ -83,6 +83,8 @@ export interface AdventureState {
   id: string;
   title: string;
   party: CharacterData[];
+  /** Party members the computer runs: the DM voices them in the story, tactics play them in battle. */
+  companions?: string[];
   characters: Record<string, CharacterState>;
   gold: number;
   scene: { name: string; description: string };

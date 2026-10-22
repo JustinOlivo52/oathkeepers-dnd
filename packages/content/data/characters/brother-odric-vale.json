@@ -1,0 +1,54 @@
+{
+  "id": "brother-odric-vale",
+  "name": "Brother Odric Vale",
+  "species": "dwarf",
+  "size": "medium",
+  "background": "soldier",
+  "class": "paladin",
+  "subclass": "oath-of-devotion",
+  "classChoices": {},
+  "level": 3,
+  "abilities": {
+    "str": 17,
+    "dex": 8,
+    "con": 15,
+    "int": 10,
+    "wis": 12,
+    "cha": 13
+  },
+  "skills": [
+    "athletics",
+    "intimidation",
+    "insight",
+    "medicine"
+  ],
+  "expertise": [],
+  "feats": [
+    {
+      "id": "savage-attacker"
+    }
+  ],
+  "fightingStyle": "defense",
+  "weaponMasteries": [
+    "longsword",
+    "javelin"
+  ],
+  "equipment": {
+    "armor": "chain-mail",
+    "shield": true,
+    "weapons": [
+      "longsword",
+      "javelin"
+    ]
+  },
+  "languages": [
+    "Common",
+    "Dwarvish",
+    "Giant"
+  ],
+  "tools": [
+    "Gaming Set"
+  ],
+  "alignment": "Lawful Good",
+  "notes": "A former border soldier who swore his oath after his company fell. Steady, blunt and kind; distrusts anything undead."
+}

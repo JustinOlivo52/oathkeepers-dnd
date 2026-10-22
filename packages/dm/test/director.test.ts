@@ -71,7 +71,7 @@ describe("Director", () => {
     await director.begin();
     const events = await director.act(bram.id, "I climb the wall");
     expect(events.map((e) => e.type)).toEqual(["player", "narration"]);
-    expect(provider.sent[1]).toMatch(/\[Game state\][\s\S]*Bram Holloway \(id: bram-holloway\)[\s\S]*Bram Holloway: I climb the wall/);
+    expect(provider.sent[1]).toMatch(/\[Game state\][\s\S]*Bram Holloway \(id: bram-holloway, player character\)[\s\S]*Bram Holloway: I climb the wall/);
   });
 
   it("pauses for the player to roll, then sends the engine's result back", async () => {
@@ -342,5 +342,37 @@ describe("Potions of Healing", () => {
     await director.act(bram.id, "I walk on");
     await director.finishCombat({ winner: "party", rounds: 2, hp: { [bram.id]: 10 }, defeated: ["goblin-warrior"], potions: { [bram.id]: 0 } });
     expect(potions(state)).toBe(0);
+  });
+});
+
+describe("AI companions", () => {
+  const [, wren, odric] = content.characters;
+
+  it("join the party, get their own potions, and are marked for the DM to play", async () => {
+    const provider = new ScriptedProvider([turn(["The road winds on."])]);
+    const state = Director.newAdventure(content, [bram, wren!, odric!], provider.name, "c", [wren!.id, odric!.id]);
+    expect(state.companions).toEqual([wren!.id, odric!.id]);
+    expect(state.characters[wren!.id]!.inventory).toEqual([{ name: POTION_ITEM, quantity: 2 }]);
+    await new Director(content, provider, state, seededRng(1)).begin();
+    const sent = provider.sent[0] as string;
+    expect(sent).toContain(`${wren!.name} (id: ${wren!.id}, companion you play`);
+    expect(sent).toContain(`${bram.name} (id: ${bram.id}, player character)`);
+  });
+
+  it("ignores companion ids that aren't in the party", () => {
+    expect(Director.newAdventure(content, [bram], "x", "id", ["nobody"]).companions).toEqual([]);
+  });
+
+  it("battle results update every party member and split XP", async () => {
+    const fightCall = call("f1", "start_combat", { enemies: [{ monster_id: "goblin-warrior", count: 2 }], battlefield: "abbey", description: "Ambush" });
+    const provider = new ScriptedProvider([turn(["Goblins!"], [fightCall]), turn(["They flee."])]);
+    const state = Director.newAdventure(content, [bram, wren!], provider.name, "c", [wren!.id]);
+    const director = new Director(content, provider, state, seededRng(1));
+    await director.act(bram.id, "I walk on");
+    await director.finishCombat({ winner: "party", rounds: 3, hp: { [bram.id]: 20, [wren!.id]: 5 }, defeated: ["goblin-warrior", "goblin-warrior"], potions: { [wren!.id]: 1 } });
+    expect(state.characters[wren!.id]!.hp).toBe(5);
+    expect(state.characters[wren!.id]!.inventory[0]!.quantity).toBe(1);
+    const xp = content.monsters.find((m) => m.id === "goblin-warrior")!.xp;
+    expect(state.characters[wren!.id]!.xp).toBe(900 + xp); // 2 goblins split 2 ways
   });
 });

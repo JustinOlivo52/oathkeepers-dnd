@@ -2,6 +2,9 @@ import "./adventure.css";
 import { useEffect, useRef, useState } from "react";
 import type { CharacterData } from "@oathkeepers/content";
 import { POTION_ITEM, XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
+
+/** Matches Director.MAX_COMPANIONS (kept here so the web bundle doesn't pull in the director for one number). */
+const MAX_COMPANIONS = 3;
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { Battle, type BattleOutcome } from "../battle/BattleView";
 import { narrator } from "./narrator";
@@ -50,6 +53,12 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
   /** Narration streaming in while the DM writes. */
   const [live, setLive] = useState("");
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
+  /** Ids of characters coming along as AI companions. Empty: solo. */
+  const [companionIds, setCompanionIds] = useState<string[]>([]);
+  const companionOptions = props.characters.filter((c) => c.id !== character.id);
+  const companions = companionIds.map((id) => companionOptions.find((c) => c.id === id)).filter((c): c is CharacterData => !!c);
+  const toggleCompanion = (id: string) =>
+    setCompanionIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : ids.length < MAX_COMPANIONS ? [...ids, id] : ids));
 
   useEffect(() => {
     void findServer().then((info) => {
@@ -87,7 +96,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
     };
     setClient(c);
     void run(async () => {
-      const s = resume ? await c.resume(resume.id) : await c.start(character);
+      const s = resume ? await c.resume(resume.id) : await c.start(character, companions);
       const ref = { mode, provider, id: s.state.id };
       writeSaved(ref);
       setSaved(ref);
@@ -121,6 +130,32 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
                 <option value="local:demo">Demo DM (offline)</option>
               </select>
             </label>
+          </div>
+          <fieldset className="companion-picker">
+            <legend>
+              Party: {companions.length ? `${character.name} and ${companions.length} AI companion${companions.length > 1 ? "s" : ""}` : `${character.name}, solo`}
+            </legend>
+            <p className="muted small">Bring up to {MAX_COMPANIONS} companions. The DM plays them in the story, and the computer fights for them on the grid.</p>
+            <div className="companion-list">
+              {companionOptions.map((c) => {
+                const on = companionIds.includes(c.id);
+                return (
+                  <label key={c.id} className={`companion ${on ? "on" : ""}`}>
+                    <input type="checkbox" checked={on} disabled={!on && companionIds.length >= MAX_COMPANIONS} onChange={() => toggleCompanion(c.id)} />
+                    <span>
+                      <strong>{c.name}</strong>
+                      <span className="muted small">
+                        {" "}
+                        {content.species.find((s) => s.id === c.species)?.name} {content.classes.find((x) => x.id === c.class)?.name}
+                      </span>
+                      {c.notes && <span className="muted small companion-notes">{c.notes}</span>}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+          <div className="row">
             <button className="primary" disabled={busy || server === undefined} onClick={() => begin()}>
               {busy ? "Starting…" : "Begin adventure"}
             </button>
@@ -191,6 +226,8 @@ function Adventure(props: {
   const { state, pending } = snap;
   const hero = state.party[0]!;
   const me = state.characters[hero.id]!;
+  const allies = state.party.slice(1);
+  const potionsOf = (id: string) => state.characters[id]?.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0;
   const [text, setText] = useState("");
   const [fighting, setFighting] = useState(false);
   const feed = useRef<HTMLOListElement>(null);
@@ -222,7 +259,8 @@ function Adventure(props: {
             seed: Math.floor(Math.random() * 1_000_000),
             id: 1,
             startingHp: me.hp,
-            potions: me.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0,
+            potions: potionsOf(hero.id),
+            companions: allies.map((c) => ({ character: c, startingHp: state.characters[c.id]!.hp, potions: potionsOf(c.id) })),
           }}
           onFinish={finish}
         />
@@ -353,6 +391,30 @@ function Adventure(props: {
           </div>
         </div>
         {level > hero.level && <p className="note">Level {level} reached! Leveling up arrives in Phase 5.</p>}
+
+        {allies.length > 0 && (
+          <Section title="Companions">
+            <ul className="companions">
+              {allies.map((c) => {
+                const s = state.characters[c.id]!;
+                return (
+                  <li key={c.id}>
+                    <strong>{c.name}</strong> <span className="muted small">{content.classes.find((x) => x.id === c.class)?.name}</span>
+                    <meter min={0} max={s.maxHp} value={s.hp} aria-label={`${c.name} hit points`} />
+                    <span className="small">
+                      {s.hp}/{s.maxHp} HP{potionsOf(c.id) ? ` · ${potionsOf(c.id)} potion${potionsOf(c.id) > 1 ? "s" : ""}` : ""}
+                    </span>
+                    {potionsOf(c.id) > 0 && s.hp < s.maxHp && (
+                      <button className="ghost small" disabled={busy || pending?.type === "combat"} onClick={() => void run(() => client.drinkPotion(c.id))}>
+                        Give potion
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </Section>
+        )}
 
         {state.memory.threads.length > 0 && (
           <Section title="Story so far">

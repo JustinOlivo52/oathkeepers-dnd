@@ -1,0 +1,59 @@
+{
+  "id": "tamsin-reed",
+  "name": "Tamsin Reed",
+  "species": "elf",
+  "lineage": "wood-elf",
+  "size": "medium",
+  "background": "criminal",
+  "class": "ranger",
+  "subclass": "hunter",
+  "classChoices": {},
+  "level": 3,
+  "abilities": {
+    "str": 10,
+    "dex": 17,
+    "con": 14,
+    "int": 8,
+    "wis": 14,
+    "cha": 12
+  },
+  "skills": [
+    "sleightOfHand",
+    "stealth",
+    "survival",
+    "nature",
+    "perception",
+    "insight"
+  ],
+  "expertise": [
+    "survival"
+  ],
+  "feats": [
+    {
+      "id": "alert"
+    }
+  ],
+  "fightingStyle": "archery",
+  "weaponMasteries": [
+    "longbow",
+    "shortsword"
+  ],
+  "equipment": {
+    "armor": "studded-leather",
+    "shield": false,
+    "weapons": [
+      "longbow",
+      "shortsword"
+    ]
+  },
+  "languages": [
+    "Common",
+    "Elvish",
+    "Orc"
+  ],
+  "tools": [
+    "Thieves' Tools"
+  ],
+  "alignment": "Neutral",
+  "notes": "A quiet tracker who poached the lord's woods to feed her village. Knows the Marches' trails and mistrusts towns."
+}

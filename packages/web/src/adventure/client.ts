@@ -16,7 +16,7 @@ export interface DmClient {
   readonly label: string;
   /** Narration arrives here word by word while a request runs. */
   onText?: TextSink;
-  start(character: CharacterData): Promise<AdventureSnapshot>;
+  start(character: CharacterData, companions?: CharacterData[]): Promise<AdventureSnapshot>;
   resume(id: string): Promise<AdventureSnapshot>;
   act(characterId: string, text: string): Promise<AdventureSnapshot>;
   roll(): Promise<AdventureSnapshot>;
@@ -104,8 +104,8 @@ export class RemoteClient implements DmClient {
     throw new ServerError(0, "The connection closed before the DM finished");
   }
 
-  start(character: CharacterData) {
-    return this.call("", { character, provider: this.provider });
+  start(character: CharacterData, companions: CharacterData[] = []) {
+    return this.call("", { character, companions, provider: this.provider });
   }
   resume(id: string) {
     return this.call(`/${id}`);
@@ -151,8 +151,8 @@ export class LocalDemoClient implements DmClient {
     return { events, state: d.state, pending: d.waitingOn };
   }
 
-  async start(character: CharacterData) {
-    const state = Director.newAdventure(content, [character], "demo", "local");
+  async start(character: CharacterData, companions: CharacterData[] = []) {
+    const state = Director.newAdventure(content, [character, ...companions], "demo", "local", companions.map((c) => c.id));
     this.director = new Director(content, new DemoProvider(), state, mathRng);
     return this.snapshot(await this.director.begin(this.onText));
   }

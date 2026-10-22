@@ -57,7 +57,11 @@ export class Director {
       : provider.start(systemPrompt(), tools);
   }
 
-  static newAdventure(content: Content, party: CharacterData[], providerName: string, id: string): AdventureState {
+  /** At most this many AI companions with one player, for a party of four. */
+  static readonly MAX_COMPANIONS = 3;
+
+  /** `party[0]` is the player's character; `companions` lists ids of party members the computer runs. */
+  static newAdventure(content: Content, party: CharacterData[], providerName: string, id: string, companions: string[] = []): AdventureState {
     const characters: AdventureState["characters"] = {};
     for (const c of party) {
       const built = buildCharacter(content, c);
@@ -67,6 +71,7 @@ export class Director {
       id,
       title: "The Western Marches",
       party,
+      companions: companions.filter((c) => party.some((p) => p.id === c)),
       characters,
       gold: 15,
       scene: { name: "The road to the frontier", description: "" },

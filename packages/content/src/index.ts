@@ -24,6 +24,9 @@ import wolf from "../data/monsters/wolf.json";
 import giantSpider from "../data/monsters/giant-spider.json";
 import ogre from "../data/monsters/ogre.json";
 import bram from "../data/characters/bram-holloway.json";
+import wren from "../data/characters/wren-ashdown.json";
+import odric from "../data/characters/brother-odric-vale.json";
+import tamsin from "../data/characters/tamsin-reed.json";
 import artCatalog from "../data/art-catalog.json";
 import {
   ArmorSchema,
@@ -51,6 +54,7 @@ function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): 
 }
 
 const monsterFiles = { "goblin-warrior": goblinWarrior, skeleton, zombie, wolf, "giant-spider": giantSpider, ogre };
+const characterFiles = { "bram-holloway": bram, "wren-ashdown": wren, "brother-odric-vale": odric, "tamsin-reed": tamsin };
 const classFiles = { barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard };
 
 export function loadContent() {
@@ -67,7 +71,8 @@ export function loadContent() {
     feats: validate(z.array(FeatSchema), feats, "feats.json"),
     languages: validate(z.array(z.string()), languages, "languages.json"),
     monsters,
-    characters: [validate(CharacterSchema, bram, "characters/bram-holloway.json")],
+    /** Premade characters: play as one, or bring the others along as AI companions. */
+    characters: Object.entries(characterFiles).map(([name, data]) => validate(CharacterSchema, data, `characters/${name}.json`)),
     art,
   };
 }

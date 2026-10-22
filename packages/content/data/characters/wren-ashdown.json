@@ -1,0 +1,59 @@
+{
+  "id": "wren-ashdown",
+  "name": "Wren Ashdown",
+  "species": "halfling",
+  "size": "small",
+  "background": "criminal",
+  "class": "rogue",
+  "subclass": "thief",
+  "classChoices": {},
+  "level": 3,
+  "abilities": {
+    "str": 8,
+    "dex": 17,
+    "con": 14,
+    "int": 12,
+    "wis": 14,
+    "cha": 10
+  },
+  "skills": [
+    "sleightOfHand",
+    "stealth",
+    "acrobatics",
+    "perception",
+    "deception",
+    "investigation"
+  ],
+  "expertise": [
+    "stealth",
+    "perception"
+  ],
+  "feats": [
+    {
+      "id": "alert"
+    }
+  ],
+  "weaponMasteries": [
+    "shortsword",
+    "shortbow"
+  ],
+  "equipment": {
+    "armor": "leather",
+    "shield": false,
+    "weapons": [
+      "shortsword",
+      "shortbow",
+      "dagger"
+    ]
+  },
+  "languages": [
+    "Common",
+    "Halfling",
+    "Goblin"
+  ],
+  "tools": [
+    "Thieves' Tools"
+  ],
+  "alignment": "Chaotic Good",
+  "notes": "Quick-tongued scout from Thornwatch's back alleys. Jokes when nervous, counts every coin, never leaves a friend behind."
+}

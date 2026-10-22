@@ -44,7 +44,7 @@ class DemoConversation implements DmConversation {
   }
 
   private reply(text: string): ProviderTurn {
-    const id = /\(id: ([^)]+)\)/.exec(text)?.[1] ?? this.s.partyId;
+    const id = /\(id: ([^,)]+)/.exec(text)?.[1] ?? this.s.partyId;
     this.s.partyId = id;
     const action = text.split("\n\n").pop()!.toLowerCase();
     const call = (name: string, input: unknown): ToolCall => ({ id: `demo-${++this.s.calls}`, name, input });

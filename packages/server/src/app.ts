@@ -80,9 +80,12 @@ export function createApp(options: AppOptions) {
     if (method === "POST" && path === "/api/adventures") {
       const parsed = CharacterSchema.safeParse(body.character);
       if (!parsed.success) throw new HttpError(400, "Invalid character");
+      const companions = CharacterSchema.array().max(Director.MAX_COMPANIONS).safeParse(body.companions ?? []);
+      if (!companions.success) throw new HttpError(400, `Send up to ${Director.MAX_COMPANIONS} valid companions`);
+      const party = [parsed.data, ...companions.data.filter((c, i, all) => c.id !== parsed.data.id && all.findIndex((x) => x.id === c.id) === i)];
       const p = provider(typeof body.provider === "string" ? body.provider : undefined);
       const id = randomUUID();
-      const state = Director.newAdventure(content, [parsed.data], p.name, id);
+      const state = Director.newAdventure(content, party, p.name, id, party.slice(1).map((c) => c.id));
       const director = new Director(content, p, state, rng, { canSpend, onCost: (usd) => store.addSpend(usd) });
       live.set(id, { director, provider: p.name });
       const events = await director.begin(onText);

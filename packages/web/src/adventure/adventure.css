@@ -59,3 +59,13 @@
 .voice-settings[open] { position: absolute; right: 0; top: 100%; z-index: 5; width: min(320px, calc(100vw - 32px)); padding: 12px; background: var(--panel, #151d20); border: 1px solid var(--border); border-radius: 8px; display: grid; gap: 8px; }
 .voice-settings[open] > summary { margin-bottom: 4px; }
 .voice-settings label { display: grid; gap: 4px; font-size: 13px; }
+
+.companion-picker { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin: 12px 0; min-width: 0; }
+.companion-picker legend { padding: 0 6px; font-weight: 600; }
+.companion-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.companion { display: flex; gap: 8px; align-items: flex-start; padding: 8px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+.companion.on { border-color: var(--accent); }
+.companion-notes { display: block; margin-top: 2px; }
+.companions { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.companions li { display: grid; gap: 2px; }
+.companions meter { width: 100%; }

@@ -1,10 +1,10 @@
-import { Combat } from "./combat.js";
+import { Combat, POTION } from "./combat.js";
 import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
 import { explore, footprintDistanceFt, key, samePoint, straightPath, type Point } from "./grid.js";
 
 /**
  * Rule-based turns for monsters (and auto-play in tests).
- * Heal when hurt, surge on the first round, then attack the weakest enemy in reach,
+ * Heal when hurt (Second Wind, then a potion when badly hurt), surge on the first round, then attack the weakest enemy in reach,
  * walking (or dashing) toward the nearest one when nobody is. On a grid, a wounded
  * creature with a ranged attack backs off first, using Nimble Escape if it has it.
  */
@@ -20,6 +20,7 @@ export function takeAutoTurn(combat: Combat): void {
     ) {
       combat.secondWind(me.id);
     }
+    if (turn.bonusActions > 0 && (me.resources[POTION]?.current ?? 0) > 0 && me.hp <= me.maxHp / 3) combat.drinkPotion(me.id);
     if (me.features.includes("action-surge") && (me.resources["action-surge"]?.current ?? 0) > 0 && combat.round === 1) {
       combat.actionSurge(me.id);
     }
