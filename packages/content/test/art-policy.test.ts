@@ -50,6 +50,7 @@ describe("compatible art selection", () => {
     expect(pickArt([tavern],{kind:"scene",tags:["crypt"]},seededRng(1))).toBeUndefined();
     expect(pickArt([crypt],{kind:"scene",tags:["invented-tag"]},seededRng(1))).toBeUndefined();
     expect(pickArt([tavern],{kind:"scene",requiredTags:["rain"]},seededRng(1))).toBeUndefined();
+    expect(pickArt([tavern],{kind:"scene",tags:["eerie"]},seededRng(1))).toBeUndefined();
   });
   it("repeats the correct match before using a less suitable fresh image", () => {
     const calm = image("calm-crypt",["crypt","underground","calm"]);

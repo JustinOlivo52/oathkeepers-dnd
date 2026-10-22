@@ -1,0 +1,26 @@
+const { chromium }=require('playwright');
+const fs=require('fs');
+const path=require('path');
+const repo=path.resolve(__dirname,'../../../../..');
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(process.env.ART_REVIEW_URL || 'http://127.0.0.1:4173/docs/art/library-batch-1.html');
+ await page.waitForFunction(()=>window.reviewStatus?.loaded===16&&window.reviewStatus.boardReady);
+ if(await page.locator('article.monster').count()!==5)throw new Error('Missing monsters');
+ await page.selectOption('#animation','attack');await page.click('#pause');await page.click('#step');
+ await page.waitForFunction(()=>Object.values(window.reviewStatus.frames).every(f=>f===7));
+ await page.screenshot({path:path.join(repo,'docs/art/library-batch-1-browser.png'),fullPage:true});
+ await page.check('#mirror');await page.waitForFunction(()=>[...document.querySelectorAll('.frame')].every(e=>e.textContent.endsWith('left')));
+ await page.selectOption('#animation','walk');await page.click('#pause');
+ await page.waitForFunction(()=>Object.values(window.reviewStatus.frames).every(f=>f>=2&&f<=5));
+ const pixels=await page.locator('.monster canvas').evaluateAll(cs=>cs.map(c=>[...c.getContext('2d').getImageData(0,0,c.width,c.height).data].filter((v,i)=>i%4===3&&v>0).length));
+ if(pixels.some(n=>n<1000))throw new Error('Blank monster canvas');
+ await page.selectOption('#animation','down');await page.waitForFunction(()=>Object.values(window.reviewStatus.frames).every(f=>f===10));
+ const desktop=await page.evaluate(()=>({assets:window.reviewStatus.loaded,errors:window.reviewStatus.errors,board:window.reviewStatus.boardReady}));
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/oath-library-mobile.png',fullPage:true});
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);if(overflow)throw new Error('Mobile document overflows');
+ if(errors.length||desktop.errors.length)throw new Error(JSON.stringify({errors,desktop}));
+ fs.writeFileSync(path.join(repo,'docs/art/library-batch-1-browser-check.json'),JSON.stringify({desktop,pixels,mobileWidth:390,mobileDocumentOverflow:overflow,verified:['all16images','boardterrain','attackframe7','mirroredfacing','walkframes2to5','downframe10','nonemptycanvas','mobilelayout'],gameplayIntegration:'pending'},null,2)+'\n');
+ console.log(JSON.stringify({desktop,pixels,mobileOverflow:overflow,errors}));await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});

@@ -43,7 +43,7 @@ export const ArtEntrySchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   kind: z.enum(ART_KINDS),
   title: z.string().min(1),
-  tags: z.array(z.enum(ALL_ART_TAGS as [ArtTag, ...ArtTag[]])).min(1),
+  tags: z.array(z.enum(ALL_ART_TAGS as [ArtTag, ...ArtTag[]])).min(3).max(8).refine((tags) => new Set(tags).size === tags.length, "Tags must be unique"),
   /** Independent production gates. Missing metadata fails closed. */
   artStatus: z.enum(["draft", "ready"]).default("draft"),
   mechanicsStatus: z.enum(["pending", "ready", "not-required"]).default("pending"),
@@ -68,7 +68,7 @@ export const ArtEntrySchema = z.object({
   /** Tile sheet for kind "tileset", or the tileset id a board uses. */
   tiles: z.string().optional(),
   props: assetPath.optional(),
-  /** SRD monster id for kind "monster" (matches the bestiary). */
+  /** SRD identity for monster sprites and their portraits; ready monster mechanics must match the bestiary. */
   monsterId: z.string().optional(),
   source: z.enum(["codex-imagegen", "claude-code", "commissioned", "ai-generated-in-game"]),
   added: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -79,6 +79,7 @@ export const ArtEntrySchema = z.object({
   if (entry.kind === "monster" && entry.mechanicsStatus === "not-required") issue("Monster mechanics cannot be not-required");
   if ((entry.kind === "npc" || entry.kind === "scene") && !entry.image) issue("Story art requires an image");
   if (entry.kind === "tileset" && !entry.tiles) issue("Tileset requires a tiles image");
+  if (entry.kind === "tileset" && entry.tiles && !assetPath.safeParse(entry.tiles).success) issue("Tileset path must stay under assets/");
   if (entry.kind === "board" && (!entry.board || !entry.tiles)) issue("Board requires layout and tileset id");
   if (entry.integrationStatus === "ready" && (entry.artStatus !== "ready" || entry.mechanicsStatus === "pending")) issue("Integrated assets need reviewed art and supported mechanics");
   const sprite = entry.sprite;
@@ -145,6 +146,7 @@ export function pickArt(catalog: ArtEntry[], query: ArtQuery, rng: Rng): ArtEntr
   const wanted = new Set(query.tags ?? []);
   const score = (e: ArtEntry) => new Set(e.tags.filter((tag) => wanted.has(tag))).size;
   const best = Math.max(...pool.map(score));
+  if (wanted.size && best === 0) return undefined;
   const top = pool.filter((e) => score(e) === best);
   const fresh = top.filter((e) => !query.exclude?.includes(e.id));
   const choices = fresh.length ? fresh : top;
@@ -183,7 +185,7 @@ export const BoardSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
   tileset: z.string().min(1),
-  rows: z.array(z.string().regex(/^[#.~]+$/).min(1)).min(8),
+  rows: z.array(z.string().regex(/^[#.~]+$/).min(18).max(26)).min(12).max(16),
   props: z.array(point.extend({ prop: z.number().int().min(0).max(3) })).default([]),
   partySpawns: z.array(point).min(6),
   enemySpawns: z.array(point).min(8),

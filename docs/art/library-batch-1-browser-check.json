@@ -1,0 +1,27 @@
+{
+  "desktop": {
+    "assets": 16,
+    "errors": [],
+    "board": true
+  },
+  "pixels": [
+    5879,
+    5719,
+    5741,
+    14382,
+    38577
+  ],
+  "mobileWidth": 390,
+  "mobileDocumentOverflow": false,
+  "verified": [
+    "all16images",
+    "boardterrain",
+    "attackframe7",
+    "mirroredfacing",
+    "walkframes2to5",
+    "downframe10",
+    "nonemptycanvas",
+    "mobilelayout"
+  ],
+  "gameplayIntegration": "pending"
+}

@@ -190,3 +190,5 @@ Board catalog `tiles`, board JSON `tileset`, and the referenced tileset catalog 
 ### Player artwork
 
 Player appearance needs a separate compatible-body/equipment specification. The four existing hero sheets remain generic defaults. This batch does not implement layered character customization.
+
+Monster portraits also carry `monsterId`, so a skeleton encounter can request its actual skeleton portrait rather than any image tagged undead. Use `assetId` for a specific saved NPC. Reviewed scene/portrait art can be reused across stories after its integration gate is passed; the monster's underlying combat support is a separate decision.
