@@ -33,6 +33,8 @@ export type GameEvent =
   | { type: "feature_used"; creatureId: string; featureId: string }
   | { type: "move"; creatureId: string; path: Point[]; costFt: number }
   | { type: "action"; creatureId: string; action: "dash" | "disengage" | "dodge"; bonus?: boolean }
+  | { type: "extra_damage"; creatureId: string; targetId: string; source: string }
+  | { type: "concentration"; creatureId: string; spell: string; kept: boolean }
   | { type: "reaction"; creatureId: string; reaction: "opportunity-attack"; targetId: string }
   | { type: "condition"; creatureId: string; condition: Condition; added: boolean }
   | { type: "effect_applied"; targetId: string; effectId: string; sourceId: string }

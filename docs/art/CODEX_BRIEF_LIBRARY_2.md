@@ -62,6 +62,22 @@ Apply the lessons from the batch 1 fixes:
 - A props sheet per tileset (`props-cave.png`, `props-crypt.png`, 2x2 grid of 128x128) and some props on each board
 - Each board supports 2x2 creatures (`supportedFootprints` with large spawns), since the bestiary now has Large monsters
 
+## 5. Companion sprites and portraits (3)
+
+The game now has premade AI companions. Today they borrow the generic hero sheets, so two of them look identical on the grid. Give each their own look, in the same style and frame layout as the existing hero sheets (`hero-martial` and friends): 11 frames of 192x192, feet at (96, 166), facing right.
+
+| Catalog id | Sprite file | Who | Look |
+|---|---|---|---|
+| `hero-wren-ashdown` | `sprites/hero-wren-ashdown.png` | Wren Ashdown, halfling rogue | Small (halfling: noticeably shorter than the human heroes in the same frame), hooded leather, shortsword and shortbow, quick and light on her feet |
+| `hero-brother-odric-vale` | `sprites/hero-brother-odric-vale.png` | Brother Odric Vale, dwarf paladin | Stocky dwarf in chain mail with a shield and longsword, a plain holy symbol (not a real-world religious symbol), grey-streaked beard |
+| `hero-tamsin-reed` | `sprites/hero-tamsin-reed.png` | Tamsin Reed, wood elf ranger | Lean elf in studded leather and a green-brown cloak, longbow drawn in the attack frames, shortsword at the hip |
+
+Also a 512x512 portrait for each at `library/portraits/companion-<id>.webp` (catalog ids `portrait-wren-ashdown` and so on, kind `npc`), chest-up like the NPC portraits.
+
+Catalog entries: kind `hero` with a `sprite` block like the other hero sheets; `artStatus: "ready"`, `mechanicsStatus: "not-required"`, `integrationStatus: "pending"`. The game already looks for `hero-<character id>` first, so no code changes are needed. Run `measure-sprites.py` afterwards.
+
+This section can go first if batch 2 is already under way: it's small and it fixes something players see in every fight.
+
 ## Done means
 
 - [ ] All four sections done, or a clearly stated subset, with catalog entries using the listed ids and tags

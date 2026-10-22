@@ -376,3 +376,26 @@ describe("AI companions", () => {
     expect(state.characters[wren!.id]!.xp).toBe(900 + xp); // 2 goblins split 2 ways
   });
 });
+
+describe("Rests and limited features", () => {
+  it("battles remember spent features; a short rest heals with Hit Dice and refills short-rest features; a long rest refills all", async () => {
+    const fightCall = call("f1", "start_combat", { enemies: [{ monster_id: "goblin-warrior", count: 1 }], battlefield: "abbey", description: "Ambush" });
+    const rest = (id: string, name: "short_rest" | "long_rest") => call(id, name, { reason: "Camp" });
+    const { state, director } = setup([turn(["Goblin!"], [fightCall]), turn(["It falls."]), turn([""], [rest("r1", "short_rest")]), turn(["Rested."]), turn([""], [rest("r2", "long_rest")]), turn(["Morning."])]);
+    await director.act(bram.id, "I walk on");
+    await director.finishCombat({ winner: "party", rounds: 2, hp: { [bram.id]: 5 }, defeated: ["goblin-warrior"], resources: { [bram.id]: { "second-wind": 0, "action-surge": 0 } } });
+    const bramState = state.characters[bram.id]!;
+    expect(bramState.resources).toEqual({ "second-wind": 0, "action-surge": 0 });
+
+    await director.act(bram.id, "We rest an hour");
+    expect(bramState.hp).toBeGreaterThan(5);
+    expect(bramState.hitDiceSpent).toBeGreaterThan(0);
+    expect(bramState.resources).toEqual({ "second-wind": 1 }); // Action Surge refills; Second Wind gets one use back
+    expect(state.events.some((e) => e.type === "rest" && e.kind === "short")).toBe(true);
+
+    await director.act(bram.id, "We sleep at the inn");
+    expect(bramState.hp).toBe(bramState.maxHp);
+    expect(bramState.resources).toBeUndefined();
+    expect(bramState.hitDiceSpent).toBeUndefined();
+  });
+});

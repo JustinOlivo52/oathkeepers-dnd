@@ -24,6 +24,8 @@ export interface CombatOutcome {
   defeated: string[];
   /** Potions of Healing each party member has left after the battle. Missing: unchanged. */
   potions?: Record<string, number>;
+  /** Uses left of each party member's limited features after the battle. Missing: unchanged. */
+  resources?: Record<string, Record<string, number>>;
 }
 
 /** Every character starts with a couple of these. */
@@ -430,11 +432,45 @@ export class Director {
         return this.ok(call.id, `Showing: ${art.title}.`);
       }
       case "long_rest": {
-        for (const c of Object.values(s.characters)) c.hp = c.maxHp;
+        for (const c of Object.values(s.characters)) {
+          c.hp = c.maxHp;
+          delete c.resources;
+          delete c.hitDiceSpent;
+        }
         s.events.push({ type: "rest", kind: "long" });
-        return this.ok(call.id, "The party is fully rested: all HP restored.");
+        return this.ok(call.id, "The party is fully rested: all HP, Hit Dice and features restored.");
+      }
+      case "short_rest": {
+        const healed = this.shortRest();
+        s.events.push({ type: "rest", kind: "short", healed });
+        const hp = s.party.map((c) => `${c.name} ${s.characters[c.id]!.hp}/${s.characters[c.id]!.maxHp} HP`).join(", ");
+        return this.ok(call.id, `Short rest done. Short-rest features restored. Party now: ${hp}.`);
       }
     }
+  }
+
+  /** Spend Hit Dice (die + Con each) until healed or out of dice, and refill short-rest features. */
+  private shortRest(): Record<string, number> {
+    const healed: Record<string, number> = {};
+    for (const data of this.state.party) {
+      const c = this.state.characters[data.id]!;
+      const built = buildCharacter(this.content, data);
+      const cls = this.content.classes.find((x) => x.id === data.class)!;
+      const con = Math.floor((data.abilities.con - 10) / 2);
+      const before = c.hp;
+      while (c.hp > 0 && c.hp < c.maxHp && (c.hitDiceSpent ?? 0) < data.level) {
+        c.hitDiceSpent = (c.hitDiceSpent ?? 0) + 1;
+        c.hp = Math.min(c.maxHp, c.hp + Math.max(1, roll(this.rng, `1d${cls.hitDie}`).total + con));
+      }
+      if (c.hp > before) healed[data.id] = c.hp - before;
+      for (const [id, r] of Object.entries(built.resources)) {
+        if (!c.resources || c.resources[id] === undefined) continue;
+        if (r.recharge === "short") delete c.resources[id];
+        // 2024 Second Wind: a short rest gives back one use.
+        else if (id === "second-wind") c.resources[id] = Math.min(r.max, c.resources[id]! + 1);
+      }
+    }
+    return healed;
   }
 
   private resolveCheck(toolCallId: string, eventId: string, r: CheckRequest): void {
@@ -471,6 +507,10 @@ export class Director {
     for (const [id, hp] of Object.entries(outcome.hp)) {
       const c = s.characters[id];
       if (c) c.hp = Math.max(0, Math.min(c.maxHp, Math.round(hp)));
+    }
+    for (const [id, uses] of Object.entries(outcome.resources ?? {})) {
+      const c = s.characters[id];
+      if (c && uses && typeof uses === "object") c.resources = Object.fromEntries(Object.entries(uses).filter(([, n]) => Number.isInteger(n) && n >= 0));
     }
     for (const [id, n] of Object.entries(outcome.potions ?? {})) {
       if (s.characters[id] && Number.isInteger(n) && n >= 0) this.setPotions(id, Math.min(n, this.potionsOf(id)));

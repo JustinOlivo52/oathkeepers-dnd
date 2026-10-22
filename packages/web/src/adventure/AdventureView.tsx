@@ -260,7 +260,13 @@ function Adventure(props: {
             id: 1,
             startingHp: me.hp,
             potions: potionsOf(hero.id),
-            companions: allies.map((c) => ({ character: c, startingHp: state.characters[c.id]!.hp, potions: potionsOf(c.id) })),
+            ...(me.resources ? { resources: me.resources } : {}),
+            companions: allies.map((c) => ({
+              character: c,
+              startingHp: state.characters[c.id]!.hp,
+              potions: potionsOf(c.id),
+              ...(state.characters[c.id]!.resources ? { resources: state.characters[c.id]!.resources } : {}),
+            })),
           }}
           onFinish={finish}
         />
@@ -604,7 +610,16 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
         </li>
       );
     case "rest":
-      return <li className="chip">Long rest: HP restored</li>;
+      return e.kind === "long" ? (
+        <li className="chip">Long rest: HP, Hit Dice and abilities restored</li>
+      ) : (
+        <li className="chip">
+          Short rest
+          {Object.entries(e.healed ?? {})
+            .map(([id, n]) => ` · ${names(id)} +${n} HP`)
+            .join("")}
+        </li>
+      );
     case "potion":
       return (
         <li className="chip">

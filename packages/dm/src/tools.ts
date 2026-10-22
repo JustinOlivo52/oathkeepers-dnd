@@ -43,6 +43,7 @@ export const TOOL_INPUTS = {
   update_quest: z.object({ title: z.string().min(1), status: z.enum(["active", "completed", "failed"]), notes: z.string() }),
   whisper: z.object({ character_id: z.string(), text: z.string().min(1) }),
   long_rest: z.object({ reason: z.string() }),
+  short_rest: z.object({ reason: z.string() }),
   show_art: z.object({
     kind: z.enum(["scene", "npc"]),
     tags: z.array(z.enum(ALL_ART_TAGS as [ArtTag, ...ArtTag[]])).min(1).max(8),
@@ -168,7 +169,13 @@ export function toolSpecs(monsterIds: string[]): ToolSpec[] {
     },
     {
       name: "long_rest",
-      description: "The party takes a long rest (8 hours somewhere reasonably safe). Restores all HP.",
+      description: "The party takes a long rest (8 hours somewhere reasonably safe). Restores all HP, Hit Dice and every limited feature (spell slots, Rage, and so on).",
+      inputSchema: obj({ reason: str("Where and how they rest.") }),
+    },
+    {
+      name: "short_rest",
+      description:
+        "The party takes a short rest (about an hour of downtime). Each character spends Hit Dice to heal, and short-rest features come back (Second Wind, Action Surge, Channel Divinity, Focus Points).",
       inputSchema: obj({ reason: str("Where and how they rest.") }),
     },
   ];

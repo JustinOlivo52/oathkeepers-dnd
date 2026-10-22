@@ -185,9 +185,22 @@ Playtest round 1 changes:
 - Straight-line movement: among equally cheap routes, paths follow the line to the target (players and monsters)
 - AI companions: choose up to 3 premade companions (Wren Ashdown, halfling rogue; Brother Odric Vale, dwarf paladin; Tamsin Reed, wood elf ranger) or your own saved characters. The DM voices them in the story; rule-based tactics fight for them (Second Wind, potions when badly hurt). They share XP and keep their own HP and potions
 
-Known limits for companions:
-- Only fighter features exist in combat so far; other classes fight with their weapons (no Sneak Attack, Rage or spells yet)
-- Companions of the same class family share a battle sprite (4 hero sprites exist)
+Class features in combat (level 1 to 3, players and AI):
+- Fighter: Second Wind, Action Surge, Improved Critical
+- Rogue: Sneak Attack, Cunning Action (bonus Dash or Disengage), Steady Aim
+- Barbarian: Rage (lasts the whole battle here, simplified), Reckless Attack, Frenzy
+- Paladin: Lay on Hands, Divine Smite (free daily cast, then spell slots; extra vs undead and fiends), Sacred Weapon
+- Ranger: Hunter's Mark (Favored Enemy casts, then slots; concentration; free to move off a fallen target), Colossus Slayer
+- Monk: Martial Arts bonus strike, Flurry of Blows, Patient Defense, Step of the Wind
+- Weapon masteries: Sap, Vex, Slow, Graze, Topple (not yet: Push, Nick, Cleave)
+- Limited uses carry over between battles; short_rest (Hit Dice healing, short-rest features, one Second Wind use) and long_rest refill them
+- AI: heals allies with Lay on Hands, rages, marks the toughest visible enemy, smites with the free cast and on undead, fiends and big targets, aims and sneak attacks, flurries
+- `npm run balance -- 3 goblin-warrior <character-id>` shows which features fired per fight
+
+Not yet:
+- Spells for full casters (Bard, Cleric, Druid, Sorcerer, Warlock, Wizard); Paladin and Ranger only use their slots for Smite and Hunter's Mark
+- Barbarian Danger Sense, Rogue Fast Hands, Monk Deflect Attacks (these need saves, objects or reactions in battle)
+- Companion battle sprites: requested from Codex in batch 2, section 5; the game uses `hero-<character id>` art automatically once it exists
 
 Part 2 (next):
 - Real-key playtest with Claude, then tune the prompt using the eval results

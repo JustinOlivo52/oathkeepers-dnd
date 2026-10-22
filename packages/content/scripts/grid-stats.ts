@@ -1,4 +1,4 @@
-/** Balance check: auto-play Bram vs monsters on generated maps. npm run balance -- [count] [monster-id] */
+/** Balance check: auto-play one character vs monsters on generated maps. npm run balance -- [count] [monster-id] [character-id] */
 import { Combat, EventLog, footprintSquares, generateDungeon, key, runCombat, seededRng } from "@oathkeepers/engine";
 import { buildCharacter, buildMonster, loadContent } from "../src/index.js";
 
@@ -6,11 +6,13 @@ const content = loadContent();
 const goblins = Number(process.argv[2] ?? 3);
 const monsterId = process.argv[3] ?? "goblin-warrior";
 const monster = content.monsters.find((m) => m.id === monsterId)!;
+const hero = content.characters.find((c) => c.id === (process.argv[4] ?? "bram-holloway"))!;
+const used: Record<string, number> = {};
 let wins = 0, hpLost = 0, enemyAttacks = 0, enemyHits = 0, ranged = 0, rounds = 0, oas = 0;
 const N = 300;
 for (let seed = 1; seed <= N; seed++) {
   const gen = generateDungeon(seededRng(seed));
-  const bram = buildCharacter(content, content.characters[0]!);
+  const bram = buildCharacter(content, hero);
   bram.position = gen.partySpawns[0];
   const enemies = Array.from({ length: goblins }, (_, i) => {
     return buildMonster(monster, `g${i}`);
@@ -35,5 +37,10 @@ for (let seed = 1; seed <= N; seed++) {
     if (monster.attacks.some((x) => x.id === a.attackId && x.kind === "ranged")) ranged++;
   }
   oas += combat.log.ofType("reaction").length;
+  for (const e of combat.log.events) {
+    if (e.type !== "feature_used" && e.type !== "extra_damage") continue;
+    const id = e.type === "feature_used" ? e.featureId : `+${e.source}`;
+    if (e.creatureId === bram.id) used[id] = (used[id] ?? 0) + 1;
+  }
 }
-console.log({ monster: monsterId, count: goblins, winRate: wins / N, avgHpLost: hpLost / N, avgRounds: rounds / N, enemyHitRate: enemyHits / enemyAttacks, rangedShare: ranged / enemyAttacks, oasPerFight: oas / N });
+console.log({ hero: hero.id, monster: monsterId, count: goblins, winRate: wins / N, avgHpLost: hpLost / N, avgRounds: rounds / N, enemyHitRate: enemyHits / enemyAttacks, rangedShare: ranged / enemyAttacks, oasPerFight: oas / N, perFight: Object.fromEntries(Object.entries(used).map(([k, v]) => [k, +(v / N).toFixed(2)])) });

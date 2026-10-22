@@ -58,7 +58,7 @@ export type StoryEvent =
   | { type: "npc"; npc: Npc }
   | { type: "quest"; quest: Quest }
   | { type: "whisper"; characterId: string; text: string }
-  | { type: "rest"; kind: "long" }
+  | { type: "rest"; kind: "long" | "short"; healed?: Record<string, number> }
   | { type: "potion"; characterId: string; faces: number[]; healed: number; hp: number }
   | { type: "session_end"; session: number; recap: string }
   | { type: "session_start"; session: number }
@@ -77,6 +77,10 @@ export interface CharacterState {
   maxHp: number;
   xp: number;
   inventory: { name: string; quantity: number }[];
+  /** Uses left of limited features (Rage, spell slots, Second Wind...). Missing: full. Refilled by rests. */
+  resources?: Record<string, number>;
+  /** Hit Dice spent on short rests; all come back on a long rest. */
+  hitDiceSpent?: number;
 }
 
 export interface AdventureState {

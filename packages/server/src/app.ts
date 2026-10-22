@@ -155,7 +155,8 @@ function parseOutcome(body: Record<string, unknown>): CombatOutcome {
   const defeated = Array.isArray(body.defeated) ? body.defeated.filter((x): x is string => typeof x === "string") : undefined;
   if (!winner || !Number.isFinite(rounds) || !hp || !defeated) throw new HttpError(400, "Send winner, rounds, hp and defeated");
   const potions = body.potions && typeof body.potions === "object" ? (body.potions as Record<string, number>) : undefined;
-  return { winner, rounds, hp, defeated, ...(potions ? { potions } : {}) };
+  const resources = body.resources && typeof body.resources === "object" ? (body.resources as Record<string, Record<string, number>>) : undefined;
+  return { winner, rounds, hp, defeated, ...(potions ? { potions } : {}), ...(resources ? { resources } : {}) };
 }
 
 async function readJson(req: IncomingMessage): Promise<Record<string, unknown>> {

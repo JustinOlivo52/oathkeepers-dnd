@@ -33,6 +33,9 @@ export interface Attack {
   attackBonus: number;
   /** Dice notation including modifiers, e.g. "1d8+5". */
   damage: string;
+  /** Ability the attack uses: Rage boosts Strength attacks, Sneak Attack needs finesse or ranged. */
+  ability?: Ability;
+  finesse?: boolean;
   damageType: DamageType;
   reachFt?: number;
   rangeFt?: [normal: number, long: number];
@@ -54,6 +57,8 @@ export interface ActiveEffect {
   sourceId: string;
   /** Effect is removed when the source creature starts its next turn. */
   expiresAtTurnStartOf?: string;
+  /** Effect is removed after this many ends of the source creature's turns (2 = the end of its next turn). */
+  turnEndsLeft?: number;
 }
 
 export interface Creature {
@@ -94,6 +99,8 @@ export interface Creature {
   dead: boolean;
   /** XP awarded for defeating this creature (monsters). */
   xp: number;
+  /** Monster type, e.g. "undead" or "fiend" (Divine Smite deals more to these). */
+  creatureType?: string;
   /** Square on the battle map, when fighting on a grid. For larger creatures, the top-left square. */
   position?: Point;
   /** Squares per side on the grid: 1 for Medium and smaller, 2 for Large, 3 Huge, 4 Gargantuan. */

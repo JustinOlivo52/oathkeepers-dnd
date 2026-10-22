@@ -1,4 +1,4 @@
-import { Combat, POTION } from "./combat.js";
+import { Combat, POTION, SPELL_SLOT } from "./combat.js";
 import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
 import { explore, footprintDistanceFt, key, samePoint, straightPath, type Point } from "./grid.js";
 
@@ -21,6 +21,7 @@ export function takeAutoTurn(combat: Combat): void {
       combat.secondWind(me.id);
     }
     if (turn.bonusActions > 0 && (me.resources[POTION]?.current ?? 0) > 0 && me.hp <= me.maxHp / 3) combat.drinkPotion(me.id);
+    openingMoves(combat, me);
     if (me.features.includes("action-surge") && (me.resources["action-surge"]?.current ?? 0) > 0 && combat.round === 1) {
       combat.actionSurge(me.id);
     }
@@ -43,14 +44,17 @@ function gridTurn(combat: Combat, me: Creature): void {
 
   // Wounded skirmishers step back and shoot.
   if (ranged && me.hp <= me.maxHp / 2 && combat.enemiesWithin(me, 5).length) {
-    if (turn.bonusActions > 0 && me.features.includes("nimble-escape")) combat.disengage(me.id, { bonus: true });
+    if (turn.bonusActions > 0 && (me.features.includes("nimble-escape") || me.features.includes("cunning-action"))) combat.disengage(me.id, { bonus: true });
     retreat(combat, me);
   }
 
   for (let guard = 0; guard < 8 && turn.actions > 0 && !combat.isOver && isConscious(me); guard++) {
     const option = bestAttackNow(combat, me);
     if (option) {
-      combat.attack(me.id, option.target.id, option.attack.id);
+      const melee = option.attack.kind === "melee" && (combat.distanceBetween(me, option.target) ?? 0) <= (option.attack.reachFt ?? 5);
+      if (melee && option.attack.ability === "str" && !turn.attacked && me.features.includes("reckless-attack")) combat.recklessAttack(me.id);
+      if (!melee && !turn.moved && !turn.attacked && turn.bonusActions > 0 && me.features.includes("steady-aim")) combat.steadyAim(me.id);
+      combat.attack(me.id, option.target.id, option.attack.id, { smite: melee && wantsSmite(me, option.target) });
       continue;
     }
     if (turn.movementFt >= 5 && approach(combat, me)) continue;
@@ -62,6 +66,48 @@ function gridTurn(combat: Combat, me: Creature): void {
     }
     break;
   }
+  monkBonus(combat, me);
+}
+
+/** Bonus Action and free openers: healing hands, Rage, Hunter's Mark, Sacred Weapon. */
+function openingMoves(combat: Combat, me: Creature): void {
+  const turn = combat.turn!;
+  const left = (id: string) => (me.resources[id]?.current ?? 0) > 0;
+  const enemies = combat.enemiesOf(me).filter(isConscious);
+  if (!enemies.length) return;
+  if (turn.bonusActions > 0 && me.features.includes("lay-on-hands") && left("lay-on-hands")) {
+    const hurt = [...combat.creatures.values()]
+      .filter((c) => c.side === me.side && !c.dead && c.hp <= c.maxHp / 3 && (c.id === me.id || (combat.distanceBetween(me, c) ?? Infinity) <= 5))
+      .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+    if (hurt) combat.layOnHands(me.id, hurt.id);
+  }
+  if (turn.bonusActions > 0 && me.features.includes("rage") && left("rage") && !me.effects.some((e) => e.id === "raging")) combat.rage(me.id);
+  if (turn.bonusActions > 0 && me.features.includes("favored-enemy") && combat.map) {
+    const marked = combat.markedBy(me.id);
+    const canMove = marked && !isConscious(marked) && me.effects.some((e) => e.id === "concentrating");
+    if ((!marked && left("favored-enemy")) || canMove) {
+      const target = enemies.filter((e) => combat.canSee(me, e) && (combat.distanceBetween(me, e) ?? 0) <= 90).sort((a, b) => b.hp - a.hp)[0];
+      if (target) combat.huntersMark(me.id, target.id);
+    }
+  }
+  if (turn.actions > 0 && me.features.includes("sacred-weapon") && left("channel-divinity") && !me.effects.some((e) => e.id === "sacred-weapon")) combat.sacredWeapon(me.id);
+}
+
+/** Paladins smite with the free daily cast, and spend slots on undead, fiends and big targets. */
+function wantsSmite(me: Creature, target: Creature): boolean {
+  if (!me.features.includes("paladins-smite")) return false;
+  if ((me.resources["paladins-smite"]?.current ?? 0) > 0) return true;
+  return (me.resources[SPELL_SLOT]?.current ?? 0) > 0 && (target.creatureType === "undead" || target.creatureType === "fiend" || target.hp >= 20);
+}
+
+/** Monks follow up the Attack action with Flurry of Blows (if they have Focus) or a Martial Arts strike. */
+function monkBonus(combat: Combat, me: Creature): void {
+  const turn = combat.turn;
+  if (!turn || combat.isOver || !isConscious(me) || turn.bonusActions < 1 || !turn.attacked || !me.features.includes("martial-arts")) return;
+  const target = combat.enemiesOf(me).filter((e) => isConscious(e) && combat.checkAttack(me.id, e.id, "unarmed-strike").ok).sort((a, b) => a.hp - b.hp)[0];
+  if (!target) return;
+  if (me.features.includes("monks-focus") && (me.resources["focus-points"]?.current ?? 0) > 0) combat.flurryOfBlows(me.id, target.id);
+  else combat.martialArts(me.id, target.id);
 }
 
 /** Best attack available from where the creature stands: melee first, weakest target first. */

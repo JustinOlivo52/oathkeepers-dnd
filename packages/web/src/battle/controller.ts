@@ -27,7 +27,16 @@ function readAutoEnd(): boolean {
 export type Mode =
   | { kind: "move" }
   | { kind: "attack"; attackId: string }
-  | { kind: "confirm"; attackId: string; targetId: string };
+  | { kind: "confirm"; attackId: string; targetId: string }
+  /** Pick who a feature is used on: an ally (Lay on Hands) or an enemy (Hunter's Mark, monk strikes). */
+  | { kind: "feature"; feature: TargetedFeature };
+
+export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows";
+export const TARGETS_ALLY: Record<TargetedFeature, boolean> = { "lay-on-hands": true, "hunters-mark": false, "martial-arts": false, "flurry-of-blows": false };
+
+export type QuickAction =
+  | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
+  | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind";
 
 export interface LogLine {
   text: string;
@@ -43,6 +52,10 @@ export class BattleController {
   hover: Point | null = null;
   busy = false;
   lastRoll: string | null = null;
+  /** Why the last click didn't work, for the HUD. */
+  message: string | null = null;
+  /** Paladin: cast Divine Smite on the next melee hit. */
+  smiteNext = false;
   lines: LogLine[] = [];
   /** End the player's turn on its own once they have nothing left to do. Remembered per browser. */
   autoEnd = readAutoEnd();
@@ -96,6 +109,24 @@ export class BattleController {
     if (!this.canAct) return;
     const me = this.active!;
     const target = this.combat.occupant(p);
+    this.message = null;
+
+    if (this.mode.kind === "feature") {
+      const feature = this.mode.feature;
+      if (!target || (TARGETS_ALLY[feature] ? target.side !== me.side : target.side === me.side)) {
+        this.mode = { kind: "move" };
+        this.refresh();
+        return;
+      }
+      this.mode = { kind: "move" };
+      await this.tryRules(() => {
+        if (feature === "lay-on-hands") this.combat.layOnHands(me.id, target.id);
+        else if (feature === "hunters-mark") this.combat.huntersMark(me.id, target.id);
+        else if (feature === "martial-arts") this.combat.martialArts(me.id, target.id);
+        else this.combat.flurryOfBlows(me.id, target.id);
+      });
+      return;
+    }
 
     if (target && target.side !== me.side) {
       const attackId = this.mode.kind === "move" ? this.defaultAttack(me, target)?.id : this.mode.attackId;
@@ -121,6 +152,29 @@ export class BattleController {
     return (options.find((o) => o.check.mode !== "disadvantage" && o.a.id !== "unarmed-strike") ?? options[0])?.a;
   }
 
+  /** Start picking a target for a feature; clicking it again cancels. */
+  selectFeature(feature: TargetedFeature): void {
+    if (!this.canAct) return;
+    this.message = null;
+    this.mode = this.mode.kind === "feature" && this.mode.feature === feature ? { kind: "move" } : { kind: "feature", feature };
+    this.refresh();
+  }
+
+  toggleSmite(): void {
+    this.smiteNext = !this.smiteNext;
+    this.emit();
+  }
+
+  /** Run a rules call; if the rules refuse it, show why instead of failing. */
+  private async tryRules(fn: () => void): Promise<void> {
+    try {
+      fn();
+    } catch (e) {
+      this.message = e instanceof Error ? e.message : String(e);
+    }
+    await this.flush();
+  }
+
   selectAttack(attackId: string): void {
     if (!this.canAct) return;
     this.mode = this.mode.kind === "attack" && this.mode.attackId === attackId ? { kind: "move" } : { kind: "attack", attackId };
@@ -137,23 +191,39 @@ export class BattleController {
     if (!this.canAct || this.mode.kind !== "confirm") return;
     const { attackId, targetId } = this.mode;
     const before = this.combat.log.events.length;
-    this.combat.attack(this.active!.id, targetId, attackId);
+    const smite = this.smiteNext;
+    this.message = null;
+    this.combat.attack(this.active!.id, targetId, attackId, { smite });
     this.mode = { kind: "move" };
     this.lastRoll = this.describeRoll(this.combat.log.events.slice(before));
     await this.flush();
   }
 
-  async act(action: "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"): Promise<void> {
+  async act(action: QuickAction): Promise<void> {
     if (!this.canAct) return;
     const id = this.active!.id;
-    if (action === "dash") this.combat.dash(id);
-    else if (action === "disengage") this.combat.disengage(id);
-    else if (action === "dodge") this.combat.dodge(id);
-    else if (action === "second-wind") this.combat.secondWind(id);
-    else if (action === "potion") this.combat.drinkPotion(id);
-    else this.combat.actionSurge(id);
+    const c = this.combat;
     this.mode = { kind: "move" };
-    await this.flush();
+    this.message = null;
+    await this.tryRules(() => {
+      const run: Record<QuickAction, () => void> = {
+        dash: () => c.dash(id),
+        disengage: () => c.disengage(id),
+        dodge: () => c.dodge(id),
+        "second-wind": () => c.secondWind(id),
+        "action-surge": () => c.actionSurge(id),
+        potion: () => c.drinkPotion(id),
+        "bonus-dash": () => c.dash(id, { bonus: true }),
+        "bonus-disengage": () => c.disengage(id, { bonus: true }),
+        rage: () => c.rage(id),
+        reckless: () => c.recklessAttack(id),
+        "steady-aim": () => c.steadyAim(id),
+        "sacred-weapon": () => c.sacredWeapon(id),
+        "patient-defense": () => c.patientDefense(id),
+        "step-of-the-wind": () => c.stepOfTheWind(id),
+      };
+      run[action]();
+    });
   }
 
   async endTurn(): Promise<void> {
@@ -161,6 +231,8 @@ export class BattleController {
     clearTimeout(this.autoEndTimer);
     this.mode = { kind: "move" };
     this.lastRoll = null;
+    this.message = null;
+    this.smiteNext = false;
     this.combat.endTurn();
     await this.flush();
     await this.runOthers();
@@ -197,6 +269,7 @@ export class BattleController {
       this.mode.kind === "confirm" ? this.combat.get(this.mode.targetId) : this.hover ? this.combat.occupant(this.hover) : undefined;
     if (!target || target.side === me.side) return null;
     const mode = this.mode;
+    if (mode.kind === "feature") return null;
     const attack = mode.kind === "move" ? (this.defaultAttack(me, target) ?? me.attacks[0]) : me.attacks.find((a) => a.id === mode.attackId);
     if (!attack) return null;
     return { target, attackName: attack.name, check: this.combat.checkAttack(me.id, target.id, attack.id), bonus: attack.attackBonus };
@@ -240,6 +313,11 @@ export class BattleController {
         o.path = this.combat.pathTo(me.id, this.hover);
         o.danger = this.dangerAlong(me, o.path);
       }
+    } else if (this.mode.kind === "feature") {
+      const ally = TARGETS_ALLY[this.mode.feature];
+      o.targets = [...this.combat.creatures.values()]
+        .filter((c) => !c.dead && c.position && (ally ? c.side === me.side : c.side !== me.side))
+        .map((c) => ({ point: c.position!, size: c.footprint ?? 1, ok: true }));
     } else {
       const attackId = this.mode.attackId;
       o.targets = this.combat

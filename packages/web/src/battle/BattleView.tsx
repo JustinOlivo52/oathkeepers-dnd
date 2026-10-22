@@ -2,10 +2,10 @@ import "./art.css";
 import { battlefieldOptions, loadBattlefield, placeCreatures, spriteFor } from "./battlefields";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
-import { Combat, EventLog, isConscious, mathRng, POTION, type Creature } from "@oathkeepers/engine";
+import { Combat, EventLog, isConscious, mathRng, POTION, type Creature, type TurnState } from "@oathkeepers/engine";
 import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
 import { content, signed } from "../content";
-import { BattleController } from "./controller";
+import { BattleController, TARGETS_ALLY, type QuickAction, type TargetedFeature } from "./controller";
 import { BattleScene } from "./scene";
 
 const PALETTE_BY_CLASS: Record<string, "martial" | "expert" | "arcane" | "divine"> = {
@@ -41,12 +41,16 @@ export interface BattleSetup {
   potions?: number;
   /** Party members run by the computer. */
   companions?: CompanionSetup[];
+  /** The hero's uses left of limited features. Missing: full. */
+  resources?: Record<string, number>;
 }
 
 export interface CompanionSetup {
   character: CharacterData;
   startingHp?: number;
   potions?: number;
+  /** Uses left of limited features from earlier battles. Missing: full. */
+  resources?: Record<string, number>;
 }
 
 export interface BattleOutcome {
@@ -57,18 +61,21 @@ export interface BattleOutcome {
   defeated: string[];
   /** Potions of Healing each party member has left. */
   potions: Record<string, number>;
+  /** Uses left of each party member's limited features. */
+  resources: Record<string, Record<string, number>>;
 }
 
-function buildPartyMember({ character, startingHp, potions = 0 }: CompanionSetup): Creature {
+function buildPartyMember({ character, startingHp, potions = 0, resources = {} }: CompanionSetup): Creature {
   const c = buildCharacter(content, character);
+  for (const [id, left] of Object.entries(resources)) if (c.resources[id]) c.resources[id]!.current = Math.max(0, Math.min(c.resources[id]!.max, left));
   if (startingHp !== undefined) c.hp = Math.max(1, Math.min(c.maxHp, startingHp));
   if (potions > 0) c.resources[POTION] = { current: potions, max: potions, recharge: "long" };
   return c;
 }
 
-function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions, companions = [] }: BattleSetup) {
+function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions, resources, companions = [] }: BattleSetup) {
   const field = loadBattlefield(battlefield, seed);
-  const hero = buildPartyMember({ character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}) });
+  const hero = buildPartyMember({ character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}), ...(resources ? { resources } : {}) });
   const allies = companions.map(buildPartyMember);
   const party = [hero, ...allies];
   const taken = new Set<string>();
@@ -93,8 +100,64 @@ function createBattle({ character, enemies: groups, seed, battlefield, startingH
     hp: Object.fromEntries(party.map((c) => [c.id, c.hp])),
     defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
     potions: Object.fromEntries(party.map((c) => [c.id, c.resources[POTION]?.current ?? 0])),
+    resources: Object.fromEntries(
+      party.map((c) => [c.id, Object.fromEntries(Object.entries(c.resources).filter(([id]) => id !== POTION).map(([id, r]) => [id, r.current]))]),
+    ),
   });
   return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
+}
+
+interface FeatureButton {
+  id: string;
+  label: string;
+  title: string;
+  disabled: boolean;
+  action?: QuickAction;
+  target?: TargetedFeature;
+  toggle?: true;
+  on?: boolean;
+}
+
+/** Buttons for the class features this creature has, greyed out when they can't be used right now. */
+function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext = false): FeatureButton[] {
+  const has = (f: string) => me.features.includes(f);
+  const uses = (r: string) => me.resources[r]?.current ?? 0;
+  const bonus = turn.bonusActions > 0;
+  const raging = me.effects.some((e) => e.id === "raging");
+  const out: FeatureButton[] = [];
+  const add = (b: FeatureButton) => out.push(b);
+  if (has("second-wind")) add({ id: "sw", label: `Second Wind (${uses("second-wind")})`, title: "Bonus Action: regain 1d10 + level HP", disabled: !bonus || !uses("second-wind") || me.hp === me.maxHp, action: "second-wind" });
+  if (has("action-surge")) add({ id: "as", label: `Action Surge (${uses("action-surge")})`, title: "One extra action this turn", disabled: !uses("action-surge") || turn.usedThisTurn.includes("action-surge"), action: "action-surge" });
+  if (has("rage")) add({ id: "rage", label: raging ? "Raging" : `Rage (${uses("rage")})`, title: "Bonus Action: resist weapon damage, +2 Strength damage", disabled: raging || !bonus || !uses("rage"), action: "rage", on: raging });
+  if (has("reckless-attack")) {
+    const reckless = me.effects.some((e) => e.id === "reckless");
+    add({ id: "reck", label: "Reckless Attack", title: "Advantage on Strength melee attacks this turn; attacks against you have advantage until your next turn", disabled: reckless || !!turn.attacked || turn.actions < 1, action: "reckless", on: reckless });
+  }
+  if (has("cunning-action")) {
+    add({ id: "cd", label: "Dash (bonus)", title: "Cunning Action: Dash as a Bonus Action", disabled: !bonus, action: "bonus-dash" });
+    add({ id: "cdis", label: "Disengage (bonus)", title: "Cunning Action: Disengage as a Bonus Action", disabled: !bonus, action: "bonus-disengage" });
+  }
+  if (has("steady-aim")) add({ id: "aim", label: "Steady Aim", title: "Bonus Action if you haven't moved: advantage on your next attack, speed becomes 0", disabled: !bonus || !!turn.moved, action: "steady-aim" });
+  if (has("lay-on-hands")) add({ id: "loh", label: `Lay on Hands (${uses("lay-on-hands")} HP)`, title: "Bonus Action: heal yourself or an ally within 5 ft", disabled: !bonus || !uses("lay-on-hands"), target: "lay-on-hands" });
+  if (has("paladins-smite")) {
+    const casts = uses("paladins-smite") + uses("spell-slot-1");
+    add({ id: "smite", label: `Smite on hit: ${smiteNext ? "on" : "off"} (${casts})`, title: "Divine Smite: after a melee hit, Bonus Action and a spell slot for 2d8 radiant (3d8 vs undead and fiends)", disabled: !casts || !bonus, toggle: true, on: smiteNext && bonus });
+  }
+  if (has("sacred-weapon")) {
+    const blessed = me.effects.some((e) => e.id === "sacred-weapon");
+    add({ id: "sacred", label: blessed ? "Weapon blessed" : `Sacred Weapon (${uses("channel-divinity")})`, title: "Channel Divinity: add Charisma to your attack rolls for the battle", disabled: blessed || turn.actions < 1 || !uses("channel-divinity"), action: "sacred-weapon", on: blessed });
+  }
+  if (has("favored-enemy")) {
+    const marked = combat.markedBy(me.id);
+    add({ id: "hm", label: `Hunter's Mark (${uses("favored-enemy")}${uses("spell-slot-1") ? ` +${uses("spell-slot-1")} slots` : ""})`, title: `Bonus Action: your hits on the target deal 1d6 force${marked ? `. Now marked: ${marked.name}` : ""}`, disabled: !bonus || (!uses("favored-enemy") && !uses("spell-slot-1") && !(marked && marked.dead)), target: "hunters-mark" });
+  }
+  if (has("martial-arts")) add({ id: "ma", label: "Bonus Strike", title: "Martial Arts: an Unarmed Strike as a Bonus Action after you attack", disabled: !bonus || !turn.attacked, target: "martial-arts" });
+  if (has("monks-focus")) {
+    add({ id: "fob", label: `Flurry of Blows (${uses("focus-points")})`, title: "1 Focus Point: two Unarmed Strikes as a Bonus Action after you attack", disabled: !bonus || !turn.attacked || !uses("focus-points"), target: "flurry-of-blows" });
+    add({ id: "pd", label: "Patient Defense", title: "1 Focus Point: Disengage and Dodge as a Bonus Action", disabled: !bonus || !uses("focus-points"), action: "patient-defense" });
+    add({ id: "sotw", label: "Step of the Wind", title: "1 Focus Point: Disengage and Dash as a Bonus Action", disabled: !bonus || !uses("focus-points"), action: "step-of-the-wind" });
+  }
+  return out;
 }
 
 export function BattleView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void }) {
@@ -218,7 +281,6 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
   const confirmTarget = mode.kind === "confirm" ? combat.get(mode.targetId) : undefined;
   const confirmAttack = mode.kind === "confirm" ? me.attacks.find((a) => a.id === mode.attackId) : undefined;
   const heroSheet = `hero-${PALETTE_BY_CLASS[setup.character.class] ?? "martial"}`;
-  const has = (f: string) => me.features.includes(f) && (me.resources[f]?.current ?? 0) > 0;
 
   return (
     <div className="battle-layout">
@@ -287,7 +349,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
               {me.attacks.map((a) => (
                 <button
                   key={a.id}
-                  className={mode.kind !== "move" && mode.attackId === a.id ? "on" : ""}
+                  className={(mode.kind === "attack" || mode.kind === "confirm") && mode.attackId === a.id ? "on" : ""}
                   disabled={turn.actions < 1}
                   onClick={() => controller.selectAttack(a.id)}
                   title={`${signed(a.attackBonus)} to hit, ${a.damage} ${a.damageType}`}
@@ -304,16 +366,17 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
               <button disabled={turn.actions < 1} onClick={() => controller.act("dodge")}>
                 Dodge
               </button>
-              {me.features.includes("second-wind") && (
-                <button disabled={turn.bonusActions < 1 || !has("second-wind") || me.hp === me.maxHp} onClick={() => controller.act("second-wind")}>
-                  Second Wind ({me.resources["second-wind"]?.current ?? 0})
+              {featureButtons(me, turn, combat, controller.smiteNext).map((b) => (
+                <button
+                  key={b.id}
+                  className={`feature ${b.on ? "on" : ""}`}
+                  disabled={b.disabled}
+                  title={b.title}
+                  onClick={() => (b.target ? controller.selectFeature(b.target) : b.toggle ? controller.toggleSmite() : controller.act(b.action!))}
+                >
+                  {b.label}
                 </button>
-              )}
-              {me.features.includes("action-surge") && (
-                <button disabled={!has("action-surge") || turn.usedThisTurn.includes("action-surge")} onClick={() => controller.act("action-surge")}>
-                  Action Surge ({me.resources["action-surge"]?.current ?? 0})
-                </button>
-              )}
+              ))}
               {(me.resources[POTION]?.max ?? 0) > 0 && (
                 <button
                   disabled={turn.bonusActions < 1 || !(me.resources[POTION]!.current > 0) || me.hp === me.maxHp}
@@ -357,6 +420,8 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
           </p>
         )}
         {warning && <p className="warning">{warning}</p>}
+        {controller.message && <p className="warning">{controller.message}</p>}
+        {mode.kind === "feature" && <p className="preview">{TARGETS_ALLY[mode.feature] ? "Click yourself or an ally." : "Click an enemy."} Click the button again to cancel.</p>}
         {controller.lastRoll && <p className="roll">{controller.lastRoll}</p>}
 
         <details className="battle-journal"><summary>Battle journal <span>{controller.lines.length} events</span></summary><ol className="log battle-log">

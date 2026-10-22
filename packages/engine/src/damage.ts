@@ -16,7 +16,8 @@ export interface DamageOptions {
 export function adjustForDefenses(target: Creature, amount: number, type: DamageType): number {
   if (target.immunities.includes(type)) return 0;
   let result = amount;
-  if (target.resistances.includes(type)) result = Math.floor(result / 2);
+  const raging = target.effects.some((e) => e.id === "raging") && (type === "bludgeoning" || type === "piercing" || type === "slashing");
+  if (target.resistances.includes(type) || raging) result = Math.floor(result / 2);
   if (target.vulnerabilities.includes(type)) result *= 2;
   return result;
 }

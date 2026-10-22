@@ -99,7 +99,8 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
   const attacks: Attack[] = data.equipment.weapons.map((weaponId) => {
     const w = lookup(content.weapons, weaponId, "weapon");
     const finesse = w.properties.includes("finesse") || (has("martial-arts") && isMonkWeapon(w));
-    const abilityMod = w.kind === "ranged" ? dex : finesse ? Math.max(mod("str"), dex) : mod("str");
+    const ability = w.kind === "ranged" || (finesse && dex > mod("str")) ? "dex" : "str";
+    const abilityMod = mod(ability);
     let attackBonus = abilityMod + (proficientWith(w) ? pb : 0);
     if (data.fightingStyle === "archery" && w.kind === "ranged") attackBonus += 2;
     const hasMastery = has("weapon-mastery") && data.weaponMasteries.includes(w.id);
@@ -110,6 +111,8 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
       attackBonus,
       damage: withModifier(w.damage, abilityMod),
       damageType: w.damageType,
+      ability,
+      ...(w.properties.includes("finesse") ? { finesse: true } : {}),
       ...(w.kind === "melee" ? { reachFt: w.properties.includes("reach") ? 10 : 5 } : {}),
       ...(w.rangeFt ? { rangeFt: w.rangeFt } : {}),
       ...(hasMastery ? { mastery: w.mastery } : {}),
@@ -125,6 +128,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     damage: has("martial-arts") ? withModifier("1d6", unarmedMod) : String(Math.max(1, 1 + unarmedMod)),
     damageType: "bludgeoning",
     reachFt: 5,
+    ability: has("martial-arts") && dex > mod("str") ? "dex" : "str",
   });
 
   let initiativeBonus = dex;
@@ -156,7 +160,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     immunities: [],
     conditions: [],
     features,
-    resources: classResources(cls, data.level),
+    resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level) },
     effects: [],
     deathSaves: { successes: 0, failures: 0 },
     stable: false,
@@ -205,7 +209,22 @@ export function buildMonster(data: MonsterData, instanceId: string, name = data.
     stable: false,
     dead: false,
     xp: data.xp,
+    creatureType: data.type,
   };
+}
+
+/** Level 1 spell slots for half casters (2024 Paladin and Ranger table), by class level 1 to 5+. */
+const HALF_CASTER_SLOTS = [0, 2, 2, 3, 3, 4];
+
+/** Uses that come from features rather than the class resource table. */
+function featureResources(cls: ClassData, features: string[], level: number): Record<string, Resource> {
+  const out: Record<string, Resource> = {};
+  const long = (n: number): Resource => ({ current: n, max: n, recharge: "long" });
+  if (features.includes("lay-on-hands")) out["lay-on-hands"] = long(5 * level);
+  if (features.includes("paladins-smite")) out["paladins-smite"] = long(1);
+  if (features.includes("favored-enemy")) out["favored-enemy"] = long(level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2);
+  if (cls.spellcasting?.progression === "half") out["spell-slot-1"] = long(HALF_CASTER_SLOTS[Math.min(level, 5)]!);
+  return out;
 }
 
 function classResources(cls: ClassData, level: number): Record<string, Resource> {
