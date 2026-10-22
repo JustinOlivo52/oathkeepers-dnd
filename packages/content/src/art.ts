@@ -59,6 +59,8 @@ export const ArtEntrySchema = z.object({
       rulesSize: rulesSize.default("medium"),
       footprint: z.object({ width: z.number().int().min(1).max(4), height: z.number().int().min(1).max(4) }).default({ width: 1, height: 1 }),
       anchor: z.object({ x: z.number().int().min(0), y: z.number().int().min(0) }).optional(),
+      /** Pixels from the feet to the top of the idle pose; places the health bar just above the head. */
+      visibleHeight: z.number().int().positive().optional(),
     })
     .optional(),
   /** Still image shown in the story: portraits, scene backdrops. */

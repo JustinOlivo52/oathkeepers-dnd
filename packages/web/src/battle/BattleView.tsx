@@ -1,8 +1,8 @@
 import "./art.css";
-import { abbeyBattlefield } from "./abbey";
+import { battlefieldOptions, loadBattlefield, placeCreatures, spriteFor } from "./battlefields";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
-import { Combat, EventLog, explore, generateDungeon, isConscious, key, mathRng, seededRng, type Creature, type GridMap, type Point } from "@oathkeepers/engine";
+import { Combat, EventLog, isConscious, mathRng, type Creature } from "@oathkeepers/engine";
 import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController } from "./controller";
@@ -33,7 +33,8 @@ export interface BattleSetup {
   enemies: EnemyGroup[];
   seed: number;
   id: number;
-  battlefield: "abbey" | "generated";
+  /** "abbey", "generated", or a board id from the art library. */
+  battlefield: string;
   /** HP to start at, when the hero is already hurt. Defaults to full. */
   startingHp?: number;
 }
@@ -46,61 +47,47 @@ export interface BattleOutcome {
   defeated: string[];
 }
 
-/** Spawn squares for `count` creatures: the map's own spawn points first, then the nearest open squares. */
-function spawnSquares(map: GridMap, preferred: Point[], count: number, taken: Set<string>): Point[] {
-  const out: Point[] = [];
-  const take = (p: Point) => {
-    if (out.length >= count || taken.has(key(p)) || !map.walkable(p)) return;
-    out.push(p);
-    taken.add(key(p));
-  };
-  preferred.forEach(take);
-  if (out.length < count && preferred[0]) {
-    [...explore(map, preferred[0], (p) => map.walkable(p)).values()].sort((a, b) => a.cost - b.cost).forEach((n) => take(n.point));
-  }
-  return out;
-}
-
 function createBattle({ character, enemies: groups, seed, battlefield, startingHp }: BattleSetup) {
-  const gen = battlefield === "abbey" ? abbeyBattlefield() : generateDungeon(seededRng(seed));
+  const field = loadBattlefield(battlefield, seed);
   const hero = buildCharacter(content, character);
   if (startingHp !== undefined) hero.hp = Math.max(1, Math.min(hero.maxHp, startingHp));
   const taken = new Set<string>();
-  hero.position = spawnSquares(gen.map, gen.partySpawns, 1, taken)[0];
+  placeCreatures(field.map, [hero], field.partySpawns, [], taken);
   const monsterOf = new Map<string, string>();
   const list = groups.flatMap((g) => Array.from({ length: g.count }, () => g.monsterId));
-  const squares = spawnSquares(gen.map, gen.enemySpawns, list.length, taken);
   const enemies = list.map((monsterId, i) => {
     const data = content.monsters.find((m) => m.id === monsterId) ?? content.monsters[0]!;
     const id = `${data.id}-${i + 1}`;
     monsterOf.set(id, data.id);
     const label = list.length > 1 ? `${data.name.replace(/ Warrior$/, "")} ${i + 1}` : data.name;
-    const m = buildMonster(data, id, label);
-    m.position = squares[i];
-    return m;
+    return buildMonster(data, id, label);
   });
-  const combat = new Combat([hero, ...enemies], mathRng, new EventLog(), gen.map);
-  const sheetFor = (c: Creature) => (c.side === "enemies" ? "goblin" : `hero-${PALETTE_BY_CLASS[character.class] ?? "martial"}`) as never;
+  // Big creatures first, so they get the roomy spawn points.
+  placeCreatures(field.map, [...enemies].sort((a, b) => (b.footprint ?? 1) - (a.footprint ?? 1)), field.enemySpawns, field.largeEnemySpawns, taken);
+  const combat = new Combat([hero, ...enemies], mathRng, new EventLog(), field.map);
+  const archetype = PALETTE_BY_CLASS[character.class] ?? "martial";
+  const sheetFor = (c: Creature) => spriteFor(c, archetype, monsterOf.get(c.id));
   const outcome = (): BattleOutcome => ({
     winner: combat.winner ?? "enemies",
     rounds: combat.round,
     hp: { [hero.id]: hero.hp },
     defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
   });
-  return { combat, map: gen.map, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
+  return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
 }
 
 export function BattleView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void }) {
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
   const [goblins, setGoblins] = useState(3);
+  const [monsterId, setMonsterId] = useState("goblin-warrior");
   const [seedText, setSeedText] = useState("");
-  const [battlefield, setBattlefield] = useState<"abbey" | "generated">("abbey");
+  const [battlefield, setBattlefield] = useState("abbey");
   const [setup, setSetup] = useState<BattleSetup | null>(null);
   const battleId = useRef(0);
 
   const start = () => {
     const seed = seedText ? Number(seedText) : Math.floor(Math.random() * 1_000_000);
-    setSetup({ character, enemies: [{ monsterId: "goblin-warrior", count: goblins }], seed, id: ++battleId.current, battlefield });
+    setSetup({ character, enemies: [{ monsterId, count: goblins }], seed, id: ++battleId.current, battlefield });
   };
 
   return (
@@ -119,9 +106,28 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
             ))}
           </select>
         </label>
-        <label>Battlefield<select value={battlefield} onChange={(e) => setBattlefield(e.target.value as "abbey" | "generated")}><option value="abbey">Abbey ruins</option><option value="generated">Generated dungeon</option></select></label>
         <label>
-          Goblins
+          Battlefield
+          <select value={battlefield} onChange={(e) => setBattlefield(e.target.value)}>
+            {battlefieldOptions().map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Enemy
+          <select value={monsterId} onChange={(e) => setMonsterId(e.target.value)}>
+            {content.monsters.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          How many
           <select value={goblins} onChange={(e) => setGoblins(Number(e.target.value))}>
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <option key={n}>{n}</option>
@@ -158,7 +164,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
   useEffect(() => controller.subscribe(rerender), [controller]);
 
   useEffect(() => {
-    const scene = new BattleScene(map, [...combat.creatures.values()], battle.sheetFor, {
+    const scene = new BattleScene(map, [...combat.creatures.values()], battle.sheetFor, battle.tileset, {
       onHover: (p) => controller.onHover(p),
       onClick: (p) => void controller.onClick(p),
       onLoadError: () => setBoardError("Artwork could not load. Reload the page to try again."),
@@ -210,7 +216,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
             const c = combat.get(id);
             return (
               <li key={id} className={`${turn?.creatureId === id ? "now" : ""} ${c.dead ? "dead" : ""} ${c.side}`}>
-                <span className="initiative-avatar" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${c.side === "enemies" ? "goblin" : heroSheet}.png)` }} />
+                <span className="initiative-avatar" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/${battle.sheetFor(c).file})` }} />
                 <span>{c.name}{turn?.creatureId === id ? " · Active" : ""}</span>
                 <span className="hp">
                   <span style={{ width: `${(100 * c.hp) / c.maxHp}%` }} />

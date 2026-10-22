@@ -47,7 +47,10 @@ class DemoConversation implements DmConversation {
           "Rain needles across the frontier road as the walls of Thornwatch rise out of the mist: a timber palisade, a squat stone keep, and the glow of a tavern sign shaped like a lantern. A cart lies overturned in the ditch ahead, one wheel still turning. Muddy tracks, small and clawed, lead off into the brambles.",
           "Somewhere beyond the hedge, something giggles. What do you do?",
         ],
-        [call("set_scene", { name: "The Thornwatch Road", description: "A muddy frontier road outside the town of Thornwatch." })],
+        [
+          call("set_scene", { name: "The Thornwatch Road", description: "A muddy frontier road outside the town of Thornwatch." }),
+          call("show_art", { kind: "scene", tags: ["forest", "road", "day"], npc_name: null, caption: "The forest road outside Thornwatch" }),
+        ],
       );
     }
     if (/\b(sneak|hide|creep)\b/.test(action)) {
@@ -75,10 +78,24 @@ class DemoConversation implements DmConversation {
         call("start_combat", { enemies: [{ monster_id: "goblin-warrior", count: 3 }], battlefield: "abbey", description: "Goblins ambush the party beside the wrecked cart." }),
       ]);
     }
-    if (/\brest\b/.test(action)) {
-      return turn(["You find a dry corner of the Lantern tavern, and sleep comes easily."], [call("long_rest", { reason: "A night at the Lantern tavern in Thornwatch" })]);
+    if (/\b(wolf|wolves|hunt|howl)\b/.test(action)) {
+      return turn(["A howl answers from the treeline. Two grey shapes slip between the pines, circling."], [
+        call("start_combat", { enemies: [{ monster_id: "wolf", count: 2 }], battlefield: "forest", description: "Wolves stalk the party on the forest road." }),
+      ]);
     }
-    return turn([`The rain keeps falling. (Demo DM: try "sneak", "search", "talk", "fight" or "rest".)`]);
+    if (/\b(rest|tavern|inn)\b/.test(action)) {
+      return turn(
+        ["The Lantern is loud and warm. A red-braided dwarf behind the bar waves you over. \"Hilde Brassbelly. Room's five silver, stew's free if you tell me where you've been.\""],
+        [
+          call("set_scene", { name: "The Lantern", description: "Thornwatch's busiest tavern." }),
+          call("show_art", { kind: "scene", tags: ["tavern", "night", "festive"], npc_name: null, caption: "The Lantern, late evening" }),
+          call("update_npc", { name: "Hilde Brassbelly", description: "Cheerful dwarf who runs the Lantern tavern.", attitude: "friendly", notes: "Hears every rumor in Thornwatch." }),
+          call("show_art", { kind: "npc", tags: ["innkeeper", "dwarf", "woman"], npc_name: "Hilde Brassbelly", caption: "Hilde Brassbelly, keeper of the Lantern" }),
+          call("long_rest", { reason: "A night at the Lantern tavern in Thornwatch" }),
+        ],
+      );
+    }
+    return turn([`The rain keeps falling. (Demo DM: try "sneak", "search", "talk", "fight", "hunt wolves" or "rest at the tavern".)`]);
   }
 
   async sendToolResults(results: ToolResult[]): Promise<ProviderTurn> {
@@ -90,7 +107,7 @@ class DemoConversation implements DmConversation {
       persuasion: ["Skrit shrugs. \"Big boss in the old abbey says take carts. Boss pays in shinies.\"", "Skrit spits. \"No shinies, no talk.\" He vanishes into the hedge."],
     };
     if (/won in/.test(text)) {
-      return turn(["The last goblin falls. In the quiet you hear only the rain, and far off, a bell from the ruined abbey on the hill."], [
+      return turn(["The last of them falls. In the quiet you hear only the rain, and far off, a bell from the ruined abbey on the hill."], [
         { id: `demo-${++this.s.calls}`, name: "update_quest", input: { title: "The Abbey Bell", status: "active", notes: "Goblins raiding the Thornwatch road answer to a boss in the ruined abbey." } },
       ]);
     }

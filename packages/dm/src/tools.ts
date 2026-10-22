@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ABILITIES, SKILLS, type Skill } from "@oathkeepers/engine";
+import { ALL_ART_TAGS, type ArtTag } from "@oathkeepers/content";
 import type { ToolSpec } from "./provider.js";
 
 const SKILL_NAMES = Object.keys(SKILLS) as [Skill, ...Skill[]];
@@ -26,7 +27,7 @@ export const TOOL_INPUTS = {
   }),
   start_combat: z.object({
     enemies: z.array(z.object({ monster_id: z.string(), count: z.number().int().min(1).max(8) })).min(1),
-    battlefield: z.enum(["abbey", "dungeon"]),
+    battlefield: z.enum(["abbey", "forest", "dungeon"]),
     description: z.string(),
   }),
   grant_xp: z.object({ amount: z.number().int().min(1).max(5000), reason: z.string() }),
@@ -42,6 +43,12 @@ export const TOOL_INPUTS = {
   update_quest: z.object({ title: z.string().min(1), status: z.enum(["active", "completed", "failed"]), notes: z.string() }),
   whisper: z.object({ character_id: z.string(), text: z.string().min(1) }),
   long_rest: z.object({ reason: z.string() }),
+  show_art: z.object({
+    kind: z.enum(["scene", "npc"]),
+    tags: z.array(z.enum(ALL_ART_TAGS as [ArtTag, ...ArtTag[]])).min(1).max(8),
+    npc_name: z.string().nullable(),
+    caption: z.string(),
+  }),
 } as const;
 
 export type ToolName = keyof typeof TOOL_INPUTS;
@@ -92,7 +99,11 @@ export function toolSpecs(monsterIds: string[]): ToolSpec[] {
           description: "Enemy groups.",
           items: obj({ monster_id: { type: "string", enum: monsterIds }, count: int("How many, 1 to 8.") }),
         },
-        battlefield: { type: "string", enum: ["abbey", "dungeon"], description: "abbey: open ruined abbey. dungeon: rooms and corridors." },
+        battlefield: {
+          type: "string",
+          enum: ["abbey", "forest", "dungeon"],
+          description: "abbey: open ruined abbey. forest: woodland road with tree cover. dungeon: rooms and corridors (caves, crypts, buildings).",
+        },
         description: str("One sentence setting the scene for the battle."),
       }),
     },
@@ -139,6 +150,21 @@ export function toolSpecs(monsterIds: string[]): ToolSpec[] {
       name: "whisper",
       description: "Tell one player something privately (only they see it), such as something only their character notices.",
       inputSchema: obj({ character_id: str("Who hears it."), text: str("The private message.") }),
+    },
+    {
+      name: "show_art",
+      description:
+        "Show a picture next to your narration: a scene when the party arrives somewhere new, or a portrait when they meet someone who matters. Describe what you want with tags; the game picks matching art from its library. For an NPC, pass npc_name so they keep the same portrait later. If nothing matches you'll be told; carry on without a picture.",
+      inputSchema: obj({
+        kind: { type: "string", enum: ["scene", "npc"], description: "scene: a location. npc: a person or creature portrait." },
+        tags: {
+          type: "array",
+          items: { type: "string", enum: ALL_ART_TAGS },
+          description: "What the picture should show: place, time of day, weather, mood, and for people their role, species and presentation (man, woman, androgynous).",
+        },
+        npc_name: { anyOf: [{ type: "string" }, { type: "null" }], description: "The NPC's name for portraits, otherwise null." },
+        caption: str("A short caption, e.g. 'The Lantern, late evening'."),
+      }),
     },
     {
       name: "long_rest",

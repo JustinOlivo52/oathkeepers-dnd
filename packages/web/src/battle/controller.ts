@@ -193,7 +193,7 @@ export class BattleController {
   private overlay(): Overlay {
     const me = this.active;
     if (!me || this.combat.isOver) return {};
-    const o: Overlay = { active: me.position!, ...(this.hover ? { hover: this.hover } : {}) };
+    const o: Overlay = { active: me.position!, activeSize: me.footprint ?? 1, ...(this.hover ? { hover: this.hover } : {}) };
     if (!this.canAct) return o;
 
     if (this.mode.kind === "move") {
@@ -207,7 +207,7 @@ export class BattleController {
       const attackId = this.mode.attackId;
       o.targets = this.combat
         .enemiesOf(me)
-        .map((e) => ({ point: e.position!, ok: this.combat.turn!.actions > 0 && this.combat.checkAttack(me.id, e.id, attackId).ok }));
+        .map((e) => ({ point: e.position!, size: e.footprint ?? 1, ok: this.combat.turn!.actions > 0 && this.combat.checkAttack(me.id, e.id, attackId).ok }));
       if (this.mode.kind === "confirm") {
         o.targets = o.targets.filter((t) => samePoint(t.point, this.combat.get((this.mode as { targetId: string }).targetId).position!));
       }

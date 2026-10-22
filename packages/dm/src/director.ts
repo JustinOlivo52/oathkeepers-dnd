@@ -5,7 +5,7 @@ import {
   SKILLS,
   type Rng,
 } from "@oathkeepers/engine";
-import { buildCharacter, type CharacterData, type Content } from "@oathkeepers/content";
+import { buildCharacter, isEncounterReady, pickArt, type CharacterData, type Content } from "@oathkeepers/content";
 import type { DmConversation, DmProvider, ProviderTurn, ToolCall } from "./provider.js";
 import { stateBlock, systemPrompt } from "./prompt.js";
 import { levelForXp, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
@@ -44,7 +44,7 @@ export class Director {
     private readonly options: { canSpend?: () => boolean; onCost?: (usd: number) => void } = {},
     saved?: unknown,
   ) {
-    const tools = toolSpecs(content.monsters.map((m) => m.id));
+    const tools = toolSpecs(encounterMonsters(content));
     this.conversation = saved
       ? provider.restore(systemPrompt(), tools, saved)
       : provider.start(systemPrompt(), tools);
@@ -236,8 +236,9 @@ export class Director {
         return;
       }
       case "start_combat": {
-        const i = input as { enemies: { monster_id: string; count: number }[]; battlefield: "abbey" | "dungeon"; description: string };
-        const unknown = i.enemies.filter((e) => !this.content.monsters.some((m) => m.id === e.monster_id));
+        const i = input as { enemies: { monster_id: string; count: number }[]; battlefield: "abbey" | "forest" | "dungeon"; description: string };
+        const ready = encounterMonsters(this.content);
+        const unknown = i.enemies.filter((e) => !ready.includes(e.monster_id));
         if (unknown.length) return this.error(call.id, `Unknown monsters: ${unknown.map((e) => e.monster_id).join(", ")}.`);
         if (s.pending.some((p) => p.type === "combat")) return this.error(call.id, "A battle is already starting.");
         const enemies: EnemyGroup[] = i.enemies.map((e) => ({ monsterId: e.monster_id, count: e.count }));
@@ -277,7 +278,8 @@ export class Director {
       }
       case "update_npc": {
         const npc = input as AdventureState["npcs"][string];
-        s.npcs[npc.name] = { ...npc };
+        const artId = s.npcs[npc.name]?.artId;
+        s.npcs[npc.name] = { ...npc, ...(artId ? { artId } : {}) };
         s.events.push({ type: "npc", npc: { ...npc } });
         return this.ok(call.id, "NPC recorded.");
       }
@@ -294,6 +296,30 @@ export class Director {
         if (!character(i.character_id)) return this.error(call.id, `No party member with id "${i.character_id}".`);
         s.events.push({ type: "whisper", characterId: i.character_id, text: i.text });
         return this.ok(call.id, "Delivered privately.");
+      }
+      case "show_art": {
+        const i = input as { kind: "scene" | "npc"; tags: string[]; npc_name: string | null; caption: string };
+        const known = i.npc_name ? s.npcs[i.npc_name]?.artId : undefined;
+        const recent = s.events.filter((e) => e.type === "art").slice(-6).map((e) => (e as { artId: string }).artId);
+        const art = known
+          ? this.content.art.find((a) => a.id === known)
+          : pickArt(this.content.art, { kind: i.kind, tags: i.tags, exclude: recent }, this.rng);
+        if (!art?.image) return this.error(call.id, "No matching picture in the library. Continue without one.");
+        if (i.npc_name) {
+          const npc = s.npcs[i.npc_name];
+          if (npc) npc.artId = art.id;
+          else s.npcs[i.npc_name] = { name: i.npc_name, description: "", attitude: "neutral", notes: "", artId: art.id };
+        }
+        s.events.push({
+          type: "art",
+          artId: art.id,
+          kind: i.kind,
+          image: art.image,
+          title: art.title,
+          caption: i.caption,
+          ...(i.npc_name ? { npcName: i.npc_name } : {}),
+        });
+        return this.ok(call.id, `Showing: ${art.title}.`);
       }
       case "long_rest": {
         for (const c of Object.values(s.characters)) c.hp = c.maxHp;
@@ -366,4 +392,11 @@ export class Director {
     const after = levelForXp(c.xp);
     if (after > before) this.state.events.push({ type: "level_up", characterId, level: after });
   }
+}
+
+/** Monsters the DM may put in a fight: rules done, art reviewed and hooked up. */
+export function encounterMonsters(content: Content): string[] {
+  return content.monsters
+    .filter((m) => content.art.some((a) => a.kind === "monster" && a.monsterId === m.id && isEncounterReady(a)))
+    .map((m) => m.id);
 }

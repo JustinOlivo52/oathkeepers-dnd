@@ -6,6 +6,8 @@ export interface Npc {
   description: string;
   attitude: "friendly" | "neutral" | "hostile";
   notes: string;
+  /** Portrait from the art library, kept so the NPC always looks the same. */
+  artId?: string;
 }
 
 export interface Quest {
@@ -57,9 +59,10 @@ export type StoryEvent =
   | { type: "quest"; quest: Quest }
   | { type: "whisper"; characterId: string; text: string }
   | { type: "rest"; kind: "long" }
+  | { type: "art"; artId: string; kind: "scene" | "npc"; image: string; title: string; caption: string; npcName?: string }
   | { type: "notice"; text: string };
 
-export type Battlefield = "abbey" | "dungeon";
+export type Battlefield = "abbey" | "forest" | "dungeon";
 
 /** Waiting on the player: a roll to click, or a battle to fight. */
 export type Pending =

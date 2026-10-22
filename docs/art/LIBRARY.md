@@ -95,7 +95,7 @@ Frames go left to right in one row. Characters **face right** (the game mirrors 
 | `kind` | all | `hero`, `monster`, `npc`, `scene`, `board`, `tileset` |
 | `title` | all | Short human description |
 | `tags` | all | From the vocabulary below only; 3 to 8 per entry |
-| `sprite` | hero, monster | `{ file, frameWidth, frameHeight, size: "medium" or "large" }` |
+| `sprite` | hero, monster | `{ file, frameWidth, frameHeight, size, rulesSize, footprint, anchor, visibleHeight }`; `visibleHeight` is pixels from the feet to the top of the idle pose |
 | `monsterId` | monster | The bestiary id, for example `goblin-warrior` |
 | `image` | npc, scene | Path under `assets/` |
 | `board` | board | Path to the board JSON |

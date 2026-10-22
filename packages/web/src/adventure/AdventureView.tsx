@@ -195,7 +195,7 @@ function Adventure(props: {
           setup={{
             character: hero,
             enemies: pending.enemies,
-            battlefield: pending.battlefield === "abbey" ? "abbey" : "generated",
+            battlefield: { abbey: "abbey", forest: "board-forest-road", dungeon: "generated" }[pending.battlefield] ?? "generated",
             seed: Math.floor(Math.random() * 1_000_000),
             id: 1,
             startingHp: me.hp,
@@ -327,12 +327,18 @@ function Adventure(props: {
         <Section title="People met">
           {Object.values(state.npcs).length ? (
             <ul>
-              {Object.values(state.npcs).map((n) => (
-                <li key={n.name}>
-                  <strong>{n.name}</strong> <span className="tag">{n.attitude}</span>
-                  <p className="muted small">{n.description}</p>
-                </li>
-              ))}
+              {Object.values(state.npcs).map((n) => {
+                const portrait = n.artId ? content.art.find((a) => a.id === n.artId)?.image : undefined;
+                return (
+                  <li key={n.name} className="npc-row">
+                    {portrait && <img src={`${import.meta.env.BASE_URL}assets/${portrait}`} alt="" />}
+                    <div>
+                      <strong>{n.name}</strong> <span className="tag">{n.attitude}</span>
+                      {n.description && <p className="muted small">{n.description}</p>}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="muted small">No one yet.</p>
@@ -461,5 +467,17 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
       return <li className="chip">Long rest: HP restored</li>;
     case "notice":
       return <li className="system">{e.text}</li>;
+    case "art":
+      return e.kind === "scene" ? (
+        <li className="art-scene">
+          <img src={`${import.meta.env.BASE_URL}assets/${e.image}`} alt={e.title} loading="lazy" />
+          <span>{e.caption}</span>
+        </li>
+      ) : (
+        <li className="art-portrait">
+          <img src={`${import.meta.env.BASE_URL}assets/${e.image}`} alt={e.title} loading="lazy" />
+          <span>{e.caption}</span>
+        </li>
+      );
   }
 }

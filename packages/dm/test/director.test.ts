@@ -199,3 +199,47 @@ describe("DemoProvider", () => {
     expect(state.quests[0]?.title).toBe("The Abbey Bell");
   });
 });
+
+describe("art", () => {
+  it("shows a matching scene and keeps an NPC's portrait the same later", async () => {
+    const { director, state, provider } = setup([
+      turn([], [
+        call("a", "show_art", { kind: "scene", tags: ["tavern", "night"], npc_name: null, caption: "The Lantern" }),
+        call("b", "update_npc", { name: "Hilde", description: "Dwarf innkeeper", attitude: "friendly", notes: "" }),
+        call("c", "show_art", { kind: "npc", tags: ["innkeeper", "dwarf", "woman"], npc_name: "Hilde", caption: "Hilde" }),
+      ]),
+      turn(["Welcome."]),
+      turn([], [call("d", "show_art", { kind: "npc", tags: ["guard"], npc_name: "Hilde", caption: "Hilde again" })]),
+      turn(["Still Hilde."]),
+    ]);
+    await director.act(bram.id, "enter the tavern");
+    const art = state.events.filter((e) => e.type === "art");
+    expect(art).toEqual([
+      expect.objectContaining({ kind: "scene", artId: "scene-tavern-night", image: "library/scenes/scene-tavern-night.webp" }),
+      expect.objectContaining({ kind: "npc", artId: "npc-innkeeper-dwarf", npcName: "Hilde" }),
+    ]);
+    expect(state.npcs.Hilde?.artId).toBe("npc-innkeeper-dwarf");
+    await director.act(bram.id, "talk to Hilde");
+    expect(state.events.filter((e) => e.type === "art").at(-1)).toMatchObject({ artId: "npc-innkeeper-dwarf" });
+    expect((provider.sent[1] as ToolResult[]).every((r) => !r.isError)).toBe(true);
+  });
+
+  it("tells the DM when nothing in the library fits", async () => {
+    const { director, provider } = setup([
+      turn([], [call("a", "show_art", { kind: "scene", tags: ["swamp", "snow"], npc_name: null, caption: "" })]),
+      turn(["Moving on."]),
+    ]);
+    await director.act(bram.id, "go");
+    expect((provider.sent[1] as ToolResult[])[0]).toMatchObject({ isError: true, content: expect.stringMatching(/No matching picture/) });
+  });
+
+  it("only offers monsters whose rules and art are both ready", async () => {
+    const { encounterMonsters } = await import("../src/index.js");
+    const ready = encounterMonsters(content);
+    expect(ready).toContain("goblin-warrior");
+    for (const id of ready) {
+      const art = content.art.find((a) => a.kind === "monster" && a.monsterId === id)!;
+      expect([art.artStatus, art.mechanicsStatus, art.integrationStatus]).toEqual(["ready", "ready", "ready"]);
+    }
+  });
+});

@@ -1,21 +1,52 @@
 import Phaser from "phaser";
 import { key, type Creature, type GridMap, type LoggedEvent, type Point } from "@oathkeepers/engine";
-import manifest from "../../public/assets/sprites/sprites.json";
 
 /** One square is still 5 ft. Art resolution is independent of rules coordinates. */
 export const TILE = 96;
-const FOOT_ORIGIN = 166 / 192;
 const BASE = import.meta.env.BASE_URL;
 
-type SheetName = keyof typeof manifest;
+/** The shared 11-frame animation layout every creature sheet follows (docs/art/LIBRARY.md). */
+const ANIMATIONS: Record<string, { frames: number[]; fps: number; loop: boolean }> = {
+  idle: { frames: [0, 1], fps: 2, loop: true },
+  walk: { frames: [2, 3, 4, 5], fps: 8, loop: true },
+  attack: { frames: [6, 7, 8, 0], fps: 8, loop: false },
+  hit: { frames: [9, 0], fps: 6, loop: false },
+  down: { frames: [10], fps: 1, loop: false },
+};
+
+/** A creature's sprite sheet from the art catalog. */
+export interface SpriteSheetInfo {
+  key: string;
+  /** Path under assets/. */
+  file: string;
+  frameWidth: number;
+  frameHeight: number;
+  /** Where the feet are in each frame. */
+  anchor: { x: number; y: number };
+  /** Grid squares per side. */
+  footprint: number;
+  /** How far above the feet to draw the health bar. */
+  hpOffset: number;
+}
+
+/** Terrain art for the board. */
+export interface TilesetInfo {
+  key: string;
+  file: string;
+  frameSize: number;
+  named: { floor: number[]; wall: number; rubble: number };
+  /** The abbey's hand-placed braziers and columns along walls. */
+  abbeyProps: boolean;
+}
 
 export interface Overlay {
   active?: Point;
+  activeSize?: number;
   reach?: Point[];
   path?: Point[];
   /** Path squares where moving provokes an opportunity attack. */
   danger?: Point[];
-  targets?: { point: Point; ok: boolean }[];
+  targets?: { point: Point; ok: boolean; size?: number }[];
   hover?: Point;
 }
 
@@ -27,7 +58,7 @@ export interface SceneCallbacks {
 
 interface Token {
   sprite: Phaser.GameObjects.Sprite;
-  sheet: SheetName;
+  sheet: SpriteSheetInfo;
   hpBar: Phaser.GameObjects.Graphics;
   creature: Creature;
   /** HP and death as of the last event played, not the engine's latest state. */
@@ -35,7 +66,8 @@ interface Token {
   dead: boolean;
 }
 
-const center = (p: Point) => ({ x: p.x * TILE + TILE / 2, y: p.y * TILE + TILE * 0.78 });
+/** Where a creature's feet stand: the middle of the bottom edge of its footprint. */
+const center = (p: Point, size = 1) => ({ x: p.x * TILE + (size * TILE) / 2, y: (p.y + size) * TILE - TILE * 0.22 });
 const TEXT_STYLE = { fontFamily: "system-ui, sans-serif", fontSize: "18px", fontStyle: "bold", stroke: "#111", strokeThickness: 4 };
 
 /** Draws the map and creatures, and plays engine log events as animations. Holds no game rules. */
@@ -52,7 +84,8 @@ export class BattleScene extends Phaser.Scene {
   constructor(
     private readonly map: GridMap,
     private readonly creatures: Creature[],
-    private readonly sheetFor: (c: Creature) => SheetName,
+    private readonly sheetFor: (c: Creature) => SpriteSheetInfo,
+    private readonly tileset: TilesetInfo,
     private readonly callbacks: SceneCallbacks,
   ) {
     super("battle");
@@ -60,21 +93,19 @@ export class BattleScene extends Phaser.Scene {
 
   preload(): void {
     this.load.on("loaderror", () => this.callbacks.onLoadError?.());
-    this.load.spritesheet("props", `${BASE}assets/sprites/props.png`, { frameWidth: 128, frameHeight: 128 });
-    for (const [name, sheet] of Object.entries(manifest)) {
-      this.load.spritesheet(name, `${BASE}assets/sprites/${sheet.image}`, {
-        frameWidth: sheet.frameWidth,
-        frameHeight: sheet.frameHeight,
-      });
+    if (this.tileset.abbeyProps) this.load.spritesheet("props", `${BASE}assets/sprites/props.png`, { frameWidth: 128, frameHeight: 128 });
+    this.load.spritesheet(this.tileset.key, `${BASE}assets/${this.tileset.file}`, { frameWidth: this.tileset.frameSize, frameHeight: this.tileset.frameSize });
+    for (const sheet of this.sheets()) {
+      this.load.spritesheet(sheet.key, `${BASE}assets/${sheet.file}`, { frameWidth: sheet.frameWidth, frameHeight: sheet.frameHeight });
     }
   }
 
   create(): void {
-    for (const [name, sheet] of Object.entries(manifest)) {
-      for (const [anim, def] of Object.entries(sheet.animations as Record<string, { frames: number[]; fps: number; loop: boolean }>)) {
+    for (const sheet of this.sheets()) {
+      for (const [anim, def] of Object.entries(ANIMATIONS)) {
         this.anims.create({
-          key: `${name}:${anim}`,
-          frames: this.anims.generateFrameNumbers(name, { frames: def.frames }),
+          key: `${sheet.key}:${anim}`,
+          frames: this.anims.generateFrameNumbers(sheet.key, { frames: def.frames }),
           frameRate: def.fps,
           repeat: def.loop ? -1 : 0,
         });
@@ -143,6 +174,11 @@ export class BattleScene extends Phaser.Scene {
     this.ready();
   }
 
+  private sheets(): SpriteSheetInfo[] {
+    const byKey = new Map(this.creatures.map((c) => this.sheetFor(c)).map((s) => [s.key, s] as const));
+    return [...byKey.values()];
+  }
+
   zoomBy(amount: number): void {
     this.cameras.main.setZoom(Phaser.Math.Clamp(this.cameras.main.zoom + amount, 0.35, 1.6));
   }
@@ -159,7 +195,7 @@ export class BattleScene extends Phaser.Scene {
     const camera = this.cameras.main;
     camera.setZoom(Math.max(0.9, camera.zoom));
     const token = this.tokens.get(hero.id);
-    const point = token?.sprite ?? center(hero.position);
+    const point = token?.sprite ?? center(hero.position, hero.footprint ?? 1);
     camera.centerOn(point.x, point.y - TILE / 2);
   }
 
@@ -171,7 +207,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private drawMap(): void {
-    const named = manifest.tiles.named;
+    const named = this.tileset.named;
+    const tiles = this.tileset.key;
     const hash = (x: number, y: number) => ((x * 73856093) ^ (y * 19349663)) >>> 0;
     for (let y = 0; y < this.map.height; y++)
       for (let x = 0; x < this.map.width; x++) {
@@ -185,8 +222,8 @@ export class BattleScene extends Phaser.Scene {
           frame = named.wall;
         } else if (t === "difficult") frame = named.rubble;
         else frame = named.floor[hash(x, y) % named.floor.length]!;
-        this.add.image(x * TILE, y * TILE, "tiles", frame).setOrigin(0).setScale(TILE / manifest.tiles.frameWidth);
-        if (t === "wall" && this.map.walkable({ x, y: y + 1 })) {
+        this.add.image(x * TILE, y * TILE, tiles, frame).setOrigin(0).setScale(TILE / this.tileset.frameSize);
+        if (this.tileset.abbeyProps && t === "wall" && this.map.walkable({ x, y: y + 1 })) {
           const value = hash(x, y);
           if (value % 5 === 0 || (x > 0 && !this.map.walkable({ x: x - 1, y } ) && value % 3 === 0)) {
             const propFrame = value % 5 === 0 ? 0 : value % 2 === 0 ? 1 : 3;
@@ -203,10 +240,13 @@ export class BattleScene extends Phaser.Scene {
 
   private addToken(c: Creature): void {
     const sheet = this.sheetFor(c);
-    const { x, y } = center(c.position!);
-    const sprite = this.add.sprite(x, y, sheet, 0).setOrigin(0.5, FOOT_ORIGIN).setDepth(1000 + y);
+    const { x, y } = center(c.position!, sheet.footprint);
+    const sprite = this.add
+      .sprite(x, y, sheet.key, 0)
+      .setOrigin(sheet.anchor.x / sheet.frameWidth, sheet.anchor.y / sheet.frameHeight)
+      .setDepth(1000 + y);
     if (c.side === "enemies") sprite.setFlipX(true);
-    sprite.play(`${sheet}:idle`);
+    sprite.play(`${sheet.key}:idle`);
     // Offset idle animations so creatures don't breathe in sync.
     sprite.anims.setProgress(Math.random());
     const hpBar = this.add.graphics().setDepth(5000);
@@ -217,7 +257,7 @@ export class BattleScene extends Phaser.Scene {
 
   private drawHp(t: Token): void {
     const x = t.sprite.x;
-    const y = t.sprite.y - (t.sheet === "goblin" ? 104 : 138);
+    const y = t.sprite.y - t.sheet.hpOffset;
     const w = 42;
     const ratio = Phaser.Math.Clamp(t.creature.maxHp ? t.hp / t.creature.maxHp : 0, 0, 1);
     t.hpBar.clear();
@@ -229,16 +269,17 @@ export class BattleScene extends Phaser.Scene {
   setOverlay(o: Overlay): void {
     const g = this.overlay.clear();
     const fill = (p: Point, color: number, alpha: number) => g.fillStyle(color, alpha).fillRect(p.x * TILE + 1, p.y * TILE + 1, TILE - 2, TILE - 2);
-    const ring = (p: Point, color: number, width = 3) => g.lineStyle(width, color, 1).strokeRect(p.x * TILE + 2, p.y * TILE + 2, TILE - 4, TILE - 4);
+    const ring = (p: Point, color: number, width = 3, size = 1) =>
+      g.lineStyle(width, color, 1).strokeRect(p.x * TILE + 2, p.y * TILE + 2, size * TILE - 4, size * TILE - 4);
     for (const p of o.reach ?? []) fill(p, 0x529da8, 0.28);
     const danger = new Set((o.danger ?? []).map(key));
     for (const p of o.path ?? []) fill(p, danger.has(key(p)) ? 0xe0603a : 0x7fd0ff, 0.26);
-    for (const t of o.targets ?? []) ring(t.point, t.ok ? 0xe0503a : 0x777777, t.ok ? 3 : 2);
+    for (const t of o.targets ?? []) ring(t.point, t.ok ? 0xe0503a : 0x777777, t.ok ? 3 : 2, t.size ?? 1);
     if (o.active) {
-      ring(o.active, 0xe4bf73, 3);
+      ring(o.active, 0xe4bf73, 3, o.activeSize ?? 1);
       const nextCell = key(o.active);
       if (this.cameraReady && this.activeCell !== nextCell) {
-        const point = center(o.active);
+        const point = center(o.active, o.activeSize ?? 1);
         this.cameras.main.pan(point.x, point.y - TILE / 2, 240, "Sine.easeInOut");
       }
       this.activeCell = nextCell;
@@ -257,14 +298,14 @@ export class BattleScene extends Phaser.Scene {
       case "move": {
         const t = this.tokens.get(e.creatureId)!;
         t.hpBar.clear();
-        t.sprite.play(`${t.sheet}:walk`);
+        t.sprite.play(`${t.sheet.key}:walk`);
         for (const step of e.path) {
-          const { x, y } = center(step);
+          const { x, y } = center(step, t.sheet.footprint);
           if (x !== t.sprite.x) t.sprite.setFlipX(x < t.sprite.x);
           await this.tween({ targets: t.sprite, x, y, duration: 200 });
           t.sprite.setDepth(1000 + y);
         }
-        t.sprite.play(`${t.sheet}:idle`);
+        t.sprite.play(`${t.sheet.key}:idle`);
         this.drawHp(t);
         return;
       }
@@ -274,7 +315,7 @@ export class BattleScene extends Phaser.Scene {
         a.sprite.setFlipX(d.sprite.x < a.sprite.x);
         const attack = a.creature.attacks.find((x) => x.id === e.attackId);
         const ranged = Math.abs(a.sprite.x - d.sprite.x) > TILE * 1.5 || Math.abs(a.sprite.y - d.sprite.y) > TILE * 1.5;
-        a.sprite.play(`${a.sheet}:attack`);
+        a.sprite.play(`${a.sheet.key}:attack`);
         if (ranged) await this.projectile(a.sprite, d.sprite, attack?.kind === "ranged" ? 0xd9c7a0 : 0xb0b8c0);
         else await this.lunge(a.sprite, d.sprite);
         this.float(d.sprite, e.critical ? "CRIT!" : e.hit ? `${e.roll.total}` : "Miss", e.critical ? "#ffd84a" : e.hit ? "#ffffff" : "#bbbbbb", -18);
@@ -284,7 +325,7 @@ export class BattleScene extends Phaser.Scene {
       case "damage": {
         const t = this.tokens.get(e.targetId)!;
         t.hp = e.hpAfter;
-        if (t.hp > 0) t.sprite.play(`${t.sheet}:hit`).once("animationcomplete", () => t.sprite.play(`${t.sheet}:idle`));
+        if (t.hp > 0) t.sprite.play(`${t.sheet.key}:hit`).once("animationcomplete", () => t.sprite.play(`${t.sheet.key}:idle`));
         t.sprite.setTint(0xff6060);
         this.time.delayedCall(160, () => t.sprite.clearTint());
         this.float(t.sprite, `-${e.amount}`, "#ff7a6a", 6);
@@ -303,7 +344,7 @@ export class BattleScene extends Phaser.Scene {
       case "down":
       case "death": {
         const t = this.tokens.get(e.creatureId)!;
-        t.sprite.play(`${t.sheet}:down`);
+        t.sprite.play(`${t.sheet.key}:down`);
         t.sprite.setDepth(6000);
         if (e.type === "death") t.dead = true;
         if (e.type === "death") this.tweens.add({ targets: t.sprite, alpha: 0.45, duration: 400 });
@@ -314,7 +355,7 @@ export class BattleScene extends Phaser.Scene {
       }
       case "revived": {
         const t = this.tokens.get(e.creatureId)!;
-        t.sprite.play(`${t.sheet}:idle`).setDepth(1000 + t.sprite.y).setAlpha(1);
+        t.sprite.play(`${t.sheet.key}:idle`).setDepth(1000 + t.sprite.y).setAlpha(1);
         return;
       }
       case "reaction":

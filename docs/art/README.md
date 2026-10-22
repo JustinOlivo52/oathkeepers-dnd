@@ -37,6 +37,8 @@ The battle board draws each square at 96 world pixels (`TILE` in `packages/web/s
 
 ## Art library
 
+Batch 1 pilot (5 monsters, 8 portraits, 2 scenes, forest board) is integrated and marked ready in the catalog.
+
 All new art goes into the tagged art library: see [`LIBRARY.md`](LIBRARY.md). Batch 1 brief: [`CODEX_BRIEF_LIBRARY_1.md`](CODEX_BRIEF_LIBRARY_1.md).
 
 ## Requesting new art

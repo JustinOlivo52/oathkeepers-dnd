@@ -38,3 +38,10 @@
 .side-section p { margin: 0; }
 .side-section .completed { opacity: .7; }
 .side-section .failed { opacity: .5; text-decoration: line-through; }
+.feed .art-scene { display: flex; flex-direction: column; gap: 6px; }
+.feed .art-scene img { width: 100%; max-height: 360px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+.feed .art-scene span, .feed .art-portrait span { font: italic 13px Georgia, serif; color: var(--muted); }
+.feed .art-portrait { display: flex; align-items: center; gap: 12px; }
+.feed .art-portrait img { width: 128px; height: 128px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent); }
+.side-section .npc-row { display: flex; gap: 8px; align-items: flex-start; }
+.side-section .npc-row img { width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); flex-shrink: 0; }

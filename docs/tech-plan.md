@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: Phases 1 to 3 done, Phase 4 (AI DM) part 1 done. Companion to `design.md`.
+Status: Phases 1 to 3 done, Phase 4 (AI DM) part 1 done, art library batch 1 integrated. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -181,3 +181,18 @@ Known limits:
 - Combat results are reported by the browser; Phase 6 moves battles to the server for multiplayer
 - Level-up is announced but not applied yet (Phase 5)
 - Only goblins exist as monsters until more content is added
+
+### Art library integration (batch 1)
+
+Done:
+- Large creatures: 2x2 footprints for movement, reach, distance, opportunity attacks, line of sight and placement
+- New rules: prone (standing costs half speed, melee advantage, ranged disadvantage), attack side effects (wolf knockdown), bonus damage (spider poison), Pack Tactics, Undead Fortitude
+- Bestiary: skeleton, zombie, wolf, giant spider, ogre (2024 SRD stat blocks; double-check against the SRD)
+- Battle screen loads monster sprites, tilesets and boards from the art catalog; the forest road board is playable
+- DM tool `show_art`: scenes and portraits picked by tags, NPCs keep their portrait
+- start_combat offers only monsters whose rules and art are both marked ready, and a new forest battlefield
+- Balance (`npm run balance -- <count> <monster>`): Bram alone wins vs 2 wolves 98%, 3 zombies 91%, 1 giant spider 84%, 3 skeletons 71%, 1 ogre 38%
+
+Not yet:
+- Giant spider Web, Spider Climb and Web Walker
+- Monster portraits only appear when the DM asks for them by tags
