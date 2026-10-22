@@ -1,6 +1,6 @@
 import { Combat } from "./combat.js";
 import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
-import { explore, footprintDistanceFt, key, pathFrom, samePoint, type Point } from "./grid.js";
+import { explore, footprintDistanceFt, key, samePoint, straightPath, type Point } from "./grid.js";
 
 /**
  * Rule-based turns for monsters (and auto-play in tests).
@@ -87,24 +87,21 @@ function approach(combat: Combat, me: Creature): boolean {
   const size = footprintOf(me);
   const gap = (at: Point, e: Creature) => footprintDistanceFt(at, size, e.position!, footprintOf(e));
   // Plan the full route ignoring movement limits, then walk as far as this turn allows.
-  const all = explore(
-    map,
-    me.position!,
-    (p) => {
-      const o = combat.occupant(p);
-      return !o || o.side === me.side;
-    },
-    Infinity,
-    size,
-  );
+  const passable = (p: Point) => {
+    const o = combat.occupant(p);
+    return !o || o.side === me.side;
+  };
+  const all = explore(map, me.position!, passable, Infinity, size);
+  // Cheapest square in reach of an enemy; among equals, the one most directly ahead.
+  const crow = (p: Point) => Math.hypot(p.x - me.position!.x, p.y - me.position!.y);
   let best: { point: Point; cost: number } | undefined;
   for (const node of all.values()) {
     if (!samePoint(node.point, me.position!) && !combat.canStandAt(me, node.point)) continue;
     if (!enemies.some((e) => gap(node.point, e) <= reach)) continue;
-    if (!best || node.cost < best.cost) best = { point: node.point, cost: node.cost };
+    if (!best || node.cost < best.cost || (node.cost === best.cost && crow(node.point) < crow(best.point))) best = { point: node.point, cost: node.cost };
   }
   if (!best || samePoint(best.point, me.position!)) return false;
-  const route = pathFrom(all, best.point);
+  const route = straightPath(map, all, me.position!, best.point, passable, size);
   const reachable = combat.reachable(me.id);
   let stop = -1;
   for (let i = 0; i < route.length; i++) if (reachable.has(key(route[i]!))) stop = i;

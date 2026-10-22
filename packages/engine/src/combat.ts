@@ -9,7 +9,7 @@ import {
   footprintNeighbors,
   footprintSquares,
   key,
-  pathFrom,
+  straightPath,
   samePoint,
   type GridMap,
   type PathNode,
@@ -258,7 +258,7 @@ export class Combat {
     if (!nodes.has(key(target)) || (!samePoint(target, c.position!) && !this.canStandAt(c, target))) {
       throw new RulesError("Can't reach that square");
     }
-    return pathFrom(nodes, target);
+    return straightPath(this.requireMap(), nodes, c.position!, target, (p) => this.passableFor(c, p), footprintOf(c));
   }
 
   private exploreFor(c: Creature): Map<string, PathNode> {

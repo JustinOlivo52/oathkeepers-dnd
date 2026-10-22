@@ -148,6 +148,46 @@ export function explore(map: GridMap, start: Point, passable: (p: Point) => bool
   return nodes;
 }
 
+/**
+ * The cheapest path to `target` that stays closest to the straight line from the start.
+ * With 5 ft diagonals many routes cost the same; picking any of them makes creatures walk
+ * all their diagonals first and then turn, which looks like a wide arc. Walking back from the
+ * target, each step takes the equally cheap square nearest the line. The start is not included.
+ */
+export function straightPath(
+  map: GridMap,
+  nodes: Map<string, PathNode>,
+  start: Point,
+  target: Point,
+  passable: (p: Point) => boolean,
+  size = 1,
+): Point[] {
+  const dx = target.x - start.x;
+  const dy = target.y - start.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const offLine = (p: Point) => Math.abs(dx * (p.y - start.y) - dy * (p.x - start.x)) / len;
+  const canStep = (from: Point, to: Point) => footprintNeighbors(map, from, size, (q) => samePoint(q, start) || passable(q)).some((n) => samePoint(n, to));
+  const path: Point[] = [];
+  let cur = nodes.get(key(target));
+  if (!cur) return [];
+  while (!samePoint(cur.point, start)) {
+    path.unshift(cur.point);
+    const here: PathNode = cur;
+    const enter = footprintEnterCost(map, here.point, size);
+    let best: PathNode | undefined;
+    for (const n of footprintNeighbors(map, here.point, size, () => true)) {
+      const node = nodes.get(key(n));
+      if (!node || node.cost + enter !== here.cost || !canStep(node.point, here.point)) continue;
+      if (!best || offLine(node.point) < offLine(best.point)) best = node;
+    }
+    // Shouldn't happen, but never loop forever: fall back to the recorded route.
+    best ??= here.prev ? nodes.get(here.prev) : undefined;
+    if (!best) break;
+    cur = best;
+  }
+  return path;
+}
+
 /** Walk back from a square to the start. The start itself is not included. */
 export function pathFrom(nodes: Map<string, PathNode>, target: Point): Point[] {
   const path: Point[] = [];
