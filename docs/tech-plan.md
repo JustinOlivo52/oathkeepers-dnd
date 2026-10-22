@@ -176,6 +176,13 @@ Part 2 done:
 - Sessions: End session writes a recap with Haiku 5.5 (recap, open threads, NPC notes); the next session starts a fresh conversation with "Story so far" in the prompt, which keeps cost flat as the campaign grows
 - DM quality tests: 6 scenarios (routine action, uncertain climb, fight, unavailable monster, new location, trap) with automatic checks (rolls asked for and waited on, DC kept secret, short replies, valid tools, ready monsters only, scene art, no speaking for the player). `npm run eval:dm` runs them against Claude (about $0.10 to $0.30, capped at $1) and saves a report to `packages/server/data/evals/`
 
+Playtest round 1 changes:
+- The DM narrates the player's own action vividly before the outcome
+- Every character starts with 2 Potions of Healing (2d4 + 2; Bonus Action in battle), drinkable in battle or from the story inventory
+- Auto end turn once no action, movement or useful bonus action is left (Action Surge isn't counted); a checkbox turns it off
+- DM voice: the browser's built-in speech reads narration sentence by sentence as it streams; voice and speed settings; free, quality depends on the device
+- Dev server accepts GitHub Codespaces forwarded ports, for testing away from home
+
 Part 2 (next):
 - Real-key playtest with Claude, then tune the prompt using the eval results
 - AI image generation (only when the library has nothing that fits), with its own budget

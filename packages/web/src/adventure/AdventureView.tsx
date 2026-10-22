@@ -4,6 +4,8 @@ import type { CharacterData } from "@oathkeepers/content";
 import { POTION_ITEM, XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { Battle, type BattleOutcome } from "../battle/BattleView";
+import { narrator } from "./narrator";
+import { VoiceControls } from "./VoiceControls";
 import { findServer, LocalDemoClient, RemoteClient, ServerError, type AdventureSnapshot, type DmClient, type ServerInfo } from "./client";
 
 const SAVED_KEY = "oathkeepers.adventure.v1";
@@ -60,6 +62,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
     setBusy(true);
     setError(null);
     setLive("");
+    narrator.stop();
     try {
       setSnap(await fn());
     } catch (e) {
@@ -69,6 +72,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
         canRetry: status === 502 || status === 0,
       });
     } finally {
+      narrator.finish();
       setBusy(false);
       setLive("");
     }
@@ -77,7 +81,10 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
   const begin = (resume?: SavedRef) => {
     const [mode, provider] = (resume ? `${resume.mode}:${resume.provider}` : choice).split(":") as ["remote" | "local", string];
     const c = clientFor(mode, provider);
-    c.onText = (delta) => setLive((text) => text + delta);
+    c.onText = (delta) => {
+      setLive((text) => text + delta);
+      narrator.feed(delta);
+    };
     setClient(c);
     void run(async () => {
       const s = resume ? await c.resume(resume.id) : await c.start(character);
@@ -236,7 +243,10 @@ function Adventure(props: {
             <p className="eyebrow">{state.title.toUpperCase()}</p>
             <h2>{state.scene.name}</h2>
           </div>
-          <span className="muted small">DM: {client.label}</span>
+          <div className="story-tools">
+            <VoiceControls />
+            <span className="muted small">DM: {client.label}</span>
+          </div>
         </header>
 
         <ol className="feed" ref={feed} aria-live="polite">

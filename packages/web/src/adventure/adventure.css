@@ -50,3 +50,12 @@
 .feed .recap { padding: 12px 14px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 6px; font: 15px/1.6 Georgia, serif; }
 .feed .recap h4 { margin: 0 0 6px; }
 .feed .recap p { margin: 0 0 8px; }
+
+.story-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+.voice-controls { position: relative; display: flex; align-items: center; gap: 8px; }
+.voice-controls > button.on { border-color: var(--accent); color: var(--accent); }
+.voice-settings > summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.voice-settings[open] > :not(summary) { margin-top: 8px; }
+.voice-settings[open] { position: absolute; right: 0; top: 100%; z-index: 5; width: min(320px, calc(100vw - 32px)); padding: 12px; background: var(--panel, #151d20); border: 1px solid var(--border); border-radius: 8px; display: grid; gap: 8px; }
+.voice-settings[open] > summary { margin-bottom: 4px; }
+.voice-settings label { display: grid; gap: 4px; font-size: 13px; }
