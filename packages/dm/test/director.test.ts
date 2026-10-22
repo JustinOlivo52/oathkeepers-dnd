@@ -6,6 +6,7 @@ import {
   BudgetExceededError,
   DemoProvider,
   Director,
+  POTION_ITEM,
   ZERO_USAGE,
   type DmConversation,
   type DmProvider,
@@ -154,7 +155,7 @@ describe("Director", () => {
     ]);
     const events = await director.act(bram.id, "go");
     expect(state.gold).toBe(35);
-    expect(state.characters[bram.id]!.inventory).toEqual([{ name: "Rope", quantity: 3 }]);
+    expect(state.characters[bram.id]!.inventory).toEqual([{ name: POTION_ITEM, quantity: 2 }, { name: "Rope", quantity: 3 }]);
     expect(state.quests).toEqual([{ title: "Find the bell", status: "completed", notes: "Rang it." }]);
     expect(state.npcs.Skrit).toBeDefined();
     expect(events).toContainEqual({ type: "level_up", characterId: bram.id, level: 4 });
@@ -305,5 +306,41 @@ describe("DemoProvider streaming", () => {
     await director.begin((d) => (streamed += d));
     const narration = state.events.filter((e) => e.type === "narration").map((e) => (e as { text: string }).text).join("\n\n");
     expect(streamed).toBe(narration);
+  });
+});
+
+describe("Potions of Healing", () => {
+  const potions = (state: ReturnType<typeof setup>["state"]) => state.characters[bram.id]!.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0;
+
+  it("every character starts with two", () => {
+    expect(potions(setup([]).state)).toBe(2);
+  });
+
+  it("drinking one outside battle heals 2d4 + 2 without calling the DM", () => {
+    const { state, director, provider } = setup([]);
+    state.characters[bram.id]!.hp = 3;
+    const [event] = director.drinkPotion(bram.id);
+    expect(event).toMatchObject({ type: "potion", characterId: bram.id });
+    const hp = state.characters[bram.id]!.hp;
+    expect(hp).toBeGreaterThanOrEqual(7);
+    expect(hp).toBeLessThanOrEqual(13);
+    expect(potions(state)).toBe(1);
+    expect(provider.sent).toEqual([]);
+  });
+
+  it("refuses at full HP or with none left", () => {
+    const { state, director } = setup([]);
+    expect(() => director.drinkPotion(bram.id)).toThrow(AdventureError);
+    state.characters[bram.id]!.hp = 1;
+    state.characters[bram.id]!.inventory = [];
+    expect(() => director.drinkPotion(bram.id)).toThrow(/No Potion/);
+  });
+
+  it("potions drunk in battle are taken off the inventory", async () => {
+    const fightCall = call("f1", "start_combat", { enemies: [{ monster_id: "goblin-warrior", count: 1 }], battlefield: "abbey", description: "Ambush" });
+    const { state, director } = setup([turn(["Goblins!"], [fightCall]), turn(["The goblin falls."])]);
+    await director.act(bram.id, "I walk on");
+    await director.finishCombat({ winner: "party", rounds: 2, hp: { [bram.id]: 10 }, defeated: ["goblin-warrior"], potions: { [bram.id]: 0 } });
+    expect(potions(state)).toBe(0);
   });
 });

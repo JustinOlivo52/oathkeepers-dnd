@@ -42,6 +42,7 @@ export class RulesError extends Error {}
 
 const SAPPED = "sapped";
 const DODGING = "dodging";
+export const POTION = "potion-of-healing";
 
 /**
  * Turn-based combat. The server calls these methods when a player clicks an action,
@@ -357,6 +358,32 @@ export class Combat {
     this.log.push({ type: "feature_used", creatureId: c.id, featureId: "second-wind" });
     const r = roll(this.rng, `1d10+${c.level}`);
     return heal(this.log, c, r.total, r);
+  }
+
+  /** Potion of Healing: Bonus Action to drink, regain 2d4 + 2 HP. Potions are tracked as the "potion-of-healing" resource. */
+  drinkPotion(creatureId: string): number {
+    const c = this.requireActive(creatureId);
+    const turn = this.turn!;
+    if (turn.bonusActions < 1) throw new RulesError(`${c.name} has no bonus action left`);
+    this.spendResource(c, POTION);
+    turn.bonusActions -= 1;
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: POTION });
+    const r = roll(this.rng, "2d4+2");
+    return heal(this.log, c, r.total, r);
+  }
+
+  /**
+   * Whether the active creature can still do anything this turn: an action, a step, or a bonus action
+   * or feature that would help. Used to end a player's turn automatically once nothing is left.
+   */
+  hasOptionsLeft(creatureId: string): boolean {
+    const c = this.requireActive(creatureId);
+    const t = this.turn!;
+    const left = (id: string) => (c.resources[id]?.current ?? 0) > 0;
+    if (t.actions > 0) return true;
+    // Action Surge isn't counted: a fighter saving it would otherwise never have their turn end on its own.
+    if (t.bonusActions > 0 && c.hp < c.maxHp && (left(POTION) || (c.features.includes("second-wind") && left("second-wind")))) return true;
+    return this.map ? [...this.reachable(c.id).keys()].some((k) => k !== key(c.position!)) : false;
   }
 
   /** Fighter: Action Surge. One extra action, no more than once per turn. */

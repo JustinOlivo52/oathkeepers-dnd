@@ -89,7 +89,7 @@ export function createApp(options: AppOptions) {
       persist(id, director);
       return view(director, events);
     }
-    const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/(act|roll|combat|retry|begin|end-session))?$/.exec(path);
+    const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/(act|roll|combat|retry|begin|end-session|potion))?$/.exec(path);
     if (!m) throw new HttpError(404, "Not found");
     const [, id, action] = m as unknown as [string, string, string | undefined];
     const d = directorFor(id);
@@ -103,7 +103,10 @@ export function createApp(options: AppOptions) {
     } else if (action === "roll") events = await d.roll(onText);
     else if (action === "retry") events = await d.retry(onText);
     else if (action === "begin") events = await d.begin(onText);
-    else if (action === "end-session") events = await d.endSession(options.summarizerFor(d.state.provider));
+    else if (action === "potion") {
+      if (typeof body.characterId !== "string") throw new HttpError(400, "Send characterId");
+      events = d.drinkPotion(body.characterId);
+    } else if (action === "end-session") events = await d.endSession(options.summarizerFor(d.state.provider));
     else events = await d.finishCombat(parseOutcome(body), onText);
     persist(id, d);
     return view(d, events);
@@ -148,7 +151,8 @@ function parseOutcome(body: Record<string, unknown>): CombatOutcome {
   const hp = body.hp && typeof body.hp === "object" ? (body.hp as Record<string, number>) : undefined;
   const defeated = Array.isArray(body.defeated) ? body.defeated.filter((x): x is string => typeof x === "string") : undefined;
   if (!winner || !Number.isFinite(rounds) || !hp || !defeated) throw new HttpError(400, "Send winner, rounds, hp and defeated");
-  return { winner, rounds, hp, defeated };
+  const potions = body.potions && typeof body.potions === "object" ? (body.potions as Record<string, number>) : undefined;
+  return { winner, rounds, hp, defeated, ...(potions ? { potions } : {}) };
 }
 
 async function readJson(req: IncomingMessage): Promise<Record<string, unknown>> {

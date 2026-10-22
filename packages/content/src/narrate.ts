@@ -19,7 +19,7 @@ export function describeEvent(e: LoggedEvent, name: (id: string) => string): str
     case "heal":
       return `${name(e.targetId)} heals ${e.amount} (HP ${e.hpAfter})`;
     case "feature_used":
-      return `${name(e.creatureId)} uses ${e.featureId}`;
+      return e.featureId === "potion-of-healing" ? `${name(e.creatureId)} drinks a Potion of Healing` : `${name(e.creatureId)} uses ${e.featureId}`;
     case "effect_applied":
       return `${name(e.targetId)} is ${e.effectId}`;
     case "down":

@@ -81,3 +81,5 @@
   .battle-intro { padding: 40px 24px; }
 }
 @media (prefers-reduced-motion: reduce) { .battle * { scroll-behavior: auto; } }
+
+.auto-end { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }

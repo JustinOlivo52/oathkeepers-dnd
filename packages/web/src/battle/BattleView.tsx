@@ -2,7 +2,7 @@ import "./art.css";
 import { battlefieldOptions, loadBattlefield, placeCreatures, spriteFor } from "./battlefields";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
-import { Combat, EventLog, isConscious, mathRng, type Creature } from "@oathkeepers/engine";
+import { Combat, EventLog, isConscious, mathRng, POTION, type Creature } from "@oathkeepers/engine";
 import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController } from "./controller";
@@ -37,6 +37,8 @@ export interface BattleSetup {
   battlefield: string;
   /** HP to start at, when the hero is already hurt. Defaults to full. */
   startingHp?: number;
+  /** Potions of Healing the hero carries into the fight. */
+  potions?: number;
 }
 
 export interface BattleOutcome {
@@ -45,12 +47,15 @@ export interface BattleOutcome {
   hp: Record<string, number>;
   /** Monster ids of enemies killed, one per enemy. */
   defeated: string[];
+  /** Potions of Healing each party member has left. */
+  potions: Record<string, number>;
 }
 
-function createBattle({ character, enemies: groups, seed, battlefield, startingHp }: BattleSetup) {
+function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions = 0 }: BattleSetup) {
   const field = loadBattlefield(battlefield, seed);
   const hero = buildCharacter(content, character);
   if (startingHp !== undefined) hero.hp = Math.max(1, Math.min(hero.maxHp, startingHp));
+  if (potions > 0) hero.resources[POTION] = { current: potions, max: potions, recharge: "long" };
   const taken = new Set<string>();
   placeCreatures(field.map, [hero], field.partySpawns, [], taken);
   const monsterOf = new Map<string, string>();
@@ -72,6 +77,7 @@ function createBattle({ character, enemies: groups, seed, battlefield, startingH
     rounds: combat.round,
     hp: { [hero.id]: hero.hp },
     defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
+    potions: { [hero.id]: hero.resources[POTION]?.current ?? 0 },
   });
   return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
 }
@@ -293,6 +299,15 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
                   Action Surge ({me.resources["action-surge"]?.current ?? 0})
                 </button>
               )}
+              {(me.resources[POTION]?.max ?? 0) > 0 && (
+                <button
+                  disabled={turn.bonusActions < 1 || !(me.resources[POTION]!.current > 0) || me.hp === me.maxHp}
+                  onClick={() => controller.act("potion")}
+                  title="Bonus Action: regain 2d4 + 2 HP"
+                >
+                  Potion ({me.resources[POTION]!.current})
+                </button>
+              )}
               <button className="end" onClick={() => controller.endTurn()}>
                 End turn
               </button>
@@ -337,6 +352,9 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
           ))}
         </ol></details>
         {!isConscious(me) && !combat.isOver && <p className="warning">You're down. Death saves roll at the start of your turns.</p>}
+        <label className="note auto-end">
+          <input type="checkbox" checked={controller.autoEnd} onChange={(e) => controller.setAutoEnd(e.target.checked)} /> End my turn automatically when I have nothing left to do
+        </label>
         <p className="note">Opportunity attacks you can make are taken automatically for now.</p>
       </aside>
     </div>

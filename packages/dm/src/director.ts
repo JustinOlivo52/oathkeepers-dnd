@@ -1,6 +1,7 @@
 import {
   abilityCheck,
   EventLog,
+  roll,
   savingThrow,
   SKILLS,
   type Rng,
@@ -21,7 +22,13 @@ export interface CombatOutcome {
   hp: Record<string, number>;
   /** Monster ids of enemies killed, one entry per enemy. */
   defeated: string[];
+  /** Potions of Healing each party member has left after the battle. Missing: unchanged. */
+  potions?: Record<string, number>;
 }
+
+/** Every character starts with a couple of these. */
+export const POTION_ITEM = "Potion of Healing";
+const STARTING_POTIONS = 2;
 
 export class BudgetExceededError extends Error {}
 
@@ -54,7 +61,7 @@ export class Director {
     const characters: AdventureState["characters"] = {};
     for (const c of party) {
       const built = buildCharacter(content, c);
-      characters[c.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: 900, inventory: [] };
+      characters[c.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: 900, inventory: [{ name: POTION_ITEM, quantity: STARTING_POTIONS }] };
     }
     return {
       id,
@@ -129,6 +136,36 @@ export class Director {
     this.state.pending.shift();
     await this.continueIfReady(onText);
     return this.state.events.slice(start);
+  }
+
+  /** Drink a Potion of Healing outside battle: regain 2d4 + 2 HP. No DM call; the DM sees the new HP next turn. */
+  drinkPotion(characterId: string): StoryEvent[] {
+    const c = this.state.characters[characterId];
+    if (!c) throw new AdventureError("Unknown character");
+    if (this.state.pending[0]?.type === "combat") throw new AdventureError("Drink potions on the battle screen during a fight");
+    const potion = c.inventory.find((i) => i.name === POTION_ITEM && i.quantity > 0);
+    if (!potion) throw new AdventureError("No Potion of Healing left");
+    if (c.hp >= c.maxHp) throw new AdventureError("Already at full HP");
+    const r = roll(this.rng, "2d4+2");
+    const before = c.hp;
+    c.hp = Math.min(c.maxHp, c.hp + r.total);
+    this.setPotions(characterId, potion.quantity - 1);
+    const event: StoryEvent = { type: "potion", characterId, faces: r.results.flatMap((x) => x.faces), healed: c.hp - before, hp: c.hp };
+    this.state.events.push(event);
+    return [event];
+  }
+
+  private setPotions(characterId: string, count: number): void {
+    const inv = this.state.characters[characterId]!.inventory;
+    const i = inv.findIndex((x) => x.name === POTION_ITEM);
+    if (count > 0 && i >= 0) inv[i]!.quantity = count;
+    else if (count > 0) inv.push({ name: POTION_ITEM, quantity: count });
+    else if (i >= 0) inv.splice(i, 1);
+  }
+
+  /** Potions a character carries, for the battle screen. */
+  potionsOf(characterId: string): number {
+    return this.state.characters[characterId]?.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0;
   }
 
   /** The battle on the grid finished. */
@@ -429,6 +466,9 @@ export class Director {
     for (const [id, hp] of Object.entries(outcome.hp)) {
       const c = s.characters[id];
       if (c) c.hp = Math.max(0, Math.min(c.maxHp, Math.round(hp)));
+    }
+    for (const [id, n] of Object.entries(outcome.potions ?? {})) {
+      if (s.characters[id] && Number.isInteger(n) && n >= 0) this.setPotions(id, Math.min(n, this.potionsOf(id)));
     }
     // Defeated parties wake up stable at 1 HP; what happens next is the DM's call.
     if (outcome.winner === "enemies") for (const c of Object.values(s.characters)) c.hp = Math.max(1, c.hp);

@@ -29,7 +29,8 @@ export function stateBlock(state: AdventureState): string {
   const party = state.party
     .map((c) => {
       const s = state.characters[c.id]!;
-      return `- ${c.name} (id: ${c.id}): level ${c.level} ${c.species} ${c.class}${c.subclass ? ` (${c.subclass})` : ""}, HP ${s.hp}/${s.maxHp}, XP ${s.xp}`;
+      const items = s.inventory.map((i) => (i.quantity > 1 ? `${i.name} x${i.quantity}` : i.name)).join(", ");
+      return `- ${c.name} (id: ${c.id}): level ${c.level} ${c.species} ${c.class}${c.subclass ? ` (${c.subclass})` : ""}, HP ${s.hp}/${s.maxHp}, XP ${s.xp}${items ? `. Carrying: ${items}` : ""}`;
     })
     .join("\n");
   const quests = state.quests.filter((q) => q.status === "active").map((q) => q.title);
@@ -80,6 +81,8 @@ export function transcript(state: AdventureState, fromEvent: number): string {
           return [`(${name(e.characterId)} got ${e.name})`];
         case "scene":
           return [`(Location: ${e.name})`];
+        case "potion":
+          return [`(${name(e.characterId)} drank a Potion of Healing: +${e.healed} HP)`];
         default:
           return [];
       }

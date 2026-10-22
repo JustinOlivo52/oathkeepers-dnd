@@ -13,6 +13,17 @@ import {
 import { describeEvent } from "@oathkeepers/content";
 import type { BattleScene, Overlay } from "./scene";
 
+const AUTO_END_KEY = "oathkeepers.autoEndTurn";
+const AUTO_END_DELAY_MS = 900;
+
+function readAutoEnd(): boolean {
+  try {
+    return localStorage.getItem(AUTO_END_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
+
 export type Mode =
   | { kind: "move" }
   | { kind: "attack"; attackId: string }
@@ -33,6 +44,9 @@ export class BattleController {
   busy = false;
   lastRoll: string | null = null;
   lines: LogLine[] = [];
+  /** End the player's turn on its own once they have nothing left to do. Remembered per browser. */
+  autoEnd = readAutoEnd();
+  private autoEndTimer?: ReturnType<typeof setTimeout>;
   private scene?: BattleScene;
   private played = 0;
   private listeners = new Set<() => void>();
@@ -129,13 +143,14 @@ export class BattleController {
     await this.flush();
   }
 
-  async act(action: "dash" | "disengage" | "dodge" | "second-wind" | "action-surge"): Promise<void> {
+  async act(action: "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"): Promise<void> {
     if (!this.canAct) return;
     const id = this.active!.id;
     if (action === "dash") this.combat.dash(id);
     else if (action === "disengage") this.combat.disengage(id);
     else if (action === "dodge") this.combat.dodge(id);
     else if (action === "second-wind") this.combat.secondWind(id);
+    else if (action === "potion") this.combat.drinkPotion(id);
     else this.combat.actionSurge(id);
     this.mode = { kind: "move" };
     await this.flush();
@@ -143,11 +158,33 @@ export class BattleController {
 
   async endTurn(): Promise<void> {
     if (!this.canAct) return;
+    clearTimeout(this.autoEndTimer);
     this.mode = { kind: "move" };
     this.lastRoll = null;
     this.combat.endTurn();
     await this.flush();
     await this.runOthers();
+  }
+
+  setAutoEnd(on: boolean): void {
+    this.autoEnd = on;
+    try {
+      localStorage.setItem(AUTO_END_KEY, on ? "1" : "0");
+    } catch {
+      // Storage blocked: the setting just lasts for this page.
+    }
+    this.scheduleAutoEnd();
+    this.emit();
+  }
+
+  /** After the player's last possible move, wait a moment (so they see the result) and end the turn. */
+  private scheduleAutoEnd(): void {
+    clearTimeout(this.autoEndTimer);
+    if (!this.autoEnd || !this.canAct || this.combat.hasOptionsLeft(this.active!.id)) return;
+    const id = this.active!.id;
+    this.autoEndTimer = setTimeout(() => {
+      if (this.canAct && this.active?.id === id && !this.combat.hasOptionsLeft(id)) void this.endTurn();
+    }, AUTO_END_DELAY_MS);
   }
 
   // ---------- what the HUD shows ----------
@@ -240,6 +277,7 @@ export class BattleController {
     await this.scene?.play(events);
     this.busy = false;
     this.refresh();
+    this.scheduleAutoEnd();
   }
 
   /** Run turns for monsters, and skip turns of players who are down, until a player can act. */

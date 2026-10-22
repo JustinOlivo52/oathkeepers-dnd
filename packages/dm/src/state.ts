@@ -59,6 +59,7 @@ export type StoryEvent =
   | { type: "quest"; quest: Quest }
   | { type: "whisper"; characterId: string; text: string }
   | { type: "rest"; kind: "long" }
+  | { type: "potion"; characterId: string; faces: number[]; healed: number; hp: number }
   | { type: "session_end"; session: number; recap: string }
   | { type: "session_start"; session: number }
   | { type: "art"; artId: string; kind: "scene" | "npc"; image: string; title: string; caption: string; npcName?: string }

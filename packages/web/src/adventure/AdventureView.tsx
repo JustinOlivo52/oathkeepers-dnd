@@ -1,7 +1,7 @@
 import "./adventure.css";
 import { useEffect, useRef, useState } from "react";
 import type { CharacterData } from "@oathkeepers/content";
-import { XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
+import { POTION_ITEM, XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { Battle, type BattleOutcome } from "../battle/BattleView";
 import { findServer, LocalDemoClient, RemoteClient, ServerError, type AdventureSnapshot, type DmClient, type ServerInfo } from "./client";
@@ -215,6 +215,7 @@ function Adventure(props: {
             seed: Math.floor(Math.random() * 1_000_000),
             id: 1,
             startingHp: me.hp,
+            potions: me.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0,
           }}
           onFinish={finish}
         />
@@ -398,6 +399,16 @@ function Adventure(props: {
                 <li key={it.name}>
                   {it.name}
                   {it.quantity > 1 ? ` ×${it.quantity}` : ""}
+                  {it.name === POTION_ITEM && (
+                    <button
+                      className="ghost small"
+                      disabled={busy || me.hp >= me.maxHp || pending?.type === "combat"}
+                      title={me.hp >= me.maxHp ? "Already at full HP" : "Regain 2d4 + 2 HP"}
+                      onClick={() => void run(() => client.drinkPotion(hero.id))}
+                    >
+                      Drink
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -522,6 +533,12 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
       );
     case "rest":
       return <li className="chip">Long rest: HP restored</li>;
+    case "potion":
+      return (
+        <li className="chip">
+          {names(e.characterId)} drank a Potion of Healing (rolled {e.faces.join(" + ")} + 2): +{e.healed} HP, now {e.hp} HP
+        </li>
+      );
     case "notice":
       return <li className="system">{e.text}</li>;
     case "session_start":

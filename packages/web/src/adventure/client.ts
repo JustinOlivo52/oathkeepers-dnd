@@ -22,6 +22,7 @@ export interface DmClient {
   roll(): Promise<AdventureSnapshot>;
   finishCombat(outcome: CombatOutcome): Promise<AdventureSnapshot>;
   retry(): Promise<AdventureSnapshot>;
+  drinkPotion(characterId: string): Promise<AdventureSnapshot>;
   /** Start the next session (after ending one). */
   begin(): Promise<AdventureSnapshot>;
   endSession(): Promise<AdventureSnapshot>;
@@ -121,6 +122,9 @@ export class RemoteClient implements DmClient {
   retry() {
     return this.call(`/${this.id}/retry`, {});
   }
+  drinkPotion(characterId: string) {
+    return this.call(`/${this.id}/potion`, { characterId });
+  }
   begin() {
     return this.call(`/${this.id}/begin`, {});
   }
@@ -176,6 +180,9 @@ export class LocalDemoClient implements DmClient {
   }
   async retry() {
     return this.snapshot(await this.director!.retry(this.onText));
+  }
+  async drinkPotion(characterId: string) {
+    return this.snapshot(this.director!.drinkPotion(characterId));
   }
   async begin() {
     return this.snapshot(await this.director!.begin(this.onText));
