@@ -1,0 +1,64 @@
+{
+  "id": "pip-thistlewick",
+  "name": "Pip Thistlewick",
+  "species": "gnome",
+  "lineage": "rock-gnome",
+  "size": "small",
+  "background": "sage",
+  "class": "wizard",
+  "subclass": "evoker",
+  "classChoices": {},
+  "level": 3,
+  "abilities": {
+    "str": 8,
+    "dex": 14,
+    "con": 14,
+    "int": 17,
+    "wis": 12,
+    "cha": 10
+  },
+  "skills": [
+    "arcana",
+    "history",
+    "investigation",
+    "medicine"
+  ],
+  "expertise": [
+    "arcana"
+  ],
+  "feats": [
+    {
+      "id": "magic-initiate",
+      "option": "wizard"
+    }
+  ],
+  "weaponMasteries": [],
+  "equipment": {
+    "shield": false,
+    "weapons": [
+      "dagger",
+      "quarterstaff"
+    ]
+  },
+  "languages": [
+    "Common",
+    "Gnomish",
+    "Draconic"
+  ],
+  "tools": [
+    "Calligrapher's Supplies"
+  ],
+  "alignment": "Chaotic Good",
+  "notes": "An excitable gnome evoker who studies the old empire's ruins. Talks fast, names every spell he casts, and is terrified of spiders.",
+  "spells": [
+    "fire-bolt",
+    "ray-of-frost",
+    "shocking-grasp",
+    "magic-missile",
+    "burning-hands",
+    "thunderwave",
+    "scorching-ray",
+    "shatter",
+    "misty-step"
+  ]
+}

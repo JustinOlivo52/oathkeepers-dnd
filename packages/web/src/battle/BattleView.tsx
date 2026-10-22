@@ -6,7 +6,17 @@ import { Combat, EventLog, isConscious, mathRng, POTION, type Creature, type Tur
 import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController, TARGETS_ALLY, type QuickAction, type TargetedFeature } from "./controller";
-import { BattleScene } from "./scene";
+import { BattleScene, type VfxInfo } from "./scene";
+
+/** Reviewed spell effect art from the library; spells without any use effects drawn in code. */
+const SPELL_EFFECTS: VfxInfo[] = content.art
+  .filter((e) => e.kind === "vfx" && e.vfx && e.artStatus === "ready")
+  .map((e) => ({ key: e.id, ...e.vfx! }));
+
+/** Spell button icons from the library (kind "icon", id icon-<spell id>). */
+const SPELL_ICONS = new Map(
+  content.art.filter((e) => e.kind === "icon" && e.image && e.artStatus === "ready" && e.id.startsWith("icon-")).map((e) => [e.id.slice(5), `${import.meta.env.BASE_URL}assets/${e.image}`]),
+);
 
 const PALETTE_BY_CLASS: Record<string, "martial" | "expert" | "arcane" | "divine"> = {
   barbarian: "martial",
@@ -160,6 +170,84 @@ function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext
   return out;
 }
 
+/** Spell buttons with slot counts, an upcast picker and target hints. */
+function SpellBar({ me, combat, controller }: { me: Creature; combat: Combat; controller: BattleController }) {
+  const mode = controller.mode;
+  const casting = mode.kind === "spell" ? controller.spell(mode.spellId) : undefined;
+  const slots = [1, 2, 3, 4, 5].map((n) => ({ n, left: me.resources[`spell-slot-${n}`]?.current ?? 0, max: me.resources[`spell-slot-${n}`]?.max ?? 0 })).filter((s) => s.max > 0);
+  const byLevel = [...new Set(me.spells!.map((s) => s.level))].sort();
+  return (
+    <div className="spell-bar">
+      <p className="spell-slots">
+        <strong>Spells</strong>
+        {slots.map((s) => (
+          <span key={s.n} title={`Level ${s.n} spell slots`}>
+            Lv {s.n}: {"●".repeat(s.left)}
+            {"○".repeat(s.max - s.left)}
+          </span>
+        ))}
+      </p>
+      {byLevel.map((level) => (
+        <div key={level} className="spell-row">
+          <span className="spell-level">{level === 0 ? "Cantrips" : `Level ${level}`}</span>
+          {me.spells!
+            .filter((s) => s.level === level)
+            .map((s) => {
+              const problem = combat.spellProblem(me.id, s.id);
+              const on = mode.kind === "spell" && mode.spellId === s.id;
+              const info = [s.castingTime === "bonus" ? "Bonus Action" : "Action", s.rangeFt ? (s.rangeFt === 5 ? "touch" : `${s.rangeFt} ft`) : "self", s.concentration ? "concentration" : ""].filter(Boolean).join(", ");
+              return (
+                <button key={s.id} className={`spell ${on ? "on" : ""}`} disabled={!!problem && !on} title={`${s.name} (${info})${problem ? `: ${problem}` : ""}`} onClick={() => void controller.selectSpell(s.id)}>
+                  {SPELL_ICONS.has(s.id) && <img src={SPELL_ICONS.get(s.id)} alt="" width={20} height={20} />}
+                  {s.name}
+                  {s.castingTime === "bonus" ? " ◆" : ""}
+                </button>
+              );
+            })}
+        </div>
+      ))}
+      {casting && mode.kind === "spell" && (
+        <div className="spell-casting">
+          <span>
+            {casting.target === "point"
+              ? casting.area
+                ? `Point at where the ${casting.area.sizeFt} ft ${casting.area.shape} goes. It hits allies too.`
+                : "Click the square to go to."
+              : controller.maxTargets(casting, mode.slot) > 1
+                ? `Click up to ${controller.maxTargets(casting, mode.slot)} ${casting.target === "ally" ? "allies (or yourself)" : "enemies"}, then Cast.`
+                : `Click ${casting.target === "ally" ? "an ally or yourself" : "an enemy"} in range.`}
+          </span>
+          {casting.level > 0 && combat.slotsFor(me.id, casting.id).length > 1 && (
+            <label>
+              Slot
+              <select value={mode.slot} onChange={(e) => controller.setSpellSlot(Number(e.target.value))}>
+                {combat.slotsFor(me.id, casting.id).map((n) => (
+                  <option key={n} value={n}>
+                    Level {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {controller.maxTargets(casting, mode.slot) > 1 && casting.target !== "point" && (
+            <button className="primary" disabled={!mode.picked.length} onClick={() => void controller.castPicked()}>
+              Cast ({mode.picked.length})
+            </button>
+          )}
+          <button className="ghost" onClick={() => void controller.selectSpell(casting.id)}>
+            Cancel
+          </button>
+        </div>
+      )}
+      {combat.hasSpiritualWeapon(me.id) && (
+        <button disabled={combat.turn!.bonusActions < 1} onClick={() => controller.selectFeature("spiritual-weapon")}>
+          Spiritual Weapon attack ◆
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function BattleView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void }) {
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
   const [goblins, setGoblins] = useState(3);
@@ -252,7 +340,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
       onHover: (p) => controller.onHover(p),
       onClick: (p) => void controller.onClick(p),
       onLoadError: () => setBoardError("Artwork could not load. Reload the page to try again."),
-    });
+    }, SPELL_EFFECTS);
     sceneRef.current = scene;
     const game = new Phaser.Game({
       type: Phaser.AUTO,
@@ -390,6 +478,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
                 End turn
               </button>
             </div>
+            {me.spells?.length ? <SpellBar me={me} combat={combat} controller={controller} /> : null}
           </>
         ) : (
           !combat.isOver && <p className="turn-info">{turn ? `${combat.current.name}'s turn…` : "Rolling initiative…"}</p>

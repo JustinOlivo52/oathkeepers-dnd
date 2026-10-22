@@ -1,6 +1,8 @@
 import { Combat, POTION, SPELL_SLOT } from "./combat.js";
 import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
-import { explore, footprintDistanceFt, key, samePoint, straightPath, type Point } from "./grid.js";
+import { averageRoll } from "./dice.js";
+import { explore, footprintDistanceFt, footprintSquares, key, samePoint, straightPath, type Point } from "./grid.js";
+import { areaSquares, slotResource, type SpellDef } from "./spells.js";
 
 /**
  * Rule-based turns for monsters (and auto-play in tests).
@@ -40,13 +42,15 @@ export function takeAutoTurn(combat: Combat): void {
 
 function gridTurn(combat: Combat, me: Creature): void {
   const turn = combat.turn!;
-  const ranged = me.attacks.find((a) => a.kind === "ranged");
+  const ranged = me.attacks.find((a) => a.kind === "ranged") ?? me.spells?.find((s) => s.damage && s.rangeFt >= 30 && s.target !== "point");
 
-  // Wounded skirmishers step back and shoot.
+  // Wounded skirmishers (and casters) step back and shoot.
   if (ranged && me.hp <= me.maxHp / 2 && combat.enemiesWithin(me, 5).length) {
     if (turn.bonusActions > 0 && (me.features.includes("nimble-escape") || me.features.includes("cunning-action"))) combat.disengage(me.id, { bonus: true });
     retreat(combat, me);
   }
+
+  if (me.spells?.length) castSpells(combat, me);
 
   for (let guard = 0; guard < 8 && turn.actions > 0 && !combat.isOver && isConscious(me); guard++) {
     const option = bestAttackNow(combat, me);
@@ -91,6 +95,111 @@ function openingMoves(combat: Combat, me: Creature): void {
     }
   }
   if (turn.actions > 0 && me.features.includes("sacred-weapon") && left("channel-divinity") && !me.effects.some((e) => e.id === "sacred-weapon")) combat.sacredWeapon(me.id);
+}
+
+/**
+ * A caster's turn: heal the badly hurt, keep a Spiritual Weapon swinging, slip away with Misty Step,
+ * then use the action on control (Hold Person, Bless), an area blast that spares allies, a big single-target
+ * spell, or a cantrip. Leaves the action unused if nothing is in range, so the weapon logic can close in.
+ */
+function castSpells(combat: Combat, me: Creature): void {
+  const turn = combat.turn!;
+  const spells = new Map(me.spells!.map((s) => [s.id, s]));
+  const can = (id: string) => spells.has(id) && !combat.spellProblem(me.id, id);
+  const tryCast = (id: string, opts: Parameters<Combat["castSpell"]>[2]) => {
+    try {
+      combat.castSpell(me.id, id, opts);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  const enemies = combat.enemiesOf(me).filter(isConscious);
+  if (!enemies.length) return;
+  const allies = [...combat.creatures.values()].filter((c) => c.side === me.side && !c.dead);
+  const within = (c: Creature, ft: number) => c.id === me.id || ((combat.distanceBetween(me, c) ?? 0) <= ft && combat.canSee(me, c));
+  const concentrating = me.effects.some((e) => e.id === "concentrating");
+  const slotsLeft = (level: number) => [1, 2, 3, 4, 5].filter((n) => n >= level).reduce((sum, n) => sum + (me.resources[slotResource(n)]?.current ?? 0), 0);
+
+  // Bonus Action: heal anyone at a third of their HP or less.
+  const hurt = allies.filter((c) => c.hp <= c.maxHp / 3).sort((a, b) => a.hp - b.hp);
+  const healTarget = hurt.find((c) => within(c, 60));
+  if (healTarget && can("healing-word")) tryCast("healing-word", { targetIds: [healTarget.id] });
+  // Bonus Action: Spiritual Weapon.
+  if (turn.bonusActions > 0 && combat.hasSpiritualWeapon(me.id)) {
+    const target = enemies.filter((e) => within(e, 60)).sort((a, b) => a.hp - b.hp)[0];
+    if (target) {
+      try {
+        combat.spiritualWeaponAttack(me.id, target.id);
+      } catch {
+        // Out of reach this turn.
+      }
+    }
+  } else if (!concentrating && can("spiritual-weapon")) {
+    const target = enemies.filter((e) => within(e, 60)).sort((a, b) => a.hp - b.hp)[0];
+    if (target) tryCast("spiritual-weapon", { targetIds: [target.id] });
+  }
+  // Bonus Action: Misty Step out of trouble.
+  if (me.hp <= me.maxHp / 2 && combat.enemiesWithin(me, 5).length && can("misty-step") && combat.map) {
+    let best: { p: Point; score: number } | undefined;
+    for (let dy = -6; dy <= 6; dy++)
+      for (let dx = -6; dx <= 6; dx++) {
+        const p = { x: me.position!.x + dx, y: me.position!.y + dy };
+        if (!combat.map.walkable(p) || !combat.canStandAt(me, p) || !combat.map.lineOfSight(me.position!, p)) continue;
+        if (Math.max(Math.abs(dx), Math.abs(dy)) * 5 > 30) continue;
+        const score = Math.min(...enemies.map((e) => footprintDistanceFt(p, footprintOf(me), e.position!, footprintOf(e))));
+        if (!best || score > best.score) best = { p, score };
+      }
+    if (best && best.score > 5) tryCast("misty-step", { point: best.p });
+  }
+  if (turn.actions < 1 || combat.isOver) return;
+
+  // Action: Cure Wounds on someone down within reach.
+  const downed = allies.find((c) => c.hp === 0 && within(c, 5));
+  if (downed && can("cure-wounds") && tryCast("cure-wounds", { targetIds: [downed.id] })) return;
+  // Action: control and buffs, early, if not already holding a spell.
+  const holding = me.effects.some((e) => e.id === "concentrating");
+  if (!holding) {
+    const humanoid = enemies.filter((e) => e.creatureType === "humanoid" && within(e, 60) && e.hp >= 15).sort((a, b) => b.hp - a.hp)[0];
+    if (humanoid && can("hold-person") && tryCast("hold-person", { targetIds: [humanoid.id] })) return;
+    const friends = allies.filter((c) => isConscious(c) && within(c, 30)).slice(0, 3);
+    if (combat.round <= 2 && friends.length >= 2 && can("bless") && tryCast("bless", { targetIds: friends.map((c) => c.id) })) return;
+  }
+  // Action: an area spell that catches two or more enemies and no allies.
+  const map = combat.map;
+  if (map) {
+    let bestArea: { id: string; point: Point; hit: number } | undefined;
+    for (const s of spells.values()) {
+      if (!s.area || !s.damage || !can(s.id)) continue;
+      if (s.level > 0 && slotsLeft(s.level) < 1) continue;
+      for (const e of enemies) {
+        const point = e.position!;
+        if (s.area.shape === "sphere" && (footprintDistanceFt(me.position!, footprintOf(me), point, 1) > s.rangeFt || !map.lineOfSight(me.position!, point))) continue;
+        const covered = new Set(areaSquares(map, s.area.shape, s.area.sizeFt, point, me.position!, footprintOf(me)).map(key));
+        const touches = (c: Creature) => footprintSquares(c.position!, footprintOf(c)).some((q) => covered.has(key(q)));
+        if (allies.some((a) => a.id !== me.id && a.position && touches(a))) continue;
+        const hit = enemies.filter((x) => touches(x)).length;
+        const need = s.level > 0 ? 2 : 1;
+        if (hit >= need && (!bestArea || hit > bestArea.hit)) bestArea = { id: s.id, point, hit };
+      }
+    }
+    if (bestArea && bestArea.hit >= 2 && tryCast(bestArea.id, { point: bestArea.point })) return;
+  }
+  // Action: a single-target spell. Slots go to tough targets; otherwise the best cantrip.
+  const adjacent = combat.enemiesWithin(me, 5).length > 0;
+  const targetsFor = (s: SpellDef) => enemies.filter((e) => within(e, Math.max(5, s.rangeFt)) && (!s.onlyType || e.creatureType === s.onlyType));
+  const average = (s: SpellDef) => (s.damage ? averageRoll(s.damage.dice) * (s.hits ?? 1) : 0);
+  const options = [...spells.values()]
+    .filter((s) => s.damage && s.target === "enemy" && s.castingTime === "action" && can(s.id) && targetsFor(s).length)
+    .filter((s) => !(adjacent && s.attack === "ranged"))
+    .sort((a, b) => average(b) - average(a));
+  const toughest = (s: SpellDef) => targetsFor(s).sort((a, b) => b.hp - a.hp)[0]!;
+  const leveled = options.find((s) => s.level > 0 && toughest(s).hp >= 12 && slotsLeft(1) >= 2);
+  const cantrip = options.find((s) => s.level === 0);
+  const pick = leveled ?? cantrip;
+  if (!pick) return;
+  const target = pick.level > 0 ? toughest(pick) : targetsFor(pick).sort((a, b) => a.hp - b.hp)[0]!;
+  tryCast(pick.id, { targetIds: [target.id] });
 }
 
 /** Paladins smite with the free daily cast, and spend slots on undead, fiends and big targets. */

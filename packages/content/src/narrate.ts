@@ -18,6 +18,15 @@ export function describeEvent(e: LoggedEvent, name: (id: string) => string): str
       return `${name(e.targetId)} takes ${e.amount} ${e.damageType} damage (HP ${e.hpAfter})`;
     case "heal":
       return `${name(e.targetId)} heals ${e.amount} (HP ${e.hpAfter})`;
+    case "spell_cast": {
+      const spell = e.spellId.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
+      const on = e.targetIds.length ? ` on ${e.targetIds.map(name).join(", ")}` : "";
+      return `${name(e.creatureId)} casts ${spell}${e.slotLevel > 1 ? ` (level ${e.slotLevel} slot)` : ""}${e.area ? "" : on}`;
+    }
+    case "extra_damage":
+      return null;
+    case "concentration":
+      return e.kept ? `${name(e.creatureId)} keeps concentrating` : `${name(e.creatureId)} loses concentration`;
     case "feature_used":
       return e.featureId === "potion-of-healing" ? `${name(e.creatureId)} drinks a Potion of Healing` : `${name(e.creatureId)} uses ${e.featureId}`;
     case "effect_applied":

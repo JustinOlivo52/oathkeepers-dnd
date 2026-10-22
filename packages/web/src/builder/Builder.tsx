@@ -1,18 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   creationOptions,
+  defaultSpells,
   emptyDraft,
   finalizeCharacter,
   pointBuyCost,
   pointBuyTotal,
   POINT_BUY_BUDGET,
   rollAbilityScores,
+  spellCounts,
+  spellOptions,
   STANDARD_ARRAY,
   validateDraft,
   type AbilityRoll,
   type CharacterData,
   type CharacterDraft,
+  type ClassData,
   type CreationStep,
+  type SpellData,
 } from "@oathkeepers/content";
 import { ABILITIES, abilityModifier, mathRng, type Ability, type Skill } from "@oathkeepers/engine";
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
@@ -28,7 +33,8 @@ const STEPS: { id: CreationStep; title: string }[] = [
   { id: "skills", title: "5. Skills" },
   { id: "features", title: "6. Features" },
   { id: "equipment", title: "7. Equipment" },
-  { id: "details", title: "8. Details" },
+  { id: "spells", title: "8. Spells" },
+  { id: "details", title: "9. Details" },
 ];
 
 const ALIGNMENTS = [
@@ -100,6 +106,7 @@ export function Builder(props: {
                       armorId: undefined,
                       shield: false,
                       weaponIds: [],
+                      spells: [],
                     });
                   })
                 }
@@ -483,6 +490,14 @@ export function Builder(props: {
           )}
         </Step>
 
+        <Step id="spells" issues={stepIssues("spells")}>
+          {o.cls?.spellcasting ? (
+            <SpellPicker cls={o.cls} level={draft.level} selected={draft.spells ?? []} onChange={(spells) => update((d) => void (d.spells = spells))} />
+          ) : (
+            <p className="muted">{o.cls ? `${o.cls.name}s don't cast spells.` : "Choose a class first."}</p>
+          )}
+        </Step>
+
         <Step id="details" issues={stepIssues("details")}>
           <div className="row">
             <label>
@@ -555,6 +570,59 @@ export function Builder(props: {
         )}
       </aside>
     </main>
+  );
+}
+
+/** Cantrips and prepared spells from the class list, with the counts the class allows at this level. */
+function SpellPicker(props: { cls: ClassData; level: number; selected: string[]; onChange: (ids: string[]) => void }) {
+  const { cantrips, leveled } = spellOptions(content, props.cls, props.level);
+  const counts = spellCounts(props.cls, props.level);
+  const name = (id: string) => content.spells.find((s) => s.id === id)?.name ?? id;
+  const describe = (list: SpellData[]) => (
+    <ul className="spell-notes">
+      {list
+        .filter((s) => props.selected.includes(s.id))
+        .map((s) => (
+          <li key={s.id} className="small">
+            <strong>{s.name}</strong>
+            {s.level ? ` (level ${s.level})` : ""}: {s.description}
+          </li>
+        ))}
+    </ul>
+  );
+  const pickedCantrips = props.selected.filter((id) => cantrips.some((s) => s.id === id));
+  const pickedLeveled = props.selected.filter((id) => leveled.some((s) => s.id === id));
+  return (
+    <>
+      <p className="muted small">
+        The battle spell list is growing: these are the {props.cls.name} spells the game can run so far. What your picks do is listed under each list.
+      </p>
+      {cantrips.length > 0 && (
+        <>
+          <h4>Cantrips</h4>
+          <ChipPicker
+            options={cantrips.map((s) => s.id)}
+            selected={pickedCantrips}
+            max={Math.min(counts.cantrips, cantrips.length)}
+            label={name}
+            onChange={(next) => props.onChange([...next, ...pickedLeveled])}
+          />
+          {describe(cantrips)}
+        </>
+      )}
+      <h4>Prepared spells</h4>
+      <ChipPicker
+        options={leveled.map((s) => s.id)}
+        selected={pickedLeveled}
+        max={Math.min(counts.prepared, leveled.length)}
+        label={(id) => `${name(id)} (${content.spells.find((s) => s.id === id)?.level})`}
+        onChange={(next) => props.onChange([...pickedCantrips, ...next])}
+      />
+      {describe(leveled)}
+      <button type="button" className="ghost small" onClick={() => props.onChange(defaultSpells(content, props.cls, props.level))}>
+        Pick for me
+      </button>
+    </>
   );
 }
 

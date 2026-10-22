@@ -32,6 +32,8 @@ The catalog that lists every asset is `packages/content/data/art-catalog.json`. 
 | `scene` | Location backdrop shown in the story | WebP, quality about 85 | 1600x900, under 400 KB |
 | `tileset` | Terrain tiles for battle boards | PNG | 5 frames of 128x128: floor x3, wall, difficult terrain |
 | `board` | A hand-made battle map | JSON (see below) | 18 to 26 squares wide, 12 to 16 tall |
+| `vfx` | Spell effect animation | PNG, transparent | Projectile 4 x 64x64, impact 8 x 192x192, area 8 x 384x384 (see `CODEX_BRIEF_SPELLS.md`) |
+| `icon` | Spell button icon | PNG | 64x64 |
 
 Monsters can also have a portrait (an `npc`-style still image) listed as a separate `npc` entry with the monster's creature tags.
 
@@ -92,12 +94,13 @@ Frames go left to right in one row. Characters **face right** (the game mirrors 
 | Field | Used by | Meaning |
 |---|---|---|
 | `id` | all | Unique, lowercase with dashes |
-| `kind` | all | `hero`, `monster`, `npc`, `scene`, `board`, `tileset` |
+| `kind` | all | `hero`, `monster`, `npc`, `scene`, `board`, `tileset`, `vfx`, `icon` |
 | `title` | all | Short human description |
-| `tags` | all | From the vocabulary below only; 3 to 8 per entry |
+| `tags` | all | From the vocabulary below only; 3 to 8 per entry (none needed for `vfx` and `icon`, which are found by id) |
 | `sprite` | hero, monster | `{ file, frameWidth, frameHeight, size, rulesSize, footprint, anchor, visibleHeight }`; `visibleHeight` is pixels from the feet to the top of the idle pose |
 | `monsterId` | monster | The bestiary id, for example `goblin-warrior` |
-| `image` | npc, scene | Path under `assets/` |
+| `image` | npc, scene, icon | Path under `assets/` |
+| `vfx` | vfx | `{ file, frameWidth, frameHeight, frames, fps, role }`, role `projectile`, `impact` or `area` |
 | `board` | board | Path to the board JSON |
 | `tiles` | tileset, board | Tileset: path to its PNG. Board: the tileset's catalog id |
 | `source` | all | `codex-imagegen`, `claude-code`, `commissioned`, or `ai-generated-in-game` |

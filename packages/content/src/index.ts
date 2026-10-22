@@ -5,6 +5,7 @@ import species from "../data/species.json";
 import backgrounds from "../data/backgrounds.json";
 import feats from "../data/feats.json";
 import languages from "../data/languages.json";
+import spells from "../data/spells.json";
 import barbarian from "../data/classes/barbarian.json";
 import bard from "../data/classes/bard.json";
 import cleric from "../data/classes/cleric.json";
@@ -27,6 +28,8 @@ import bram from "../data/characters/bram-holloway.json";
 import wren from "../data/characters/wren-ashdown.json";
 import odric from "../data/characters/brother-odric-vale.json";
 import tamsin from "../data/characters/tamsin-reed.json";
+import maren from "../data/characters/sister-maren-holt.json";
+import pip from "../data/characters/pip-thistlewick.json";
 import artCatalog from "../data/art-catalog.json";
 import {
   ArmorSchema,
@@ -35,6 +38,7 @@ import {
   ClassSchema,
   FeatSchema,
   MonsterSchema,
+  SpellSchema,
   SpeciesSchema,
   WeaponSchema,
 } from "./schemas.js";
@@ -45,6 +49,7 @@ export * from "./build.js";
 export * from "./creation.js";
 export * from "./narrate.js";
 export * from "./art.js";
+export * from "./spells.js";
 
 /** Validate every data file at load time so bad data fails loudly, with the file and field named. */
 function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): z.infer<T> {
@@ -54,7 +59,7 @@ function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): 
 }
 
 const monsterFiles = { "goblin-warrior": goblinWarrior, skeleton, zombie, wolf, "giant-spider": giantSpider, ogre };
-const characterFiles = { "bram-holloway": bram, "wren-ashdown": wren, "brother-odric-vale": odric, "tamsin-reed": tamsin };
+const characterFiles = { "bram-holloway": bram, "wren-ashdown": wren, "brother-odric-vale": odric, "tamsin-reed": tamsin, "sister-maren-holt": maren, "pip-thistlewick": pip };
 const classFiles = { barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard };
 
 export function loadContent() {
@@ -71,6 +76,7 @@ export function loadContent() {
     feats: validate(z.array(FeatSchema), feats, "feats.json"),
     languages: validate(z.array(z.string()), languages, "languages.json"),
     monsters,
+    spells: validate(z.array(SpellSchema), spells, "spells.json"),
     /** Premade characters: play as one, or bring the others along as AI companions. */
     characters: Object.entries(characterFiles).map(([name, data]) => validate(CharacterSchema, data, `characters/${name}.json`)),
     art,

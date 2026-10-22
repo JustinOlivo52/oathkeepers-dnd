@@ -1,4 +1,5 @@
 import { abilityModifier, proficiencyBonus, type Attack, type Creature, type Resource, type Side } from "@oathkeepers/engine";
+import { buildSpells, spellSlots } from "./spells.js";
 import type { Content } from "./index.js";
 import type { CharacterData, ClassData, MonsterData, WeaponData } from "./schemas.js";
 
@@ -23,6 +24,23 @@ export const IMPLEMENTED_FEATURES = new Set([
   "deft-explorer",
   "scholar",
   "draconic-resilience",
+  // Martial features in battle
+  "sneak-attack",
+  "cunning-action",
+  "steady-aim",
+  "rage",
+  "reckless-attack",
+  "frenzy",
+  "lay-on-hands",
+  "paladins-smite",
+  "sacred-weapon",
+  "channel-divinity",
+  "favored-enemy",
+  "hunters-prey",
+  "monks-focus",
+  // Spells (the battle spell list grows over time)
+  "spellcasting",
+  "pact-magic",
 ]);
 
 export function unimplementedFeatures(creature: Creature): string[] {
@@ -160,7 +178,8 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     immunities: [],
     conditions: [],
     features,
-    resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level) },
+    resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level), ...spellSlots(cls, data.level) },
+    ...(cls.spellcasting ? { spells: buildSpells(content, data, cls) } : {}),
     effects: [],
     deathSaves: { successes: 0, failures: 0 },
     stable: false,
@@ -213,9 +232,6 @@ export function buildMonster(data: MonsterData, instanceId: string, name = data.
   };
 }
 
-/** Level 1 spell slots for half casters (2024 Paladin and Ranger table), by class level 1 to 5+. */
-const HALF_CASTER_SLOTS = [0, 2, 2, 3, 3, 4];
-
 /** Uses that come from features rather than the class resource table. */
 function featureResources(cls: ClassData, features: string[], level: number): Record<string, Resource> {
   const out: Record<string, Resource> = {};
@@ -223,7 +239,6 @@ function featureResources(cls: ClassData, features: string[], level: number): Re
   if (features.includes("lay-on-hands")) out["lay-on-hands"] = long(5 * level);
   if (features.includes("paladins-smite")) out["paladins-smite"] = long(1);
   if (features.includes("favored-enemy")) out["favored-enemy"] = long(level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2);
-  if (cls.spellcasting?.progression === "half") out["spell-slot-1"] = long(HALF_CASTER_SLOTS[Math.min(level, 5)]!);
   return out;
 }
 

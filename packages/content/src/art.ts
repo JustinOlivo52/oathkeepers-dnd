@@ -7,7 +7,7 @@ import { GridMap, key, type Rng } from "@oathkeepers/engine";
  * Format and rules: docs/art/LIBRARY.md.
  */
 
-export const ART_KINDS = ["hero", "monster", "npc", "scene", "board", "tileset"] as const;
+export const ART_KINDS = ["hero", "monster", "npc", "scene", "board", "tileset", "vfx", "icon"] as const;
 export type ArtKind = (typeof ART_KINDS)[number];
 
 /** The only tags allowed, grouped so the DM prompt and the docs can list them. */
@@ -43,7 +43,8 @@ export const ArtEntrySchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   kind: z.enum(ART_KINDS),
   title: z.string().min(1),
-  tags: z.array(z.enum(ALL_ART_TAGS as [ArtTag, ...ArtTag[]])).min(3).max(8).refine((tags) => new Set(tags).size === tags.length, "Tags must be unique"),
+  /** 3 to 8 tags for story and battle art; spell effects and icons are found by id and may have none. */
+  tags: z.array(z.enum(ALL_ART_TAGS as [ArtTag, ...ArtTag[]])).max(8).default([]).refine((tags) => new Set(tags).size === tags.length, "Tags must be unique"),
   /** Independent production gates. Missing metadata fails closed. */
   artStatus: z.enum(["draft", "ready"]).default("draft"),
   mechanicsStatus: z.enum(["pending", "ready", "not-required"]).default("pending"),
@@ -63,7 +64,18 @@ export const ArtEntrySchema = z.object({
       visibleHeight: z.number().int().positive().optional(),
     })
     .optional(),
-  /** Still image shown in the story: portraits, scene backdrops. */
+  /** Spell effect animation for kind "vfx": one row of frames, played once (impact, area) or looped while flying (projectile). */
+  vfx: z
+    .object({
+      file: assetPath,
+      frameWidth: z.number().int().positive(),
+      frameHeight: z.number().int().positive(),
+      frames: z.number().int().min(1).max(24),
+      fps: z.number().int().min(1).max(60).default(16),
+      role: z.enum(["projectile", "impact", "area"]),
+    })
+    .optional(),
+  /** Still image shown in the story: portraits, scene backdrops. Also the 64x64 picture for kind "icon". */
   image: assetPath.optional(),
   /** Battle board layout (JSON) for kind "board". */
   board: assetPath.optional(),
@@ -78,6 +90,9 @@ export const ArtEntrySchema = z.object({
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
   if ((entry.kind === "hero" || entry.kind === "monster") && !entry.sprite) issue("Battle art requires sprite metadata");
   if (entry.kind === "monster" && !entry.monsterId) issue("Monster art requires monsterId, even before mechanics exist");
+  if (entry.kind !== "vfx" && entry.kind !== "icon" && entry.tags.length < 3) issue("Story and battle art needs at least 3 tags");
+  if (entry.kind === "vfx" && !entry.vfx) issue("Spell effects require vfx metadata");
+  if (entry.kind === "icon" && !entry.image) issue("Icons require an image");
   if (entry.kind === "monster" && entry.mechanicsStatus === "not-required") issue("Monster mechanics cannot be not-required");
   if ((entry.kind === "npc" || entry.kind === "scene") && !entry.image) issue("Story art requires an image");
   if (entry.kind === "tileset" && !entry.tiles) issue("Tileset requires a tiles image");

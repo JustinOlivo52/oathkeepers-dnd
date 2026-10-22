@@ -1,5 +1,6 @@
 import type { Ability, AbilityScores, Skill } from "./abilities.js";
 import type { Point } from "./grid.js";
+import type { SpellDef } from "./spells.js";
 
 export const DAMAGE_TYPES = [
   "acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic",
@@ -33,6 +34,8 @@ export interface Attack {
   attackBonus: number;
   /** Dice notation including modifiers, e.g. "1d8+5". */
   damage: string;
+  /** A spell attack rather than a weapon: weapon-only features (Sneak Attack, Smite...) don't apply. */
+  spell?: boolean;
   /** Ability the attack uses: Rage boosts Strength attacks, Sneak Attack needs finesse or ranged. */
   ability?: Ability;
   finesse?: boolean;
@@ -59,6 +62,12 @@ export interface ActiveEffect {
   expiresAtTurnStartOf?: string;
   /** Effect is removed after this many ends of the source creature's turns (2 = the end of its next turn). */
   turnEndsLeft?: number;
+  /** Held by the source's concentration: ends when that does. */
+  concentration?: boolean;
+  /** Spell that made it, for concentration and the log. */
+  spell?: string;
+  /** Save DC to shake it off (Hold Person). */
+  dc?: number;
 }
 
 export interface Creature {
@@ -101,6 +110,8 @@ export interface Creature {
   xp: number;
   /** Monster type, e.g. "undead" or "fiend" (Divine Smite deals more to these). */
   creatureType?: string;
+  /** Spells this creature can cast in battle. Slots are resources "spell-slot-1", "spell-slot-2"... */
+  spells?: SpellDef[];
   /** Square on the battle map, when fighting on a grid. For larger creatures, the top-left square. */
   position?: Point;
   /** Squares per side on the grid: 1 for Medium and smaller, 2 for Large, 3 Huge, 4 Gargantuan. */

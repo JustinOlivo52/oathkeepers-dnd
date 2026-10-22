@@ -62,7 +62,7 @@ Apply the lessons from the batch 1 fixes:
 - A props sheet per tileset (`props-cave.png`, `props-crypt.png`, 2x2 grid of 128x128) and some props on each board
 - Each board supports 2x2 creatures (`supportedFootprints` with large spawns), since the bestiary now has Large monsters
 
-## 5. Companion sprites and portraits (3)
+## 5. Companion sprites and portraits (5)
 
 The game now has premade AI companions. Today they borrow the generic hero sheets, so two of them look identical on the grid. Give each their own look, in the same style and frame layout as the existing hero sheets (`hero-martial` and friends): 11 frames of 192x192, feet at (96, 166), facing right.
 
@@ -71,6 +71,8 @@ The game now has premade AI companions. Today they borrow the generic hero sheet
 | `hero-wren-ashdown` | `sprites/hero-wren-ashdown.png` | Wren Ashdown, halfling rogue | Small (halfling: noticeably shorter than the human heroes in the same frame), hooded leather, shortsword and shortbow, quick and light on her feet |
 | `hero-brother-odric-vale` | `sprites/hero-brother-odric-vale.png` | Brother Odric Vale, dwarf paladin | Stocky dwarf in chain mail with a shield and longsword, a plain holy symbol (not a real-world religious symbol), grey-streaked beard |
 | `hero-tamsin-reed` | `sprites/hero-tamsin-reed.png` | Tamsin Reed, wood elf ranger | Lean elf in studded leather and a green-brown cloak, longbow drawn in the attack frames, shortsword at the hip |
+| `hero-sister-maren-holt` | `sprites/hero-sister-maren-holt.png` | Sister Maren Holt, human cleric | Young woman in chain mail with a shield and mace, a plain sun holy symbol (not a real-world religious symbol); attack frames can be a raised-hand casting pose |
+| `hero-pip-thistlewick` | `sprites/hero-pip-thistlewick.png` | Pip Thistlewick, rock gnome wizard | Small (gnome: as short as Wren), robes with many pockets, quarterstaff, goggles pushed up; attack frames are a casting gesture with a spark at the hand |
 
 Also a 512x512 portrait for each at `library/portraits/companion-<id>.webp` (catalog ids `portrait-wren-ashdown` and so on, kind `npc`), chest-up like the NPC portraits.
 

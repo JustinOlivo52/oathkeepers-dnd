@@ -17,7 +17,7 @@ describe("art catalog", () => {
 
   it("points only at files that exist", () => {
     for (const e of content.art) {
-      for (const file of [e.sprite?.file, e.image, e.board, e.props, e.kind === "tileset" ? e.tiles : undefined]) {
+      for (const file of [e.sprite?.file, e.vfx?.file, e.image, e.board, e.props, e.kind === "tileset" ? e.tiles : undefined]) {
         if (file) expect(existsSync(join(assets, file)), `${e.id}: ${file}`).toBe(true);
       }
     }

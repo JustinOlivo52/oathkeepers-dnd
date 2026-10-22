@@ -3,6 +3,7 @@ import { ABILITIES, seededRng } from "@oathkeepers/engine";
 import {
   buildCharacter,
   creationOptions,
+  defaultSpells,
   emptyDraft,
   finalizeCharacter,
   loadContent,
@@ -54,6 +55,7 @@ function completeDraft(classId: string, speciesId = "human", backgroundId = "sol
   d.shield = o.canUseShield;
   d.weaponIds = o.weapons.slice(0, 2).map((w) => w.id);
   d.languages = ["Elvish", "Dwarvish"];
+  if (o.cls?.spellcasting) d.spells = defaultSpells(content, o.cls, d.level);
   return d;
 }
 

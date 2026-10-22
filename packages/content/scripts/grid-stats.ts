@@ -38,8 +38,8 @@ for (let seed = 1; seed <= N; seed++) {
   }
   oas += combat.log.ofType("reaction").length;
   for (const e of combat.log.events) {
-    if (e.type !== "feature_used" && e.type !== "extra_damage") continue;
-    const id = e.type === "feature_used" ? e.featureId : `+${e.source}`;
+    if (e.type !== "feature_used" && e.type !== "extra_damage" && e.type !== "spell_cast") continue;
+    const id = e.type === "feature_used" ? e.featureId : e.type === "spell_cast" ? `spell:${e.spellId}` : `+${e.source}`;
     if (e.creatureId === bram.id) used[id] = (used[id] ?? 0) + 1;
   }
 }

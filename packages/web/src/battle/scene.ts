@@ -46,9 +46,28 @@ export interface Overlay {
   path?: Point[];
   /** Path squares where moving provokes an opportunity attack. */
   danger?: Point[];
-  targets?: { point: Point; ok: boolean; size?: number }[];
+  targets?: { point: Point; ok: boolean; size?: number; picked?: boolean }[];
+  /** Squares an area spell would cover. */
+  area?: Point[];
   hover?: Point;
 }
+
+/** A spell effect animation from the art library (kind "vfx"), keyed by its catalog id. */
+export interface VfxInfo {
+  key: string;
+  file: string;
+  frameWidth: number;
+  frameHeight: number;
+  frames: number;
+  fps: number;
+  role: "projectile" | "impact" | "area";
+}
+
+/** Colors for spell effects drawn in code, until library art exists for a spell. */
+const SPELL_COLORS: Record<string, number> = {
+  fire: 0xff7a2a, cold: 0x9fd8ff, lightning: 0xfff17a, acid: 0x9be05a, poison: 0x7fcf5a, necrotic: 0x8a5ad8,
+  radiant: 0xffe9a0, force: 0xc28cff, thunder: 0xb0c4ff, psychic: 0xff8ad8, heal: 0x7fffa0, buff: 0xffe08a, control: 0xb48cff,
+};
 
 export interface SceneCallbacks {
   onHover(p: Point | null): void;
@@ -87,6 +106,7 @@ export class BattleScene extends Phaser.Scene {
     private readonly sheetFor: (c: Creature) => SpriteSheetInfo,
     private readonly tileset: TilesetInfo,
     private readonly callbacks: SceneCallbacks,
+    private readonly effects: VfxInfo[] = [],
   ) {
     super("battle");
   }
@@ -98,6 +118,7 @@ export class BattleScene extends Phaser.Scene {
     for (const sheet of this.sheets()) {
       this.load.spritesheet(sheet.key, `${BASE}assets/${sheet.file}`, { frameWidth: sheet.frameWidth, frameHeight: sheet.frameHeight });
     }
+    for (const v of this.effects) this.load.spritesheet(v.key, `${BASE}assets/${v.file}`, { frameWidth: v.frameWidth, frameHeight: v.frameHeight });
   }
 
   create(): void {
@@ -110,6 +131,10 @@ export class BattleScene extends Phaser.Scene {
           repeat: def.loop ? -1 : 0,
         });
       }
+    }
+    for (const v of this.effects) {
+      if (!this.textures.exists(v.key)) continue;
+      this.anims.create({ key: `${v.key}:play`, frames: this.anims.generateFrameNumbers(v.key, { start: 0, end: v.frames - 1 }), frameRate: v.fps, repeat: v.role === "projectile" ? -1 : 0 });
     }
     this.drawMap();
     this.overlay = this.add.graphics().setDepth(1);
@@ -274,7 +299,8 @@ export class BattleScene extends Phaser.Scene {
     for (const p of o.reach ?? []) fill(p, 0x529da8, 0.28);
     const danger = new Set((o.danger ?? []).map(key));
     for (const p of o.path ?? []) fill(p, danger.has(key(p)) ? 0xe0603a : 0x7fd0ff, 0.26);
-    for (const t of o.targets ?? []) ring(t.point, t.ok ? 0xe0503a : 0x777777, t.ok ? 3 : 2, t.size ?? 1);
+    for (const t of o.targets ?? []) ring(t.point, t.picked ? 0xffe27a : t.ok ? 0xe0503a : 0x777777, t.ok ? 3 : 2, t.size ?? 1);
+    for (const p of o.area ?? []) fill(p, 0xe0703a, 0.32);
     if (o.active) {
       ring(o.active, 0xe4bf73, 3, o.activeSize ?? 1);
       const nextCell = key(o.active);
@@ -316,7 +342,9 @@ export class BattleScene extends Phaser.Scene {
         const attack = a.creature.attacks.find((x) => x.id === e.attackId);
         const ranged = Math.abs(a.sprite.x - d.sprite.x) > TILE * 1.5 || Math.abs(a.sprite.y - d.sprite.y) > TILE * 1.5;
         a.sprite.play(`${a.sheet.key}:attack`);
-        if (ranged) await this.projectile(a.sprite, d.sprite, attack?.kind === "ranged" ? 0xd9c7a0 : 0xb0b8c0);
+        const spell = attack ? undefined : a.creature.spells?.find((x) => x.id === e.attackId);
+        if (spell) await this.spellShot(spell, a.sprite, d.sprite);
+        else if (ranged) await this.projectile(a.sprite, d.sprite, attack?.kind === "ranged" ? 0xd9c7a0 : 0xb0b8c0);
         else await this.lunge(a.sprite, d.sprite);
         this.float(d.sprite, e.critical ? "CRIT!" : e.hit ? `${e.roll.total}` : "Miss", e.critical ? "#ffd84a" : e.hit ? "#ffffff" : "#bbbbbb", -18);
         await this.wait(e.hit ? 120 : 380);
@@ -362,6 +390,33 @@ export class BattleScene extends Phaser.Scene {
         this.float(this.tokens.get(e.creatureId)!.sprite, "Opportunity attack!", "#ffd84a", -30);
         await this.wait(350);
         return;
+      case "spell_cast": {
+        const caster = this.tokens.get(e.creatureId)!;
+        const spell = caster.creature.spells?.find((x) => x.id === e.spellId);
+        if (!spell) return;
+        caster.sprite.play(`${caster.sheet.key}:attack`);
+        this.float(caster.sprite, spell.name, "#d8c4ff", -30);
+        const color = SPELL_COLORS[spell.heal ? "heal" : spell.damage?.type ?? (spell.effect === "hold" ? "control" : "buff")]!;
+        if (e.area) {
+          await this.areaFlash(spell.id, spell.damage?.type, e.area, color);
+          return;
+        }
+        if (spell.effect === "teleport") {
+          void this.impact(spell.id, "teleport", caster.sprite, color);
+          await this.tween({ targets: caster.sprite, alpha: 0, duration: 180 });
+          caster.sprite.setAlpha(1);
+          return;
+        }
+        // Attack spells animate with their attack events; everything else shows at each target here.
+        if (spell.attack) return;
+        for (const id of e.targetIds) {
+          const t = this.tokens.get(id);
+          if (!t) continue;
+          if (spell.autoHit) for (let i = 0; i < (spell.hits ?? 1); i++) await this.spellShot(spell, caster.sprite, t.sprite, 160);
+          else await this.impact(spell.id, spell.heal ? "heal" : spell.damage?.type ?? spell.effect ?? "buff", t.sprite, color);
+        }
+        return;
+      }
       case "action":
         this.float(this.tokens.get(e.creatureId)!.sprite, e.action[0]!.toUpperCase() + e.action.slice(1), "#9fd3ff", -30);
         await this.wait(300);
@@ -394,6 +449,67 @@ export class BattleScene extends Phaser.Scene {
     const duration = Math.min(450, Math.hypot(d.x - a.x, d.y - a.y) * 1.2);
     await this.tween({ targets: shot, x: d.x, y: d.y - 60, duration });
     shot.destroy();
+  }
+
+  /** First library effect that exists, by spell id, then by damage type or kind: vfx-fire-bolt, then vfx-fire. */
+  private effectFor(ids: string[], role: VfxInfo["role"]): VfxInfo | undefined {
+    for (const id of ids) {
+      const v = this.effects.find((x) => x.key === `vfx-${id}${role === "projectile" ? "-projectile" : ""}` && x.role === role);
+      if (v && this.textures.exists(v.key)) return v;
+    }
+    return undefined;
+  }
+
+  private async spellShot(spell: { id: string; damage?: { type: string } }, a: Phaser.GameObjects.Sprite, d: Phaser.GameObjects.Sprite, ms?: number): Promise<void> {
+    const kinds = [spell.id, spell.damage?.type ?? "force"];
+    const art = this.effectFor(kinds, "projectile");
+    const color = SPELL_COLORS[spell.damage?.type ?? "force"] ?? 0xc28cff;
+    const duration = ms ?? Math.min(450, Math.hypot(d.x - a.x, d.y - a.y) * 1.2);
+    const angle = Math.atan2(d.y - a.y, d.x - a.x);
+    if (art) {
+      const shot = this.add.sprite(a.x, a.y - 60, art.key).setDepth(4000).setRotation(angle).play(`${art.key}:play`);
+      await this.tween({ targets: shot, x: d.x, y: d.y - 60, duration });
+      shot.destroy();
+    } else {
+      const shot = this.add.circle(a.x, a.y - 60, 7, color).setDepth(4000);
+      const glow = this.add.circle(a.x, a.y - 60, 14, color, 0.35).setDepth(3999);
+      await this.tween({ targets: [shot, glow], x: d.x, y: d.y - 60, duration });
+      shot.destroy();
+      glow.destroy();
+    }
+    await this.impact(spell.id, spell.damage?.type ?? "force", d, color, 0.6);
+  }
+
+  private async impact(spellId: string, kind: string, d: Phaser.GameObjects.Sprite, color: number, scale = 1): Promise<void> {
+    const art = this.effectFor([spellId, kind], "impact");
+    if (art) {
+      const fx = this.add.sprite(d.x, d.y - 50, art.key).setDepth(4500).setScale(scale).play(`${art.key}:play`);
+      await new Promise<void>((resolve) => fx.once("animationcomplete", () => resolve()));
+      fx.destroy();
+      return;
+    }
+    const ring = this.add.circle(d.x, d.y - 50, 18 * scale, color, 0.55).setDepth(4500);
+    await this.tween({ targets: ring, scale: 2.4, alpha: 0, duration: 320 });
+    ring.destroy();
+  }
+
+  private async areaFlash(spellId: string, type: string | undefined, area: Point[], color: number): Promise<void> {
+    const xs = area.map((p) => p.x);
+    const ys = area.map((p) => p.y);
+    const cx = ((Math.min(...xs) + Math.max(...xs) + 1) / 2) * TILE;
+    const cy = ((Math.min(...ys) + Math.max(...ys) + 1) / 2) * TILE;
+    const art = this.effectFor([spellId, type ?? "force"], "area");
+    const g = this.add.graphics().setDepth(4400);
+    for (const p of area) g.fillStyle(color, 0.45).fillRect(p.x * TILE, p.y * TILE, TILE, TILE);
+    const done = this.tween({ targets: g, alpha: 0, duration: 650 });
+    if (art) {
+      const fx = this.add.sprite(cx, cy, art.key).setDepth(4500).play(`${art.key}:play`);
+      fx.setDisplaySize((Math.max(...xs) - Math.min(...xs) + 1) * TILE, (Math.max(...ys) - Math.min(...ys) + 1) * TILE);
+      await new Promise<void>((resolve) => fx.once("animationcomplete", () => resolve()));
+      fx.destroy();
+    }
+    await done;
+    g.destroy();
   }
 
   private float(target: Phaser.GameObjects.Sprite, text: string, color: string, offsetY: number): void {

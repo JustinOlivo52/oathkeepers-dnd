@@ -197,8 +197,18 @@ Class features in combat (level 1 to 3, players and AI):
 - AI: heals allies with Lay on Hands, rages, marks the toughest visible enemy, smites with the free cast and on undead, fiends and big targets, aims and sneak attacks, flurries
 - `npm run balance -- 3 goblin-warrior <character-id>` shows which features fired per fight
 
+Spells in battle:
+- 24 SRD spells as data (`packages/content/data/spells.json`): 10 cantrips, 9 level 1, 5 level 2, for all 8 casting classes
+- Spell attacks, saving throws (half on success), auto-hit darts, areas (sphere, cone, cube; they hit allies too), healing, Bless, Shield of Faith, Hold Person (paralyzed, repeat saves), Misty Step, Spiritual Weapon, Guiding Bolt, Vicious Mockery, Ray of Frost, Shocking Grasp
+- 2024 slot tables (full, half and pact casters; pact slots back on a short rest), upcasting, one slot spell per turn, concentration (Con save on damage, ends at 0 HP)
+- Character Builder step 8 picks cantrips and prepared spells (2024 counts); older characters get sensible defaults
+- New caster companions: Sister Maren Holt (human cleric) and Pip Thistlewick (gnome wizard)
+- AI casters heal the badly hurt, keep Spiritual Weapon swinging, Misty Step away, hold humanoids, Bless the party, use areas only when no ally is caught, save slots for tough targets
+- Battle screen: spell bar with slots, upcast picker, multi-target picking, area preview on hover; code-drawn effects until library art exists (`docs/art/CODEX_BRIEF_SPELLS.md`)
+
 Not yet:
-- Spells for full casters (Bard, Cleric, Druid, Sorcerer, Warlock, Wizard); Paladin and Ranger only use their slots for Smite and Hunter's Mark
+- Spells above level 2, reactions (Shield, Hellish Rebuke), Thunderwave's push, out-of-combat spells (rituals, utility)
+- Monsters casting spells
 - Barbarian Danger Sense, Rogue Fast Hands, Monk Deflect Attacks (these need saves, objects or reactions in battle)
 - Companion battle sprites: requested from Codex in batch 2, section 5; the game uses `hero-<character id>` art automatically once it exists
 

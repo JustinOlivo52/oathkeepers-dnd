@@ -83,3 +83,16 @@
 @media (prefers-reduced-motion: reduce) { .battle * { scroll-behavior: auto; } }
 
 .auto-end { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+
+.spell-bar { display: grid; gap: 6px; margin: 8px 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+.spell-slots { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 0; font-size: 13px; }
+.spell-slots span { color: #c9a8ff; letter-spacing: 1px; }
+.spell-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.spell-level { min-width: 64px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.spell-bar button.spell { border-color: #6d5a9a; background: #211b2e; color: #e6d8ff; }
+.spell-bar button.spell.on { border-color: #c9a8ff; color: #e6d8ff; }
+.spell-casting { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+.spell-casting label { display: flex; gap: 6px; align-items: center; }
+.battle .panel > .spell-bar { grid-column: 2; }
+@media (max-width: 760px) { .battle .panel > .spell-bar { grid-column: 1; } }
+.spell-bar button.spell img { vertical-align: -5px; margin-right: 5px; image-rendering: auto; }

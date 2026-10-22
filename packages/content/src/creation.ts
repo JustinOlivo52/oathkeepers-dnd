@@ -1,3 +1,4 @@
+import { spellIssues } from "./spells.js";
 import { ABILITIES, SKILLS, rollDie, type Ability, type AbilityScores, type Rng, type Skill } from "@oathkeepers/engine";
 import { classProficiencies } from "./build.js";
 import type { Content } from "./index.js";
@@ -49,10 +50,12 @@ export interface CharacterDraft {
 
   /** Languages chosen in addition to Common. */
   languages: string[];
+  /** Cantrips and prepared spells (casters only). */
+  spells?: string[];
 }
 
 export type AbilityMethod = "standard-array" | "point-buy" | "rolled";
-export type CreationStep = "class" | "background" | "species" | "abilities" | "skills" | "features" | "equipment" | "details";
+export type CreationStep = "class" | "background" | "species" | "abilities" | "skills" | "features" | "equipment" | "spells" | "details";
 
 export interface CreationIssue {
   step: CreationStep;
@@ -277,6 +280,9 @@ export function validateDraft(content: Content, draft: CharacterDraft): Creation
   if (draft.weaponIds.some((w) => !o.weapons.some((x) => x.id === w))) add("equipment", "You aren't trained with one of your weapons.");
   if (draft.weaponIds.length > MAX_WEAPONS) add("equipment", `Carry at most ${MAX_WEAPONS} weapons for now.`);
 
+  // Spells
+  if (o.cls?.spellcasting) for (const message of spellIssues(content, o.cls, draft.level, draft.spells ?? [])) add("spells", message);
+
   // Details
   if (!draft.name.trim()) add("details", "Give your character a name.");
   if (draft.languages.length !== EXTRA_LANGUAGES || new Set(draft.languages).size !== EXTRA_LANGUAGES) {
@@ -316,6 +322,7 @@ export function finalizeCharacter(content: Content, draft: CharacterDraft, id = 
     equipment: { ...(draft.armorId ? { armor: draft.armorId } : {}), shield: draft.shield, weapons: [...draft.weaponIds] },
     languages: ["Common", ...draft.languages],
     tools: [...new Set([background.tool, ...(o.cls!.tools ? [o.cls!.tools] : [])])],
+    ...(o.cls!.spellcasting ? { spells: [...(draft.spells ?? [])] } : {}),
     ...(draft.alignment ? { alignment: draft.alignment } : {}),
     ...(draft.notes ? { notes: draft.notes } : {}),
   };

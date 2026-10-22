@@ -173,6 +173,39 @@ export const MonsterSchema = z.object({
   features: z.array(id),
 });
 
+const spellAmount = z.object({ dice, perSlot: dice.optional(), addModifier: z.boolean().optional() });
+
+/** A spell's battle rules (see SpellDef in the engine). Numbers are the base; content adds the caster's bonus and DC. */
+export const SpellSchema = z.object({
+  id,
+  name: z.string(),
+  level: z.number().int().min(0).max(9),
+  school: z.string(),
+  classes: z.array(id).min(1),
+  castingTime: z.enum(["action", "bonus"]),
+  rangeFt: z.number().int().min(0),
+  target: z.enum(["enemy", "ally", "point", "self"]),
+  targets: z.number().int().min(1).optional(),
+  targetsPerSlot: z.number().int().min(1).optional(),
+  area: z.object({ shape: z.enum(["sphere", "cone", "cube"]), sizeFt: z.number().int().min(5) }).optional(),
+  attack: z.enum(["melee", "ranged"]).optional(),
+  save: ability.optional(),
+  halfOnSave: z.boolean().optional(),
+  hits: z.number().int().min(1).optional(),
+  hitsPerSlot: z.number().int().min(1).optional(),
+  autoHit: z.boolean().optional(),
+  damage: spellAmount.extend({ type: damageType }).optional(),
+  heal: spellAmount.optional(),
+  /** Cantrip damage dice grow at levels 5, 11 and 17. */
+  cantripScaling: z.boolean().optional(),
+  /** Eldritch Blast: more beams instead of bigger dice. */
+  beamScaling: z.boolean().optional(),
+  concentration: z.boolean().optional(),
+  effect: z.enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon"]).optional(),
+  onlyType: z.string().optional(),
+  description: z.string(),
+});
+
 export const CharacterSchema = z.object({
   id,
   name: z.string().min(1),
@@ -196,12 +229,15 @@ export const CharacterSchema = z.object({
   tools: z.array(z.string()).default([]),
   alignment: z.string().optional(),
   notes: z.string().optional(),
+  /** Cantrips and prepared spells. Missing: the class's default picks. */
+  spells: z.array(id).optional(),
 });
 
 export type WeaponData = z.infer<typeof WeaponSchema>;
 export type ArmorData = z.infer<typeof ArmorSchema>;
 export type ClassData = z.infer<typeof ClassSchema>;
 export type MonsterData = z.infer<typeof MonsterSchema>;
+export type SpellData = z.infer<typeof SpellSchema>;
 export type CharacterData = z.infer<typeof CharacterSchema>;
 export type SpeciesData = z.infer<typeof SpeciesSchema>;
 export type BackgroundData = z.infer<typeof BackgroundSchema>;

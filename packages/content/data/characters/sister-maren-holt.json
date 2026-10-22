@@ -1,0 +1,65 @@
+{
+  "id": "sister-maren-holt",
+  "name": "Sister Maren Holt",
+  "species": "human",
+  "size": "medium",
+  "background": "acolyte",
+  "class": "cleric",
+  "subclass": "life-domain",
+  "classChoices": {
+    "divine-order": "protector"
+  },
+  "level": 3,
+  "abilities": {
+    "str": 14,
+    "dex": 8,
+    "con": 13,
+    "int": 10,
+    "wis": 17,
+    "cha": 13
+  },
+  "skills": [
+    "insight",
+    "religion",
+    "medicine",
+    "persuasion",
+    "perception"
+  ],
+  "expertise": [],
+  "feats": [
+    {
+      "id": "magic-initiate",
+      "option": "cleric"
+    },
+    {
+      "id": "alert"
+    }
+  ],
+  "weaponMasteries": [],
+  "equipment": {
+    "armor": "chain-mail",
+    "shield": true,
+    "weapons": [
+      "mace"
+    ]
+  },
+  "languages": [
+    "Common",
+    "Dwarvish",
+    "Halfling"
+  ],
+  "tools": [
+    "Calligrapher's Supplies"
+  ],
+  "alignment": "Lawful Good",
+  "notes": "Thornwatch's young temple healer. Warm, stubborn and braver than she looks; keeps a tally of everyone she has patched up.",
+  "spells": [
+    "sacred-flame",
+    "cure-wounds",
+    "healing-word",
+    "bless",
+    "guiding-bolt",
+    "spiritual-weapon",
+    "hold-person"
+  ]
+}

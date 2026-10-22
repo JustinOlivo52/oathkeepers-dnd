@@ -1,4 +1,5 @@
 import {
+  areaSquares,
   Combat,
   distanceFt,
   isConscious,
@@ -9,6 +10,7 @@ import {
   type Creature,
   type LoggedEvent,
   type Point,
+  type SpellDef,
 } from "@oathkeepers/engine";
 import { describeEvent } from "@oathkeepers/content";
 import type { BattleScene, Overlay } from "./scene";
@@ -29,10 +31,18 @@ export type Mode =
   | { kind: "attack"; attackId: string }
   | { kind: "confirm"; attackId: string; targetId: string }
   /** Pick who a feature is used on: an ally (Lay on Hands) or an enemy (Hunter's Mark, monk strikes). */
-  | { kind: "feature"; feature: TargetedFeature };
+  | { kind: "feature"; feature: TargetedFeature }
+  /** Casting a spell: pick targets (several for Bless) or a square. */
+  | { kind: "spell"; spellId: string; slot?: number; picked: string[] };
 
-export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows";
-export const TARGETS_ALLY: Record<TargetedFeature, boolean> = { "lay-on-hands": true, "hunters-mark": false, "martial-arts": false, "flurry-of-blows": false };
+export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon";
+export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
+  "lay-on-hands": true,
+  "hunters-mark": false,
+  "martial-arts": false,
+  "flurry-of-blows": false,
+  "spiritual-weapon": false,
+};
 
 export type QuickAction =
   | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
@@ -111,6 +121,30 @@ export class BattleController {
     const target = this.combat.occupant(p);
     this.message = null;
 
+    if (this.mode.kind === "spell") {
+      const mode = this.mode;
+      const spell = this.spell(mode.spellId);
+      if (!spell) return;
+      if (spell.target === "point") {
+        await this.castNow({ point: p });
+        return;
+      }
+      const wantAlly = spell.target === "ally";
+      if (!target || target.dead || (wantAlly ? target.side !== me.side : target.side === me.side)) {
+        this.mode = { kind: "move" };
+        this.refresh();
+        return;
+      }
+      if (this.maxTargets(spell, mode.slot) <= 1) {
+        await this.castNow({ targetIds: [target.id] });
+        return;
+      }
+      const picked = mode.picked.includes(target.id) ? mode.picked.filter((x) => x !== target.id) : [...mode.picked, target.id].slice(0, this.maxTargets(spell, mode.slot));
+      this.mode = { ...mode, picked };
+      this.refresh();
+      return;
+    }
+
     if (this.mode.kind === "feature") {
       const feature = this.mode.feature;
       if (!target || (TARGETS_ALLY[feature] ? target.side !== me.side : target.side === me.side)) {
@@ -123,6 +157,7 @@ export class BattleController {
         if (feature === "lay-on-hands") this.combat.layOnHands(me.id, target.id);
         else if (feature === "hunters-mark") this.combat.huntersMark(me.id, target.id);
         else if (feature === "martial-arts") this.combat.martialArts(me.id, target.id);
+        else if (feature === "spiritual-weapon") this.combat.spiritualWeaponAttack(me.id, target.id);
         else this.combat.flurryOfBlows(me.id, target.id);
       });
       return;
@@ -158,6 +193,54 @@ export class BattleController {
     this.message = null;
     this.mode = this.mode.kind === "feature" && this.mode.feature === feature ? { kind: "move" } : { kind: "feature", feature };
     this.refresh();
+  }
+
+  spell(id: string): SpellDef | undefined {
+    return this.active?.spells?.find((s) => s.id === id);
+  }
+
+  maxTargets(spell: SpellDef, slot?: number): number {
+    const extra = Math.max(0, (slot ?? spell.level) - spell.level);
+    return (spell.targets ?? 1) + (spell.targetsPerSlot ?? 0) * extra;
+  }
+
+  /** Choose a spell to cast; self spells go off right away. Choosing it again cancels. */
+  async selectSpell(spellId: string): Promise<void> {
+    if (!this.canAct) return;
+    this.message = null;
+    if (this.mode.kind === "spell" && this.mode.spellId === spellId) {
+      this.mode = { kind: "move" };
+      this.refresh();
+      return;
+    }
+    const spell = this.spell(spellId);
+    if (!spell) return;
+    const slot = this.combat.slotsFor(this.active!.id, spellId)[0];
+    this.mode = { kind: "spell", spellId, ...(slot ? { slot } : {}), picked: [] };
+    if (spell.target === "self") await this.castNow({});
+    else this.refresh();
+  }
+
+  /** Upcast: the slot level for the spell being cast. */
+  setSpellSlot(slot: number): void {
+    if (this.mode.kind !== "spell") return;
+    this.mode = { ...this.mode, slot };
+    this.refresh();
+  }
+
+  /** Cast a multi-target spell (Bless) on everyone picked so far. */
+  async castPicked(): Promise<void> {
+    if (this.mode.kind !== "spell" || !this.mode.picked.length) return;
+    await this.castNow({ targetIds: this.mode.picked });
+  }
+
+  private async castNow(opts: { targetIds?: string[]; point?: Point }): Promise<void> {
+    if (this.mode.kind !== "spell" || !this.canAct) return;
+    const { spellId, slot } = this.mode;
+    this.mode = { kind: "move" };
+    const before = this.combat.log.events.length;
+    await this.tryRules(() => this.combat.castSpell(this.active!.id, spellId, { ...opts, ...(slot ? { slotLevel: slot } : {}) }));
+    if (!this.message) this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
   }
 
   toggleSmite(): void {
@@ -269,7 +352,7 @@ export class BattleController {
       this.mode.kind === "confirm" ? this.combat.get(this.mode.targetId) : this.hover ? this.combat.occupant(this.hover) : undefined;
     if (!target || target.side === me.side) return null;
     const mode = this.mode;
-    if (mode.kind === "feature") return null;
+    if (mode.kind === "feature" || mode.kind === "spell") return null;
     const attack = mode.kind === "move" ? (this.defaultAttack(me, target) ?? me.attacks[0]) : me.attacks.find((a) => a.id === mode.attackId);
     if (!attack) return null;
     return { target, attackName: attack.name, check: this.combat.checkAttack(me.id, target.id, attack.id), bonus: attack.attackBonus };
@@ -312,6 +395,21 @@ export class BattleController {
       if (this.hover && reach.has(key(this.hover)) && !samePoint(this.hover, me.position!)) {
         o.path = this.combat.pathTo(me.id, this.hover);
         o.danger = this.dangerAlong(me, o.path);
+      }
+    } else if (this.mode.kind === "spell") {
+      const spell = this.spell(this.mode.spellId);
+      if (spell?.target === "point" && this.hover && this.combat.map) {
+        const area = spell.area ? areaSquares(this.combat.map, spell.area.shape, spell.area.sizeFt, this.hover, me.position!, me.footprint ?? 1) : [this.hover];
+        o.area = area;
+      } else if (spell) {
+        const ally = spell.target === "ally";
+        const picked = new Set(this.mode.picked);
+        o.targets = [...this.combat.creatures.values()]
+          .filter((c) => !c.dead && c.position && (ally ? c.side === me.side : c.side !== me.side))
+          .map((c) => {
+            const inRange = c.id === me.id || ((this.combat.distanceBetween(me, c) ?? 0) <= Math.max(5, spell.rangeFt) && this.combat.canSee(me, c));
+            return { point: c.position!, size: c.footprint ?? 1, ok: inRange, picked: picked.has(c.id) };
+          });
       }
     } else if (this.mode.kind === "feature") {
       const ally = TARGETS_ALLY[this.mode.feature];
