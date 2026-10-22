@@ -2,6 +2,21 @@
 
 You are adding the first batch of the **Oathkeepers art library**: premade art the AI Dungeon Master picks from by tags during play. Read [`LIBRARY.md`](LIBRARY.md) first. It defines the folders, formats, sizes, catalog fields, the allowed tags, and the content rules. This brief lists what to make.
 
+## Active scope: representative pilot first
+
+The owner approved a smaller complete pilot and the policy fixes in `LIBRARY.md` before the original full batch. The rest of this document is the expansion backlog; its original all-assets checklist does not define pilot completion.
+
+Pilot deliverables:
+- Five monster sheets and matching portraits: skeleton, zombie, wolf, giant-spider, ogre.
+- Three NPC portraits: npc-innkeeper-dwarf, npc-guard-captain, npc-merchant.
+- Two scenes: scene-forest-road-day, scene-tavern-night.
+- One forest tileset and board-forest-road, with validated spawn/routes.
+- Preserved originals, reproducible processing, contact-sheet preview, review viewer and handoff notes.
+
+Add each with explicit readiness fields. Static art inspection may mark art ready. New monster mechanics and runtime integration stay pending. Do NOT add invented/minimal stat blocks merely to pass catalog tests. Large artwork does not authorize Large combat support. Normal runtime selection must not choose pending entries.
+
+The owner also authorized catalog, matching and board-validator changes despite the original art-only instruction below. Engine rules and existing stat blocks remain unchanged.
+
 ## How to work
 
 1. Pull the latest `master`, then create the branch **`art/library-batch-1`**.
@@ -24,7 +39,7 @@ All are SRD 5.2 creatures. Each sheet's catalog entry uses `kind: "monster"` and
 
 | id | Monster | Size | Tags (use these) | Notes |
 |---|---|---|---|---|
-| goblin-boss | Goblin Boss | Medium | goblinoid, humanoid, leader | Bigger, better armor than the goblin warrior; crude crown or trophy |
+| goblin-boss | Goblin Boss | Small (192px canvas) | goblinoid, humanoid, leader | Bigger, better armor than the goblin warrior; crude crown or trophy |
 | bugbear-warrior | Bugbear Warrior | Medium | goblinoid, humanoid, brute | Hulking, long arms, morningstar |
 | bandit | Bandit | Medium | humanoid, bandit, skirmisher | Hooded, light armor, scimitar |
 | bandit-captain | Bandit Captain | Medium | humanoid, bandit, leader | Long coat, two blades |
@@ -34,7 +49,7 @@ All are SRD 5.2 creatures. Each sheet's catalog entry uses `kind: "monster"` and
 | ghoul | Ghoul | Medium | undead, skirmisher | Gaunt, long claws |
 | wight | Wight | Medium | undead, leader | Corroded armor, cold glowing eyes |
 | wolf | Wolf | Medium | beast, skirmisher | Grey wolf, side view |
-| giant-rat | Giant Rat | Medium | beast, swarm, minion | Scale it small inside the 192 frame |
+| giant-rat | Giant Rat | Small (192px canvas) | beast, minion, skirmisher | Scale it small inside the 192 frame |
 | harpy | Harpy | Medium | monstrosity, skirmisher | Wings and talons; tasteful design |
 | dire-wolf | Dire Wolf | **Large** | beast, brute | Huge, dark fur |
 | worg | Worg | **Large** | beast, monstrosity, brute | Evil-eyed, matted fur |
@@ -109,7 +124,7 @@ Boards: `assets/boards/<id>.json` following the board format in `LIBRARY.md`, ca
 
 The abbey board stays as it is (Claude will convert it to this format).
 
-## Done means
+## Expansion backlog done means
 
 - [ ] Every asset in sections 1 to 4 exists at the path given, at the size given, with a catalog entry using the listed tags
 - [ ] Large monster sheets are 384x384 frames

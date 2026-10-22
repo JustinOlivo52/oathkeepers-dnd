@@ -3,55 +3,533 @@
     "id": "hero-martial",
     "kind": "hero",
     "title": "Crimson knight (martial heroes)",
-    "tags": ["martial", "hero", "human"],
-    "sprite": { "file": "sprites/hero-martial.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "tags": [
+      "martial",
+      "hero",
+      "human"
+    ],
+    "sprite": {
+      "file": "sprites/hero-martial.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    },
     "source": "codex-imagegen",
-    "added": "2026-10-21"
+    "added": "2026-10-21",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "ready"
   },
   {
     "id": "hero-expert",
     "kind": "hero",
     "title": "Hooded ranger (expert heroes)",
-    "tags": ["expert", "hero", "human"],
-    "sprite": { "file": "sprites/hero-expert.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "tags": [
+      "expert",
+      "hero",
+      "human"
+    ],
+    "sprite": {
+      "file": "sprites/hero-expert.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    },
     "source": "codex-imagegen",
-    "added": "2026-10-21"
+    "added": "2026-10-21",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "ready"
   },
   {
     "id": "hero-arcane",
     "kind": "hero",
     "title": "Blue-robed mage (arcane heroes)",
-    "tags": ["arcane", "hero", "human"],
-    "sprite": { "file": "sprites/hero-arcane.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "tags": [
+      "arcane",
+      "hero",
+      "human"
+    ],
+    "sprite": {
+      "file": "sprites/hero-arcane.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    },
     "source": "codex-imagegen",
-    "added": "2026-10-21"
+    "added": "2026-10-21",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "ready"
   },
   {
     "id": "hero-divine",
     "kind": "hero",
     "title": "Gold-and-ivory paladin (divine heroes)",
-    "tags": ["divine", "hero", "human"],
-    "sprite": { "file": "sprites/hero-divine.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "tags": [
+      "divine",
+      "hero",
+      "human"
+    ],
+    "sprite": {
+      "file": "sprites/hero-divine.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    },
     "source": "codex-imagegen",
-    "added": "2026-10-21"
+    "added": "2026-10-21",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "ready"
   },
   {
     "id": "goblin-warrior",
     "kind": "monster",
     "title": "Goblin Warrior",
-    "tags": ["goblinoid", "humanoid", "skirmisher", "minion"],
+    "tags": [
+      "goblinoid",
+      "humanoid",
+      "skirmisher",
+      "minion"
+    ],
     "monsterId": "goblin-warrior",
-    "sprite": { "file": "sprites/goblin.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "sprite": {
+      "file": "sprites/goblin.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    },
     "source": "codex-imagegen",
-    "added": "2026-10-21"
+    "added": "2026-10-21",
+    "artStatus": "ready",
+    "mechanicsStatus": "ready",
+    "integrationStatus": "ready"
   },
   {
     "id": "tiles-abbey",
     "kind": "tileset",
     "title": "Mossy abbey stone",
-    "tags": ["abbey", "ruins", "outdoor"],
+    "tags": [
+      "abbey",
+      "ruins",
+      "outdoor"
+    ],
     "tiles": "sprites/tiles.png",
     "source": "codex-imagegen",
-    "added": "2026-10-21"
+    "added": "2026-10-21",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "ready"
+  },
+  {
+    "id": "monster-skeleton",
+    "kind": "monster",
+    "title": "Skeleton",
+    "tags": [
+      "undead",
+      "minion",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "monsterId": "skeleton",
+    "sprite": {
+      "file": "sprites/monster-skeleton.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    }
+  },
+  {
+    "id": "portrait-skeleton",
+    "kind": "npc",
+    "title": "Skeleton portrait",
+    "tags": [
+      "undead",
+      "minion",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/monster-skeleton.webp",
+    "monsterId": "skeleton"
+  },
+  {
+    "id": "monster-zombie",
+    "kind": "monster",
+    "title": "Zombie",
+    "tags": [
+      "undead",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "monsterId": "zombie",
+    "sprite": {
+      "file": "sprites/monster-zombie.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    }
+  },
+  {
+    "id": "portrait-zombie",
+    "kind": "npc",
+    "title": "Zombie portrait",
+    "tags": [
+      "undead",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/monster-zombie.webp",
+    "monsterId": "zombie"
+  },
+  {
+    "id": "monster-wolf",
+    "kind": "monster",
+    "title": "Wolf",
+    "tags": [
+      "beast",
+      "skirmisher",
+      "forest"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "monsterId": "wolf",
+    "sprite": {
+      "file": "sprites/monster-wolf.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      }
+    }
+  },
+  {
+    "id": "portrait-wolf",
+    "kind": "npc",
+    "title": "Wolf portrait",
+    "tags": [
+      "beast",
+      "skirmisher",
+      "forest"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/monster-wolf.webp",
+    "monsterId": "wolf"
+  },
+  {
+    "id": "monster-giant-spider",
+    "kind": "monster",
+    "title": "Giant Spider",
+    "tags": [
+      "beast",
+      "eerie",
+      "forest"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "monsterId": "giant-spider",
+    "sprite": {
+      "file": "sprites/monster-giant-spider.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "size": "large",
+      "rulesSize": "large",
+      "footprint": {
+        "width": 2,
+        "height": 2
+      },
+      "anchor": {
+        "x": 192,
+        "y": 340
+      }
+    }
+  },
+  {
+    "id": "portrait-giant-spider",
+    "kind": "npc",
+    "title": "Giant Spider portrait",
+    "tags": [
+      "beast",
+      "eerie",
+      "forest"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/monster-giant-spider.webp",
+    "monsterId": "giant-spider"
+  },
+  {
+    "id": "monster-ogre",
+    "kind": "monster",
+    "title": "Ogre",
+    "tags": [
+      "giant",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "monsterId": "ogre",
+    "sprite": {
+      "file": "sprites/monster-ogre.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "size": "large",
+      "rulesSize": "large",
+      "footprint": {
+        "width": 2,
+        "height": 2
+      },
+      "anchor": {
+        "x": 192,
+        "y": 340
+      }
+    }
+  },
+  {
+    "id": "portrait-ogre",
+    "kind": "npc",
+    "title": "Ogre portrait",
+    "tags": [
+      "giant",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/monster-ogre.webp",
+    "monsterId": "ogre"
+  },
+  {
+    "id": "npc-innkeeper-dwarf",
+    "kind": "npc",
+    "title": "The Lantern innkeeper",
+    "tags": [
+      "innkeeper",
+      "dwarf",
+      "woman",
+      "friendly",
+      "tavern",
+      "indoor"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/npc-innkeeper-dwarf.webp"
+  },
+  {
+    "id": "npc-guard-captain",
+    "kind": "npc",
+    "title": "Thornwatch guard captain",
+    "tags": [
+      "captain",
+      "guard",
+      "soldier",
+      "human",
+      "woman",
+      "neutral"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/npc-guard-captain.webp"
+  },
+  {
+    "id": "npc-merchant",
+    "kind": "npc",
+    "title": "Traveling gnome merchant",
+    "tags": [
+      "merchant",
+      "gnome",
+      "man",
+      "neutral",
+      "market"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/portraits/npc-merchant.webp"
+  },
+  {
+    "id": "scene-forest-road-day",
+    "kind": "scene",
+    "title": "The forest road outside Thornwatch",
+    "tags": [
+      "road",
+      "forest",
+      "day",
+      "outdoor",
+      "calm"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/scenes/scene-forest-road-day.webp"
+  },
+  {
+    "id": "scene-tavern-night",
+    "kind": "scene",
+    "title": "An evening at The Lantern",
+    "tags": [
+      "tavern",
+      "town",
+      "night",
+      "indoor",
+      "festive"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "image": "library/scenes/scene-tavern-night.webp"
+  },
+  {
+    "id": "tiles-forest",
+    "kind": "tileset",
+    "title": "Thornwatch woodland terrain",
+    "tags": [
+      "forest",
+      "road",
+      "outdoor"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "tiles": "sprites/tiles-forest.png"
+  },
+  {
+    "id": "board-forest-road",
+    "kind": "board",
+    "title": "The Thornwatch Forest Road",
+    "tags": [
+      "forest",
+      "road",
+      "outdoor"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-22",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "board": "boards/board-forest-road.json",
+    "tiles": "tiles-forest"
   }
 ]
