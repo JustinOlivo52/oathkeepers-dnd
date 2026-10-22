@@ -1,0 +1,57 @@
+[
+  {
+    "id": "hero-martial",
+    "kind": "hero",
+    "title": "Crimson knight (martial heroes)",
+    "tags": ["martial", "hero", "human"],
+    "sprite": { "file": "sprites/hero-martial.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "source": "codex-imagegen",
+    "added": "2026-10-21"
+  },
+  {
+    "id": "hero-expert",
+    "kind": "hero",
+    "title": "Hooded ranger (expert heroes)",
+    "tags": ["expert", "hero", "human"],
+    "sprite": { "file": "sprites/hero-expert.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "source": "codex-imagegen",
+    "added": "2026-10-21"
+  },
+  {
+    "id": "hero-arcane",
+    "kind": "hero",
+    "title": "Blue-robed mage (arcane heroes)",
+    "tags": ["arcane", "hero", "human"],
+    "sprite": { "file": "sprites/hero-arcane.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "source": "codex-imagegen",
+    "added": "2026-10-21"
+  },
+  {
+    "id": "hero-divine",
+    "kind": "hero",
+    "title": "Gold-and-ivory paladin (divine heroes)",
+    "tags": ["divine", "hero", "human"],
+    "sprite": { "file": "sprites/hero-divine.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "source": "codex-imagegen",
+    "added": "2026-10-21"
+  },
+  {
+    "id": "goblin-warrior",
+    "kind": "monster",
+    "title": "Goblin Warrior",
+    "tags": ["goblinoid", "humanoid", "skirmisher", "minion"],
+    "monsterId": "goblin-warrior",
+    "sprite": { "file": "sprites/goblin.png", "frameWidth": 192, "frameHeight": 192, "size": "medium" },
+    "source": "codex-imagegen",
+    "added": "2026-10-21"
+  },
+  {
+    "id": "tiles-abbey",
+    "kind": "tileset",
+    "title": "Mossy abbey stone",
+    "tags": ["abbey", "ruins", "outdoor"],
+    "tiles": "sprites/tiles.png",
+    "source": "codex-imagegen",
+    "added": "2026-10-21"
+  }
+]

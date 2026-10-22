@@ -35,6 +35,10 @@ The battle board draws each square at 96 world pixels (`TILE` in `packages/web/s
 - Every new monster needs its own sheet
 - Purely AI-generated images generally can't be copyrighted in the US. Fine for a game among friends; revisit before anything commercial.
 
+## Art library
+
+All new art goes into the tagged art library: see [`LIBRARY.md`](LIBRARY.md). Batch 1 brief: [`CODEX_BRIEF_LIBRARY_1.md`](CODEX_BRIEF_LIBRARY_1.md).
+
 ## Requesting new art
 
-Use [`CODEX_BRIEF.md`](CODEX_BRIEF.md) as the template: name the sheets, frames, size and style, work on a branch, and have the result tested in the browser before it's merged.
+Use [`CODEX_BRIEF_LIBRARY_1.md`](CODEX_BRIEF_LIBRARY_1.md) as the template: name the sheets, frames, size and style, work on a branch, and have the result tested in the browser before it's merged.

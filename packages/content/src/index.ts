@@ -19,6 +19,7 @@ import warlock from "../data/classes/warlock.json";
 import wizard from "../data/classes/wizard.json";
 import goblinWarrior from "../data/monsters/goblin-warrior.json";
 import bram from "../data/characters/bram-holloway.json";
+import artCatalog from "../data/art-catalog.json";
 import {
   ArmorSchema,
   BackgroundSchema,
@@ -29,11 +30,13 @@ import {
   SpeciesSchema,
   WeaponSchema,
 } from "./schemas.js";
+import { ArtCatalogSchema } from "./art.js";
 
 export * from "./schemas.js";
 export * from "./build.js";
 export * from "./creation.js";
 export * from "./narrate.js";
+export * from "./art.js";
 
 /** Validate every data file at load time so bad data fails loudly, with the file and field named. */
 function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): z.infer<T> {
@@ -55,6 +58,7 @@ export function loadContent() {
     languages: validate(z.array(z.string()), languages, "languages.json"),
     monsters: [validate(MonsterSchema, goblinWarrior, "monsters/goblin-warrior.json")],
     characters: [validate(CharacterSchema, bram, "characters/bram-holloway.json")],
+    art: validate(ArtCatalogSchema, artCatalog, "art-catalog.json"),
   };
 }
 
