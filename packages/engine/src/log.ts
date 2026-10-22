@@ -1,6 +1,6 @@
 import type { D20Roll, DiceRoll } from "./dice.js";
 import type { Ability, Skill } from "./abilities.js";
-import type { DamageType, Side } from "./creature.js";
+import type { Condition, DamageType, Side } from "./creature.js";
 import type { Point } from "./grid.js";
 
 export type GameEvent =
@@ -34,6 +34,7 @@ export type GameEvent =
   | { type: "move"; creatureId: string; path: Point[]; costFt: number }
   | { type: "action"; creatureId: string; action: "dash" | "disengage" | "dodge"; bonus?: boolean }
   | { type: "reaction"; creatureId: string; reaction: "opportunity-attack"; targetId: string }
+  | { type: "condition"; creatureId: string; condition: Condition; added: boolean }
   | { type: "effect_applied"; targetId: string; effectId: string; sourceId: string }
   | { type: "effect_ended"; targetId: string; effectId: string }
   | {

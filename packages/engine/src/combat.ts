@@ -1,8 +1,20 @@
 import type { Attack, Creature, Side } from "./creature.js";
-import { hasCondition, isConscious } from "./creature.js";
+import { addCondition, footprintOf, hasCondition, isConscious, removeCondition } from "./creature.js";
 import { applyDamage, deathSave, heal } from "./damage.js";
 import { resolveMode, roll, rollD20, type RollMode } from "./dice.js";
-import { distanceFt, explore, key, pathFrom, samePoint, type GridMap, type PathNode, type Point } from "./grid.js";
+import {
+  explore,
+  footprintDistanceFt,
+  footprintEnterCost,
+  footprintNeighbors,
+  footprintSquares,
+  key,
+  pathFrom,
+  samePoint,
+  type GridMap,
+  type PathNode,
+  type Point,
+} from "./grid.js";
 import type { EventLog } from "./log.js";
 import type { Rng } from "./rng.js";
 
@@ -56,9 +68,14 @@ export class Combat {
     this.creatures = new Map(creatures.map((c) => [c.id, c]));
     if (this.creatures.size !== creatures.length) throw new RulesError("Creature ids must be unique");
     if (map) {
+      const taken = new Map<string, string>();
       for (const c of creatures) {
         if (!c.position) throw new RulesError(`${c.name} needs a position on the map`);
-        if (!map.walkable(c.position)) throw new RulesError(`${c.name} is placed in a wall`);
+        for (const sq of footprintSquares(c.position, footprintOf(c))) {
+          if (!map.walkable(sq)) throw new RulesError(`${c.name} is placed in a wall`);
+          if (taken.has(key(sq))) throw new RulesError(`${c.name} overlaps ${taken.get(key(sq))}`);
+          taken.set(key(sq), c.name);
+        }
       }
     }
   }
@@ -123,13 +140,13 @@ export class Combat {
     let advantage = false;
     let disadvantage = false;
 
-    if (this.map && attacker.position && target.position) {
-      const d = distanceFt(attacker.position, target.position);
+    const d = this.distanceBetween(attacker, target);
+    if (this.map && d !== undefined) {
       const reach = attack.reachFt ?? 5;
       if (attack.kind === "melee" && d <= reach) ranged = false;
       else if (attack.rangeFt && d <= attack.rangeFt[1]) ranged = true;
       else return fail(attack.kind === "melee" && !attack.rangeFt ? "Out of reach" : "Out of range");
-      if (ranged && !this.map.lineOfSight(attacker.position, target.position)) return fail("No line of sight");
+      if (ranged && !this.canSee(attacker, target)) return fail("No line of sight");
       if (ranged && attack.rangeFt && d > attack.rangeFt[0]) {
         disadvantage = true;
         notes.push("long range");
@@ -142,6 +159,23 @@ export class Combat {
     if (hasCondition(target, "unconscious")) {
       advantage = true;
       notes.push("target unconscious");
+    } else if (hasCondition(target, "prone")) {
+      // Prone: easy to hit up close, hard from a distance.
+      if (d === undefined || d <= 5) {
+        advantage = true;
+        notes.push("target prone");
+      } else {
+        disadvantage = true;
+        notes.push("target prone at range");
+      }
+    }
+    if (hasCondition(attacker, "prone")) {
+      disadvantage = true;
+      notes.push("attacker prone");
+    }
+    if (attacker.features.includes("pack-tactics") && this.alliesNear(attacker, target)) {
+      advantage = true;
+      notes.push("pack tactics");
     }
     if (attacker.effects.some((e) => e.id === SAPPED)) {
       disadvantage = true;
@@ -173,7 +207,7 @@ export class Combat {
     const r = rollD20(this.rng, attack.attackBonus, check.mode);
     const hit = r.natural === 20 || (r.natural !== 1 && r.total >= target.ac);
     // Melee hits within 5 ft of an unconscious target are automatic crits.
-    const close = !this.map || !attacker.position || !target.position || distanceFt(attacker.position, target.position) <= 5;
+    const close = (this.distanceBetween(attacker, target) ?? 0) <= 5;
     const autoCrit = hasCondition(target, "unconscious") && !check.ranged && close;
     const critical = hit && (r.natural >= attacker.critRange || autoCrit);
     this.log.push({
@@ -189,9 +223,18 @@ export class Combat {
 
     if (hit) {
       const dmg = roll(this.rng, attack.damage, { critical });
-      applyDamage(this.log, target, dmg.total, attack.damageType, { sourceId: attacker.id, roll: dmg, critical });
+      applyDamage(this.log, target, dmg.total, attack.damageType, { sourceId: attacker.id, roll: dmg, critical, rng: this.rng });
+      if (attack.extraDamage && !target.dead) {
+        const extra = roll(this.rng, attack.extraDamage.dice, { critical });
+        applyDamage(this.log, target, extra.total, attack.extraDamage.type, { sourceId: attacker.id, roll: extra, critical, rng: this.rng });
+      }
       if (attack.mastery === "sap" && attacker.features.includes("weapon-mastery") && !target.dead) {
         this.applyEffect(target, SAPPED, attacker.id);
+      }
+      const effect = attack.onHit;
+      if (effect && !target.dead && footprintOf(target) <= (effect.maxFootprint ?? Infinity) && !hasCondition(target, effect.condition)) {
+        addCondition(target, effect.condition);
+        this.log.push({ type: "condition", creatureId: target.id, condition: effect.condition, added: true });
       }
     }
     return { hit, critical };
@@ -203,7 +246,7 @@ export class Combat {
   reachable(creatureId: string): Map<string, PathNode> {
     const c = this.requireActive(creatureId);
     const nodes = new Map(this.exploreFor(c));
-    for (const [k, node] of nodes) if (k !== key(c.position!) && this.occupant(node.point)) nodes.delete(k);
+    for (const [k, node] of nodes) if (k !== key(c.position!) && !this.canStandAt(c, node.point)) nodes.delete(k);
     return nodes;
   }
 
@@ -211,14 +254,14 @@ export class Combat {
   pathTo(creatureId: string, target: Point): Point[] {
     const c = this.requireActive(creatureId);
     const nodes = this.exploreFor(c);
-    if (!nodes.has(key(target)) || (this.occupant(target) && !samePoint(target, c.position!))) {
+    if (!nodes.has(key(target)) || (!samePoint(target, c.position!) && !this.canStandAt(c, target))) {
       throw new RulesError("Can't reach that square");
     }
     return pathFrom(nodes, target);
   }
 
   private exploreFor(c: Creature): Map<string, PathNode> {
-    return explore(this.requireMap(), c.position!, (p) => this.passableFor(c, p), this.turn!.movementFt);
+    return explore(this.requireMap(), c.position!, (p) => this.passableFor(c, p), this.turn!.movementFt, footprintOf(c));
   }
 
   /**
@@ -231,16 +274,18 @@ export class Combat {
     const turn = this.turn!;
     if (!path.length) return;
 
+    const size = footprintOf(c);
     let cost = 0;
     let prev = c.position!;
     for (const step of path) {
-      if (!map.neighbors(prev).some((n) => samePoint(n, step))) throw new RulesError("Path squares must be adjacent and open");
-      if (!this.passableFor(c, step)) throw new RulesError("Cannot move through an enemy");
-      cost += map.enterCost(step);
+      const open = footprintNeighbors(map, prev, size, (q) => map.walkable(q));
+      if (!open.some((n) => samePoint(n, step))) throw new RulesError("Path squares must be adjacent and open");
+      if (!footprintSquares(step, size).every((q) => this.passableFor(c, q))) throw new RulesError("Cannot move through an enemy");
+      cost += footprintEnterCost(map, step, size);
       prev = step;
     }
     if (cost > turn.movementFt) throw new RulesError(`${c.name} only has ${turn.movementFt} ft of movement left`);
-    if (this.occupant(path.at(-1)!)) throw new RulesError("Cannot end a move in an occupied square");
+    if (!this.canStandAt(c, path.at(-1)!)) throw new RulesError("Cannot end a move in an occupied square");
 
     let segment: Point[] = [];
     let segmentCost = 0;
@@ -264,7 +309,7 @@ export class Combat {
           if (!isConscious(c) || this.isOver) return;
         }
       }
-      const stepCost = map.enterCost(step);
+      const stepCost = footprintEnterCost(map, step, size);
       c.position = step;
       turn.movementFt -= stepCost;
       segment.push(step);
@@ -335,13 +380,48 @@ export class Combat {
   /** Conscious enemies within `ft` of the creature. */
   enemiesWithin(c: Creature, ft: number): Creature[] {
     if (!c.position) return [];
-    return this.enemiesOf(c).filter((e) => isConscious(e) && e.position && distanceFt(c.position!, e.position) <= ft);
+    return this.enemiesOf(c).filter((e) => isConscious(e) && (this.distanceBetween(c, e) ?? Infinity) <= ft);
   }
 
-  /** The living creature standing on a square, if any. */
+  /** The living creature covering a square, if any. */
   occupant(p: Point): Creature | undefined {
-    for (const c of this.creatures.values()) if (!c.dead && c.position && samePoint(c.position, p)) return c;
+    for (const c of this.creatures.values()) {
+      if (c.dead || !c.position) continue;
+      const size = footprintOf(c);
+      if (p.x >= c.position.x && p.x < c.position.x + size && p.y >= c.position.y && p.y < c.position.y + size) return c;
+    }
     return undefined;
+  }
+
+  /** Feet between two creatures' nearest squares; undefined off the grid. */
+  distanceBetween(a: Creature, b: Creature): number | undefined {
+    if (!this.map || !a.position || !b.position) return undefined;
+    return footprintDistanceFt(a.position, footprintOf(a), b.position, footprintOf(b));
+  }
+
+  /** Line of sight from any square of one creature to any square of the other. */
+  canSee(a: Creature, b: Creature): boolean {
+    if (!this.map || !a.position || !b.position) return true;
+    const from = footprintSquares(a.position, footprintOf(a));
+    const to = footprintSquares(b.position, footprintOf(b));
+    return from.some((p) => to.some((q) => this.map!.lineOfSight(p, q)));
+  }
+
+  /** Could this creature end its move with its top-left square at `p`? */
+  canStandAt(c: Creature, p: Point): boolean {
+    if (!this.map) return false;
+    return footprintSquares(p, footprintOf(c)).every((q) => {
+      if (!this.map!.walkable(q)) return false;
+      const o = this.occupant(q);
+      return !o || o === c;
+    });
+  }
+
+  /** Pack Tactics: a conscious ally of the attacker within 5 ft of the target. */
+  private alliesNear(attacker: Creature, target: Creature): boolean {
+    return [...this.creatures.values()].some(
+      (x) => x !== attacker && x.side === attacker.side && isConscious(x) && (this.distanceBetween(x, target) ?? Infinity) <= 5,
+    );
   }
 
   hasReaction(c: Creature): boolean {
@@ -354,10 +434,12 @@ export class Combat {
 
   /** Enemies who could take an opportunity attack if `mover` steps from `from` to `to`. */
   opportunityAttackers(mover: Creature, from: Point, to: Point): Creature[] {
+    const size = footprintOf(mover);
     return this.enemiesOf(mover).filter((e) => {
       if (!isConscious(e) || !e.position || !this.hasReaction(e) || !this.bestMeleeAttack(e)) return false;
       const reach = this.meleeReach(e);
-      return distanceFt(e.position, from) <= reach && distanceFt(e.position, to) > reach;
+      const es = footprintOf(e);
+      return footprintDistanceFt(e.position, es, from, size) <= reach && footprintDistanceFt(e.position, es, to, size) > reach;
     });
   }
 
@@ -389,6 +471,13 @@ export class Combat {
       this.log.push({ type: "turn_start", creatureId: c.id, round: this.round });
       for (const other of this.creatures.values()) {
         for (const e of other.effects.filter((e) => e.expiresAtTurnStartOf === c.id)) this.endEffect(other, e.id);
+      }
+
+      if (hasCondition(c, "prone") && isConscious(c)) {
+        // Standing up costs half your speed.
+        removeCondition(c, "prone");
+        this.turn.movementFt = Math.max(0, this.turn.movementFt - Math.floor(c.speedFt / 2));
+        this.log.push({ type: "condition", creatureId: c.id, condition: "prone", added: false });
       }
 
       if (c.kind === "character" && c.hp === 0) {

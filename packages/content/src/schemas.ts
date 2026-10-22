@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ABILITIES, DAMAGE_TYPES, SKILLS, WEAPON_MASTERIES, type Skill } from "@oathkeepers/engine";
+import { ABILITIES, CONDITIONS, DAMAGE_TYPES, SKILLS, WEAPON_MASTERIES, type Skill } from "@oathkeepers/engine";
 
 const id = z.string().regex(/^[a-z0-9-]+$/, "ids are lowercase-with-dashes");
 const ability = z.enum(ABILITIES);
@@ -166,6 +166,8 @@ export const MonsterSchema = z.object({
       damageType,
       reachFt: z.number().optional(),
       rangeFt: range.optional(),
+      extraDamage: z.object({ dice, type: damageType }).optional(),
+      onHit: z.object({ condition: z.enum(CONDITIONS), maxSize: z.enum(["tiny", "small", "medium", "large", "huge"]).optional() }).optional(),
     }),
   ),
   features: z.array(id),

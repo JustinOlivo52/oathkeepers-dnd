@@ -1,0 +1,22 @@
+{
+  "id": "skeleton",
+  "name": "Skeleton",
+  "size": "medium",
+  "type": "undead",
+  "cr": 0.25,
+  "xp": 50,
+  "proficiencyBonus": 2,
+  "ac": 13,
+  "hp": { "average": 13, "formula": "2d8+4" },
+  "speedFt": 30,
+  "initiativeBonus": 3,
+  "abilities": { "str": 10, "dex": 16, "con": 15, "int": 6, "wis": 8, "cha": 5 },
+  "senses": { "darkvisionFt": 60, "passivePerception": 9 },
+  "vulnerabilities": ["bludgeoning"],
+  "immunities": ["poison"],
+  "attacks": [
+    { "id": "shortsword", "name": "Shortsword", "kind": "melee", "attackBonus": 5, "damage": "1d6+3", "damageType": "piercing", "reachFt": 5 },
+    { "id": "shortbow", "name": "Shortbow", "kind": "ranged", "attackBonus": 5, "damage": "1d6+3", "damageType": "piercing", "rangeFt": [80, 320] }
+  ],
+  "features": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "zombie",
+  "name": "Zombie",
+  "size": "medium",
+  "type": "undead",
+  "cr": 0.25,
+  "xp": 50,
+  "proficiencyBonus": 2,
+  "ac": 8,
+  "hp": { "average": 15, "formula": "2d8+6" },
+  "speedFt": 20,
+  "initiativeBonus": -2,
+  "abilities": { "str": 13, "dex": 6, "con": 16, "int": 3, "wis": 6, "cha": 5 },
+  "saveProficiencies": ["wis"],
+  "senses": { "darkvisionFt": 60, "passivePerception": 8 },
+  "immunities": ["poison"],
+  "attacks": [
+    { "id": "slam", "name": "Slam", "kind": "melee", "attackBonus": 3, "damage": "1d8+1", "damageType": "bludgeoning", "reachFt": 5 }
+  ],
+  "features": ["undead-fortitude"]
+}

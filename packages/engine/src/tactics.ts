@@ -1,6 +1,6 @@
 import { Combat } from "./combat.js";
-import { isConscious, type Attack, type Creature } from "./creature.js";
-import { distanceFt, explore, key, pathFrom, samePoint, type Point } from "./grid.js";
+import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
+import { explore, footprintDistanceFt, key, pathFrom, samePoint, type Point } from "./grid.js";
 
 /**
  * Rule-based turns for monsters (and auto-play in tests).
@@ -84,15 +84,23 @@ function approach(combat: Combat, me: Creature): boolean {
   const reach = Math.max(5, combat.meleeReach(me));
   const enemies = combat.enemiesOf(me).filter(isConscious);
   if (!enemies.length) return false;
+  const size = footprintOf(me);
+  const gap = (at: Point, e: Creature) => footprintDistanceFt(at, size, e.position!, footprintOf(e));
   // Plan the full route ignoring movement limits, then walk as far as this turn allows.
-  const all = explore(map, me.position!, (p) => {
-    const o = combat.occupant(p);
-    return !o || o.side === me.side;
-  });
+  const all = explore(
+    map,
+    me.position!,
+    (p) => {
+      const o = combat.occupant(p);
+      return !o || o.side === me.side;
+    },
+    Infinity,
+    size,
+  );
   let best: { point: Point; cost: number } | undefined;
   for (const node of all.values()) {
-    if (combat.occupant(node.point) && !samePoint(node.point, me.position!)) continue;
-    if (!enemies.some((e) => distanceFt(node.point, e.position!) <= reach)) continue;
+    if (!samePoint(node.point, me.position!) && !combat.canStandAt(me, node.point)) continue;
+    if (!enemies.some((e) => gap(node.point, e) <= reach)) continue;
     if (!best || node.cost < best.cost) best = { point: node.point, cost: node.cost };
   }
   if (!best || samePoint(best.point, me.position!)) return false;
@@ -110,8 +118,9 @@ function retreat(combat: Combat, me: Creature): void {
   const enemies = combat.enemiesOf(me).filter(isConscious);
   const reachable = combat.reachable(me.id);
   let best: { point: Point; score: number } | undefined;
+  const size = footprintOf(me);
   for (const node of reachable.values()) {
-    const nearest = Math.min(...enemies.map((e) => distanceFt(node.point, e.position!)));
+    const nearest = Math.min(...enemies.map((e) => footprintDistanceFt(node.point, size, e.position!, footprintOf(e))));
     const canShoot = enemies.some((e) => combat.map!.lineOfSight(node.point, e.position!));
     const score = nearest + (canShoot ? 100 : 0) - node.cost / 10;
     if (!best || score > best.score) best = { point: node.point, score };

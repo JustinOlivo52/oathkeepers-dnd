@@ -166,6 +166,9 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
 }
 
 /** Create one monster from its stat block. `instanceId` tells apart several of the same monster. */
+/** Grid squares per side for a creature size (2024 rules: Large 10 ft, Huge 15 ft, Gargantuan 20 ft). */
+const FOOTPRINT = { tiny: 1, small: 1, medium: 1, large: 2, huge: 3, gargantuan: 4 } as const;
+
 export function buildMonster(data: MonsterData, instanceId: string, name = data.name): Creature {
   return {
     id: instanceId,
@@ -186,7 +189,11 @@ export function buildMonster(data: MonsterData, instanceId: string, name = data.
     initiativeBonus: data.initiativeBonus,
     initiativeAdvantage: false,
     critRange: 20,
-    attacks: data.attacks.map((a) => ({ ...a })),
+    attacks: data.attacks.map(({ onHit, ...a }) => ({
+      ...a,
+      ...(onHit ? { onHit: { condition: onHit.condition, ...(onHit.maxSize ? { maxFootprint: FOOTPRINT[onHit.maxSize] } : {}) } } : {}),
+    })),
+    footprint: FOOTPRINT[data.size],
     resistances: [...(data.resistances ?? [])],
     vulnerabilities: [...(data.vulnerabilities ?? [])],
     immunities: [...(data.immunities ?? [])],

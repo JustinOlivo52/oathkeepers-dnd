@@ -1,0 +1,20 @@
+{
+  "id": "ogre",
+  "name": "Ogre",
+  "size": "large",
+  "type": "giant",
+  "cr": 2,
+  "xp": 450,
+  "proficiencyBonus": 2,
+  "ac": 11,
+  "hp": { "average": 68, "formula": "8d10+24" },
+  "speedFt": 40,
+  "initiativeBonus": -1,
+  "abilities": { "str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7 },
+  "senses": { "darkvisionFt": 60, "passivePerception": 8 },
+  "attacks": [
+    { "id": "greatclub", "name": "Greatclub", "kind": "melee", "attackBonus": 6, "damage": "2d8+4", "damageType": "bludgeoning", "reachFt": 5 },
+    { "id": "javelin", "name": "Javelin", "kind": "melee", "attackBonus": 6, "damage": "2d6+4", "damageType": "piercing", "reachFt": 5, "rangeFt": [30, 120] }
+  ],
+  "features": []
+}

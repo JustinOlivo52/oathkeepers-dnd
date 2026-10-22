@@ -19,6 +19,13 @@ export type WeaponMastery = (typeof WEAPON_MASTERIES)[number];
 
 export type Side = "party" | "enemies";
 
+/** Something that happens to the target on a hit, like a wolf knocking it down. */
+export interface OnHitEffect {
+  condition: Condition;
+  /** Only targets this size or smaller (in grid squares per side). */
+  maxFootprint?: number;
+}
+
 export interface Attack {
   id: string;
   name: string;
@@ -30,6 +37,9 @@ export interface Attack {
   reachFt?: number;
   rangeFt?: [normal: number, long: number];
   mastery?: WeaponMastery;
+  /** Extra damage of another type on a hit, e.g. a spider's poison. Doubled dice on a crit. */
+  extraDamage?: { dice: string; type: DamageType };
+  onHit?: OnHitEffect;
 }
 
 export interface Resource {
@@ -84,8 +94,14 @@ export interface Creature {
   dead: boolean;
   /** XP awarded for defeating this creature (monsters). */
   xp: number;
-  /** Square on the battle map, when fighting on a grid. */
+  /** Square on the battle map, when fighting on a grid. For larger creatures, the top-left square. */
   position?: Point;
+  /** Squares per side on the grid: 1 for Medium and smaller, 2 for Large, 3 Huge, 4 Gargantuan. */
+  footprint?: number;
+}
+
+export function footprintOf(c: Creature): number {
+  return c.footprint ?? 1;
 }
 
 export function isConscious(c: Creature): boolean {

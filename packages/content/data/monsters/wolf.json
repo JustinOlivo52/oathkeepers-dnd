@@ -1,0 +1,23 @@
+{
+  "id": "wolf",
+  "name": "Wolf",
+  "size": "medium",
+  "type": "beast",
+  "cr": 0.25,
+  "xp": 50,
+  "proficiencyBonus": 2,
+  "ac": 12,
+  "hp": { "average": 11, "formula": "2d8+2" },
+  "speedFt": 40,
+  "initiativeBonus": 2,
+  "abilities": { "str": 14, "dex": 15, "con": 12, "int": 3, "wis": 12, "cha": 6 },
+  "skillBonuses": { "perception": 5, "stealth": 4 },
+  "senses": { "darkvisionFt": 60, "passivePerception": 15 },
+  "attacks": [
+    {
+      "id": "bite", "name": "Bite", "kind": "melee", "attackBonus": 4, "damage": "1d6+2", "damageType": "piercing", "reachFt": 5,
+      "onHit": { "condition": "prone", "maxSize": "medium" }
+    }
+  ],
+  "features": ["pack-tactics"]
+}

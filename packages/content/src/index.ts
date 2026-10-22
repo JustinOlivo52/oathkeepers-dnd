@@ -18,6 +18,11 @@ import sorcerer from "../data/classes/sorcerer.json";
 import warlock from "../data/classes/warlock.json";
 import wizard from "../data/classes/wizard.json";
 import goblinWarrior from "../data/monsters/goblin-warrior.json";
+import skeleton from "../data/monsters/skeleton.json";
+import zombie from "../data/monsters/zombie.json";
+import wolf from "../data/monsters/wolf.json";
+import giantSpider from "../data/monsters/giant-spider.json";
+import ogre from "../data/monsters/ogre.json";
 import bram from "../data/characters/bram-holloway.json";
 import artCatalog from "../data/art-catalog.json";
 import {
@@ -45,10 +50,11 @@ function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): 
   return result.data;
 }
 
+const monsterFiles = { "goblin-warrior": goblinWarrior, skeleton, zombie, wolf, "giant-spider": giantSpider, ogre };
 const classFiles = { barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard };
 
 export function loadContent() {
-  const monsters = [validate(MonsterSchema, goblinWarrior, "monsters/goblin-warrior.json")];
+  const monsters = Object.entries(monsterFiles).map(([name, data]) => validate(MonsterSchema, data, `monsters/${name}.json`));
   const art = validate(ArtCatalogSchema, artCatalog, "art-catalog.json");
   const issues = artCatalogIssues(art, monsters.map((m) => m.id));
   if (issues.length) throw new Error(`Invalid art catalog links: ${issues.join("; ")}`);

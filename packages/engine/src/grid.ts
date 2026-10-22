@@ -83,6 +83,41 @@ export class GridMap {
   }
 }
 
+/** Squares covered by a creature whose top-left square is `at`. Large creatures cover 2x2. */
+export function footprintSquares(at: Point, size = 1): Point[] {
+  const out: Point[] = [];
+  for (let dy = 0; dy < size; dy++) for (let dx = 0; dx < size; dx++) out.push({ x: at.x + dx, y: at.y + dy });
+  return out;
+}
+
+/** Distance in feet between two footprints: the gap between their nearest squares. */
+export function footprintDistanceFt(a: Point, aSize: number, b: Point, bSize: number): number {
+  const dx = Math.max(0, a.x - (b.x + bSize - 1), b.x - (a.x + aSize - 1));
+  const dy = Math.max(0, a.y - (b.y + bSize - 1), b.y - (a.y + aSize - 1));
+  return Math.max(dx, dy) * SQUARE_FT;
+}
+
+/** Steps a footprint of `size` can take from `p`: every covered square must be open, and no cutting corners. */
+export function footprintNeighbors(map: GridMap, p: Point, size: number, passable: (q: Point) => boolean): Point[] {
+  if (size === 1) return map.neighbors(p).filter(passable);
+  const fits = (at: Point) => footprintSquares(at, size).every((q) => map.walkable(q) && passable(q));
+  const out: Point[] = [];
+  for (let dy = -1; dy <= 1; dy++)
+    for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      const n = { x: p.x + dx, y: p.y + dy };
+      if (!fits(n)) continue;
+      if (dx && dy && !fits({ x: p.x + dx, y: p.y }) && !fits({ x: p.x, y: p.y + dy })) continue;
+      out.push(n);
+    }
+  return out;
+}
+
+/** Cost to move a footprint onto `at`: double if any square it enters is difficult terrain. */
+export function footprintEnterCost(map: GridMap, at: Point, size: number): number {
+  return footprintSquares(at, size).some((q) => map.terrain(q) === "difficult") ? SQUARE_FT * 2 : SQUARE_FT;
+}
+
 export interface PathNode {
   cost: number;
   prev?: string;
@@ -93,16 +128,15 @@ export interface PathNode {
  * Cheapest paths from `start` (Dijkstra). `passable` decides which squares can be moved through.
  * Returns every square reached within `maxCost` feet.
  */
-export function explore(map: GridMap, start: Point, passable: (p: Point) => boolean, maxCost = Infinity): Map<string, PathNode> {
+export function explore(map: GridMap, start: Point, passable: (p: Point) => boolean, maxCost = Infinity, size = 1): Map<string, PathNode> {
   const nodes = new Map<string, PathNode>([[key(start), { cost: 0, point: start }]]);
   const open: PathNode[] = [nodes.get(key(start))!];
   while (open.length) {
     open.sort((a, b) => a.cost - b.cost);
     const cur = open.shift()!;
     if (cur.cost > nodes.get(key(cur.point))!.cost) continue;
-    for (const n of map.neighbors(cur.point)) {
-      if (!passable(n)) continue;
-      const cost = cur.cost + map.enterCost(n);
+    for (const n of footprintNeighbors(map, cur.point, size, passable)) {
+      const cost = cur.cost + footprintEnterCost(map, n, size);
       if (cost > maxCost) continue;
       const existing = nodes.get(key(n));
       if (existing && existing.cost <= cost) continue;

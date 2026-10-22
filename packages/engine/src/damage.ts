@@ -1,4 +1,5 @@
 import { addCondition, removeCondition, type Creature, type DamageType } from "./creature.js";
+import { saveModifier } from "./checks.js";
 import { rollD20, type DiceRoll } from "./dice.js";
 import type { EventLog } from "./log.js";
 import type { Rng } from "./rng.js";
@@ -8,6 +9,8 @@ export interface DamageOptions {
   roll?: DiceRoll;
   /** Damage came from a critical hit. Counts as two death save failures on a creature at 0 HP. */
   critical?: boolean;
+  /** Needed for features that roll when damage lands (Undead Fortitude). */
+  rng?: Rng;
 }
 
 export function adjustForDefenses(target: Creature, amount: number, type: DamageType): number {
@@ -51,6 +54,7 @@ export function applyDamage(
   if (remaining === 0 || target.hp > 0) return amount;
 
   if (target.kind === "monster") {
+    if (undeadFortitude(log, target, amount, type, options)) return amount;
     kill(log, target);
   } else if (wasAtZero) {
     // Taking damage while at 0 HP: a failure, two on a crit. Massive damage kills outright.
@@ -99,6 +103,23 @@ export function deathSave(rng: Rng, log: EventLog, target: Creature): void {
     target.stable = true;
     log.push({ type: "stabilized", creatureId: target.id });
   }
+}
+
+/**
+ * Zombie: when damage drops it to 0 HP, a Con save (DC 5 + the damage) leaves it at 1 HP instead.
+ * Radiant damage and critical hits bypass it.
+ */
+function undeadFortitude(log: EventLog, target: Creature, amount: number, type: DamageType, options: DamageOptions): boolean {
+  if (!target.features.includes("undead-fortitude") || !options.rng || type === "radiant" || options.critical) return false;
+  const dc = 5 + amount;
+  const roll = rollD20(options.rng, saveModifier(target, "con"));
+  const success = roll.total >= dc;
+  log.push({ type: "feature_used", creatureId: target.id, featureId: "undead-fortitude" });
+  log.push({ type: "check", creatureId: target.id, kind: "save", ability: "con", dc, roll, success });
+  if (!success) return false;
+  target.hp = 1;
+  log.push({ type: "heal", targetId: target.id, amount: 1, hpAfter: 1 });
+  return true;
 }
 
 function addDeathSaveFailures(log: EventLog, target: Creature, count: number): void {

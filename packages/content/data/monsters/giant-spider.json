@@ -1,0 +1,23 @@
+{
+  "id": "giant-spider",
+  "name": "Giant Spider",
+  "size": "large",
+  "type": "beast",
+  "cr": 1,
+  "xp": 200,
+  "proficiencyBonus": 2,
+  "ac": 14,
+  "hp": { "average": 26, "formula": "4d10+4" },
+  "speedFt": 30,
+  "initiativeBonus": 3,
+  "abilities": { "str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4 },
+  "skillBonuses": { "stealth": 7 },
+  "senses": { "darkvisionFt": 60, "passivePerception": 10 },
+  "attacks": [
+    {
+      "id": "bite", "name": "Bite", "kind": "melee", "attackBonus": 5, "damage": "1d8+3", "damageType": "piercing", "reachFt": 5,
+      "extraDamage": { "dice": "2d6", "type": "poison" }
+    }
+  ],
+  "features": ["spider-climb", "web-walker", "web"]
+}

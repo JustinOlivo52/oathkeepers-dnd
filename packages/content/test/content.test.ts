@@ -63,3 +63,23 @@ describe("buildMonster: Goblin Warrior", () => {
     expect(g).toMatchObject({ id: "goblin-1", ac: 15, maxHp: 10, xp: 50, side: "enemies", skillBonuses: { stealth: 6 } });
   });
 });
+
+describe("bestiary", () => {
+  const byId = (id: string) => content.monsters.find((m) => m.id === id)!;
+
+  it("builds every monster with its size footprint", () => {
+    expect(buildMonster(byId("ogre"), "o").footprint).toBe(2);
+    expect(buildMonster(byId("giant-spider"), "s").footprint).toBe(2);
+    expect(buildMonster(byId("wolf"), "w").footprint).toBe(1);
+  });
+
+  it("carries attack effects into the engine", () => {
+    expect(buildMonster(byId("wolf"), "w").attacks[0]).toMatchObject({ onHit: { condition: "prone", maxFootprint: 1 } });
+    expect(buildMonster(byId("giant-spider"), "s").attacks[0]).toMatchObject({ extraDamage: { dice: "2d6", type: "poison" } });
+    expect(buildMonster(byId("skeleton"), "k")).toMatchObject({ vulnerabilities: ["bludgeoning"], immunities: ["poison"] });
+  });
+
+  it("has art for every monster", () => {
+    for (const m of content.monsters) expect(content.art.some((a) => a.kind === "monster" && a.monsterId === m.id), m.id).toBe(true);
+  });
+});
