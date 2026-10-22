@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs";
 import { createServer } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,24 +6,14 @@ import { DemoProvider, type DmProvider } from "@oathkeepers/dm";
 import { createApp } from "./app.js";
 import { ClaudeProvider } from "./claude.js";
 import { Store } from "./store.js";
+import { loadSettings } from "./env.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, "..", "..", "..");
 
-// Load .env from the project folder, and say plainly what was found.
-const envFile = join(root, ".env");
-if (existsSync(envFile)) {
-  process.loadEnvFile(envFile);
-  console.log(`Settings: loaded ${envFile}`);
-} else if (existsSync(`${envFile}.txt`)) {
-  console.warn(`Settings: found ".env.txt" but not ".env". Rename it to exactly ".env" (Windows hides the .txt part).`);
-} else {
-  console.warn(`Settings: no .env file at ${envFile}. Copy .env.example to .env there and add your key.`);
-}
-// Tolerate a pasted key with spaces or quotes around it.
-const apiKey = process.env.ANTHROPIC_API_KEY?.trim().replace(/^["']|["']$/g, "");
-if (!apiKey) console.warn("Settings: ANTHROPIC_API_KEY is empty, so only the demo DM is available.");
-else if (!apiKey.startsWith("sk-ant-")) console.warn('Settings: ANTHROPIC_API_KEY doesn\'t start with "sk-ant-". Check that you copied the whole key.');
+const settings = loadSettings();
+for (const m of settings.messages) (m.level === "warn" ? console.warn : console.log)(`Settings: ${m.text}`);
+const apiKey = settings.apiKey;
+// Read after .env is loaded, so values from the file count.
 const port = Number(process.env.PORT ?? 8787);
 const budget = process.env.DM_MONTHLY_BUDGET_USD ? Number(process.env.DM_MONTHLY_BUDGET_USD) : undefined;
 

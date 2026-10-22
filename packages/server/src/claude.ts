@@ -2,9 +2,16 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { DmConversation, DmProvider, ProviderTurn, StopReason, ToolResult, ToolSpec } from "@oathkeepers/dm";
 
 /** Claude Sonnet 5.5: the everyday DM. Prices per million tokens. */
-const MODEL = "claude-sonnet-5-5";
+export const DM_MODEL = "claude-sonnet-5-5";
 const PRICE = { input: 2, output: 10, cacheRead: 0.2, cacheWrite: 2.5 };
-const BETAS = ["server-side-fallback-2026-07-01"];
+
+/** Request settings shared by the DM and the setup check, so the check tests exactly what the game sends. */
+export const DM_REQUEST_DEFAULTS = {
+  model: DM_MODEL,
+  betas: ["server-side-fallback-2026-07-01"],
+  // If a reply is declined for safety, the API retries it on a fallback model.
+  fallbacks: "default" as const,
+};
 
 export class ClaudeProvider implements DmProvider {
   readonly name = "claude";
@@ -68,10 +75,8 @@ class ClaudeConversation implements DmConversation {
   private async send(next: Anthropic.Beta.BetaMessageParam | null): Promise<ProviderTurn> {
     const messages = next ? [...this.messages, next] : this.messages;
     const response = await this.client.beta.messages.create({
-      model: MODEL,
+      ...DM_REQUEST_DEFAULTS,
       max_tokens: 16000,
-      betas: BETAS,
-      fallbacks: "default",
       output_config: { effort: "medium" },
       // Rules, tools and history repeat every request; caching makes the repeats about 90% cheaper.
       cache_control: { type: "ephemeral" },

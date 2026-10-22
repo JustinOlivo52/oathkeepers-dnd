@@ -19,6 +19,7 @@ Requires Node.js 22+.
 ```sh
 npm install
 cp .env.example .env   # then add your ANTHROPIC_API_KEY (optional: leave empty for the demo DM)
+npm run check-setup    # checks Node, .env and your API key (one tiny real request)
 npm run dev            # game server + web app: open http://localhost:5173
 npm test            # run all tests
 npm run typecheck   # TypeScript checks

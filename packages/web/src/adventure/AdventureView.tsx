@@ -125,7 +125,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
           )}
           {server && !server.providers.includes("claude") && (
             <p className="note">
-              The server is running without an API key, so only the demo DM is available. Add <code>ANTHROPIC_API_KEY</code> to <code>.env</code> and restart.
+              The server is running without an API key, so only the demo DM is available. Run <code>npm run check-setup</code> in a terminal to see what's wrong, then restart <code>npm run dev</code>.
             </p>
           )}
           {error && <p className="warning">{error.message}</p>}

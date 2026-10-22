@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --import tsx src/index.ts"
+    "start": "node --import tsx src/index.ts",
+    "check": "node --import tsx src/check-setup.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "*",
