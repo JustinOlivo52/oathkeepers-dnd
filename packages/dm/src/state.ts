@@ -59,6 +59,8 @@ export type StoryEvent =
   | { type: "quest"; quest: Quest }
   | { type: "whisper"; characterId: string; text: string }
   | { type: "rest"; kind: "long" }
+  | { type: "session_end"; session: number; recap: string }
+  | { type: "session_start"; session: number }
   | { type: "art"; artId: string; kind: "scene" | "npc"; image: string; title: string; caption: string; npcName?: string }
   | { type: "notice"; text: string };
 
@@ -92,6 +94,14 @@ export interface AdventureState {
   collected: { id: string; content: string; isError?: boolean }[];
   costUsd: number;
   provider: string;
+  /** Current session number, from 1. */
+  session: number;
+  /** False after "End session" until the next session begins. */
+  sessionOpen: boolean;
+  /** Index in `events` where the current session began. */
+  sessionStartEvent: number;
+  /** Long-term memory, written by the memory keeper at the end of each session. */
+  memory: { recaps: { session: number; text: string }[]; threads: string[] };
 }
 
 /** XP needed to reach each level (2024 rules), index = level. */

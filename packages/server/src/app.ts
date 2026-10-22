@@ -2,7 +2,16 @@ import { randomUUID } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { mathRng, type Rng } from "@oathkeepers/engine";
 import { CharacterSchema, type Content } from "@oathkeepers/content";
-import { AdventureError, BudgetExceededError, Director, type CombatOutcome, type DmProvider, type StoryEvent } from "@oathkeepers/dm";
+import {
+  AdventureError,
+  BudgetExceededError,
+  Director,
+  type CombatOutcome,
+  type DmProvider,
+  type StoryEvent,
+  type Summarizer,
+  type TextSink,
+} from "@oathkeepers/dm";
 import { Store } from "./store.js";
 
 export interface AppOptions {
@@ -10,6 +19,8 @@ export interface AppOptions {
   store: Store;
   /** Providers by name. The first is the default. */
   providers: DmProvider[];
+  /** The memory keeper for each DM provider (by provider name). */
+  summarizerFor: (provider: string) => Summarizer;
   /** Monthly AI spending cap in US dollars. Undefined means no cap. */
   monthlyBudgetUsd?: number;
   rng?: Rng;
@@ -62,7 +73,7 @@ export function createApp(options: AppOptions) {
     monthlyBudgetUsd: options.monthlyBudgetUsd ?? null,
   });
 
-  async function route(method: string, path: string, body: Record<string, unknown>) {
+  async function route(method: string, path: string, body: Record<string, unknown>, onText?: TextSink) {
     if (method === "GET" && path === "/api/health") {
       return { ok: true, providers: providers.map((p) => p.name), spentThisMonthUsd: store.spentThisMonth(), monthlyBudgetUsd: options.monthlyBudgetUsd ?? null };
     }
@@ -74,11 +85,11 @@ export function createApp(options: AppOptions) {
       const state = Director.newAdventure(content, [parsed.data], p.name, id);
       const director = new Director(content, p, state, rng, { canSpend, onCost: (usd) => store.addSpend(usd) });
       live.set(id, { director, provider: p.name });
-      const events = await director.begin();
+      const events = await director.begin(onText);
       persist(id, director);
       return view(director, events);
     }
-    const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/(act|roll|combat|retry))?$/.exec(path);
+    const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/(act|roll|combat|retry|begin|end-session))?$/.exec(path);
     if (!m) throw new HttpError(404, "Not found");
     const [, id, action] = m as unknown as [string, string, string | undefined];
     const d = directorFor(id);
@@ -88,29 +99,47 @@ export function createApp(options: AppOptions) {
     let events: StoryEvent[];
     if (action === "act") {
       if (typeof body.text !== "string" || typeof body.characterId !== "string") throw new HttpError(400, "Send characterId and text");
-      events = await d.act(body.characterId, body.text);
-    } else if (action === "roll") events = await d.roll();
-    else if (action === "retry") events = await d.retry();
-    else events = await d.finishCombat(parseOutcome(body));
+      events = await d.act(body.characterId, body.text, onText);
+    } else if (action === "roll") events = await d.roll(onText);
+    else if (action === "retry") events = await d.retry(onText);
+    else if (action === "begin") events = await d.begin(onText);
+    else if (action === "end-session") events = await d.endSession(options.summarizerFor(d.state.provider));
+    else events = await d.finishCombat(parseOutcome(body), onText);
     persist(id, d);
     return view(d, events);
   }
 
   return async (req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? "/", "http://localhost");
+    // Clients that ask for a stream get narration as it's written, then the final result.
+    const streaming = req.method === "POST" && (req.headers.accept ?? "").includes("text/event-stream");
+    const sse = (event: string, data: unknown) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
     try {
       const body = req.method === "POST" ? await readJson(req) : {};
-      const result = await route(req.method ?? "GET", url.pathname, body);
-      send(res, 200, result);
+      if (streaming) {
+        res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
+        const result = await route(req.method ?? "GET", url.pathname, body, (delta) => sse("text", delta));
+        sse("done", result);
+        res.end();
+      } else {
+        send(res, 200, await route(req.method ?? "GET", url.pathname, body));
+      }
     } catch (e) {
-      if (e instanceof HttpError) return send(res, e.status, { error: e.message });
-      if (e instanceof BudgetExceededError) return send(res, 402, { error: "This month's AI budget is used up. Raise DM_MONTHLY_BUDGET_USD or wait for next month." });
-      if (e instanceof AdventureError) return send(res, 409, { error: e.message });
-      const message = e instanceof Error ? e.message : String(e);
-      console.error(e);
-      send(res, 502, { error: "The DM didn't respond. Try again.", detail: message });
+      const [status, error] = describeError(e);
+      if (streaming && res.headersSent) {
+        sse("error", { status, error });
+        res.end();
+      } else send(res, status, { error });
     }
   };
+}
+
+function describeError(e: unknown): [number, string] {
+  if (e instanceof HttpError) return [e.status, e.message];
+  if (e instanceof BudgetExceededError) return [402, "This month's AI budget is used up. Raise DM_MONTHLY_BUDGET_USD or wait for next month."];
+  if (e instanceof AdventureError) return [409, e.message];
+  console.error(e);
+  return [502, "The DM didn't respond. Try again."];
 }
 
 function parseOutcome(body: Record<string, unknown>): CombatOutcome {

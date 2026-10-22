@@ -8,9 +8,10 @@
     "check": "node --import tsx src/check-setup.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "*",
+    "@anthropic-ai/sdk": "^0.137.0",
     "@oathkeepers/content": "*",
     "@oathkeepers/dm": "*",
-    "@oathkeepers/engine": "*"
+    "@oathkeepers/engine": "*",
+    "zod": "^4.6.7"
   }
 }

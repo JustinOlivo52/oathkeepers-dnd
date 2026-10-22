@@ -1,4 +1,4 @@
-import type { DmConversation, DmProvider, ProviderTurn, ToolCall, ToolResult, ToolSpec } from "./provider.js";
+import type { DmConversation, DmProvider, ProviderTurn, SessionSummary, Summarizer, SummaryInput, TextSink, ToolCall, ToolResult, ToolSpec } from "./provider.js";
 import { ZERO_USAGE } from "./provider.js";
 
 /**
@@ -31,16 +31,27 @@ class DemoConversation implements DmConversation {
     return { ...this.s };
   }
 
-  async resume(): Promise<ProviderTurn> {
-    return turn(["The world waits for your next move."]);
+  async resume(onText?: TextSink): Promise<ProviderTurn> {
+    return stream(turn(["The world waits for your next move."]), onText);
   }
 
-  async sendUser(text: string): Promise<ProviderTurn> {
+  async sendUser(text: string, onText?: TextSink): Promise<ProviderTurn> {
+    return stream(this.reply(text), onText);
+  }
+
+  async sendToolResults(results: ToolResult[], onText?: TextSink): Promise<ProviderTurn> {
+    return stream(this.replyToResults(results), onText);
+  }
+
+  private reply(text: string): ProviderTurn {
     const id = /\(id: ([^)]+)\)/.exec(text)?.[1] ?? this.s.partyId;
     this.s.partyId = id;
     const action = text.split("\n\n").pop()!.toLowerCase();
     const call = (name: string, input: unknown): ToolCall => ({ id: `demo-${++this.s.calls}`, name, input });
 
+    if (action.startsWith("begin session")) {
+      return turn([`Previously: ${/Session \d+: ([^\n]+)/.exec(text)?.[1] ?? "the road to Thornwatch."}`, "Morning light finds you back on the road. What do you do?"]);
+    }
     if (action.startsWith("begin the adventure")) {
       return turn(
         [
@@ -98,7 +109,7 @@ class DemoConversation implements DmConversation {
     return turn([`The rain keeps falling. (Demo DM: try "sneak", "search", "talk", "fight", "hunt wolves" or "rest at the tavern".)`]);
   }
 
-  async sendToolResults(results: ToolResult[]): Promise<ProviderTurn> {
+  private replyToResults(results: ToolResult[]): ProviderTurn {
     const text = results.map((r) => r.content).join(" ");
     const success = /SUCCESS/.test(text);
     const lines: Record<string, [string, string]> = {
@@ -127,4 +138,40 @@ class DemoConversation implements DmConversation {
 
 function turn(text: string[], toolCalls: ToolCall[] = []): ProviderTurn {
   return { text, toolCalls, stop: toolCalls.length ? "tool_use" : "end_turn", usage: ZERO_USAGE, costUsd: 0, model: "demo" };
+}
+
+/** Hand the demo's text to a streaming listener in small pieces, like a real model would. */
+async function stream(t: ProviderTurn, onText?: TextSink): Promise<ProviderTurn> {
+  if (onText) {
+    for (const [i, paragraph] of t.text.entries()) {
+      if (i) onText("\n\n");
+      for (const word of paragraph.split(/(?<= )/)) {
+        onText(word);
+        await new Promise((r) => setTimeout(r, 4));
+      }
+    }
+  }
+  return t;
+}
+
+/** Offline memory keeper: stitches a short recap from the session's own narration. */
+export class DemoSummarizer implements Summarizer {
+  readonly name = "demo";
+
+  async summarize(input: SummaryInput): Promise<{ summary: SessionSummary; costUsd: number }> {
+    const narration = input.transcript
+      .split("\n")
+      .filter((l) => l.startsWith("DM: "))
+      .map((l) => l.slice(4).split(/(?<=[.!?])\s/)[0]!)
+      .slice(0, 4);
+    const recap = narration.length ? narration.join(" ") : "A quiet session on the frontier.";
+    return {
+      summary: {
+        recap,
+        threads: input.quests.filter((q) => q.status === "active").map((q) => `${q.title}: ${q.notes}`),
+        npcNotes: input.npcs,
+      },
+      costUsd: 0,
+    };
+  }
 }

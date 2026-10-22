@@ -243,3 +243,67 @@ describe("art", () => {
     }
   });
 });
+
+describe("streaming and sessions", () => {
+  it("streams narration, separating consecutive model calls", async () => {
+    const streaming = (turns: ProviderTurn[]): DmProvider => ({
+      name: "streaming",
+      start: () => {
+        const next = async (onText?: (d: string) => void) => {
+          const t = turns.shift()!;
+          for (const text of t.text) onText?.(text);
+          return t;
+        };
+        return { sendUser: (_t, onText) => next(onText), sendToolResults: (_r, onText) => next(onText), resume: next, save: () => ({}) };
+      },
+      restore() {
+        return this.start("", []);
+      },
+    });
+    const state = Director.newAdventure(content, [bram], "streaming", "x");
+    const director = new Director(content, streaming([turn(["First."], [call("a", "set_scene", { name: "x", description: "" })]), turn(["Second."])]), state, seededRng(1));
+    const deltas: string[] = [];
+    await director.act(bram.id, "go", (d) => deltas.push(d));
+    expect(deltas.join("")).toBe("First.\n\nSecond.");
+  });
+
+  it("ends a session with a recap, then starts the next from memory in a fresh conversation", async () => {
+    const recaps: string[] = [];
+    const summarizer = {
+      name: "test",
+      async summarize(input: { transcript: string }) {
+        recaps.push(input.transcript);
+        return { summary: { recap: "You met Hilde.", threads: ["Who rang the abbey bell?"], npcNotes: [{ name: "Hilde", notes: "Owes the party a favor." }] }, costUsd: 0.001 };
+      },
+    };
+    const { director, state, provider } = setup([
+      turn(["The tavern is warm."], [call("n", "update_npc", { name: "Hilde", description: "Innkeeper", attitude: "friendly", notes: "" })]),
+      turn([""]),
+      turn(["Previously, you met Hilde."]),
+    ]);
+    await director.act(bram.id, "enter the tavern");
+    const ended = await director.endSession(summarizer);
+    expect(ended).toEqual([{ type: "session_end", session: 1, recap: "You met Hilde." }]);
+    expect(recaps[0]).toMatch(/Bram Holloway: enter the tavern[\s\S]*DM: The tavern is warm./);
+    expect(state).toMatchObject({ session: 2, sessionOpen: false, memory: { threads: ["Who rang the abbey bell?"] } });
+    expect(state.npcs.Hilde!.notes).toBe("Owes the party a favor.");
+    expect(state.costUsd).toBeCloseTo(0.001);
+    await expect(director.act(bram.id, "hi")).rejects.toThrow(/next session/);
+
+    const opening = await director.begin();
+    expect(opening[0]).toEqual({ type: "session_start", session: 2 });
+    const sent = provider.sent.at(-1) as string;
+    expect(sent).toMatch(/\[Story so far\][\s\S]*Session 1: You met Hilde.[\s\S]*Who rang the abbey bell\?[\s\S]*Hilde \(friendly\)[\s\S]*Begin session 2/);
+  });
+});
+
+describe("DemoProvider streaming", () => {
+  it("streams its narration word by word", async () => {
+    const state = Director.newAdventure(content, [bram], "demo", "s");
+    const director = new Director(content, new DemoProvider(), state, seededRng(2));
+    let streamed = "";
+    await director.begin((d) => (streamed += d));
+    const narration = state.events.filter((e) => e.type === "narration").map((e) => (e as { text: string }).text).join("\n\n");
+    expect(streamed).toBe(narration);
+  });
+});

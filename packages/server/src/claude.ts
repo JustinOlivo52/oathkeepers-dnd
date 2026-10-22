@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { DmConversation, DmProvider, ProviderTurn, StopReason, ToolResult, ToolSpec } from "@oathkeepers/dm";
+import type { DmConversation, DmProvider, ProviderTurn, StopReason, TextSink, ToolResult, ToolSpec } from "@oathkeepers/dm";
 
 /** Claude Sonnet 5.5: the everyday DM. Prices per million tokens. */
 export const DM_MODEL = "claude-sonnet-5-5";
@@ -51,12 +51,13 @@ class ClaudeConversation implements DmConversation {
     return this.messages;
   }
 
-  sendUser(text: string): Promise<ProviderTurn> {
-    return this.send({ role: "user", content: text });
+  sendUser(text: string, onText?: TextSink): Promise<ProviderTurn> {
+    return this.send({ role: "user", content: text }, onText);
   }
 
-  sendToolResults(results: ToolResult[]): Promise<ProviderTurn> {
-    return this.send({
+  sendToolResults(results: ToolResult[], onText?: TextSink): Promise<ProviderTurn> {
+    return this.send(
+      {
       role: "user",
       content: results.map((r) => ({
         type: "tool_result" as const,
@@ -64,26 +65,37 @@ class ClaudeConversation implements DmConversation {
         content: r.content,
         ...(r.isError ? { is_error: true } : {}),
       })),
-    });
+      },
+      onText,
+    );
   }
 
-  resume(): Promise<ProviderTurn> {
-    return this.send(null);
+  resume(onText?: TextSink): Promise<ProviderTurn> {
+    return this.send(null, onText);
   }
 
   /** History is only updated after a successful response, so a failed request can be retried. */
-  private async send(next: Anthropic.Beta.BetaMessageParam | null): Promise<ProviderTurn> {
+  private async send(next: Anthropic.Beta.BetaMessageParam | null, onText?: TextSink): Promise<ProviderTurn> {
     const messages = next ? [...this.messages, next] : this.messages;
-    const response = await this.client.beta.messages.create({
+    const params = {
       ...DM_REQUEST_DEFAULTS,
       max_tokens: 16000,
-      output_config: { effort: "medium" },
+      output_config: { effort: "medium" as const },
       // Rules, tools and history repeat every request; caching makes the repeats about 90% cheaper.
-      cache_control: { type: "ephemeral" },
-      system: [{ type: "text", text: this.system }],
+      cache_control: { type: "ephemeral" as const },
+      system: [{ type: "text" as const, text: this.system }],
       tools: this.tools,
       messages,
-    });
+    };
+    let response: Anthropic.Beta.BetaMessage;
+    if (onText) {
+      // Stream so narration appears as it's written; finalMessage() still gives the whole reply.
+      const stream = this.client.beta.messages.stream(params);
+      stream.on("text", (delta) => onText(delta));
+      response = await stream.finalMessage();
+    } else {
+      response = await this.client.beta.messages.create(params);
+    }
     // Keep the full content (thinking and fallback blocks included) so the next request is valid.
     this.messages = [...messages, { role: "assistant", content: response.content }];
 

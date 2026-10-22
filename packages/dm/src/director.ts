@@ -6,8 +6,8 @@ import {
   type Rng,
 } from "@oathkeepers/engine";
 import { buildCharacter, isEncounterReady, pickArt, type CharacterData, type Content } from "@oathkeepers/content";
-import type { DmConversation, DmProvider, ProviderTurn, ToolCall } from "./provider.js";
-import { stateBlock, systemPrompt } from "./prompt.js";
+import type { DmConversation, DmProvider, ProviderTurn, Summarizer, TextSink, ToolCall } from "./provider.js";
+import { memoryBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
 import { levelForXp, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
 import { TOOL_INPUTS, toolSpecs, type ToolName } from "./tools.js";
 
@@ -65,11 +65,15 @@ export class Director {
       scene: { name: "The road to the frontier", description: "" },
       npcs: {},
       quests: [],
-      events: [],
+      events: [{ type: "session_start", session: 1 }],
       pending: [],
       collected: [],
       costUsd: 0,
       provider: providerName,
+      session: 1,
+      sessionOpen: true,
+      sessionStartEvent: 0,
+      memory: { recaps: [], threads: [] },
     };
   }
 
@@ -81,17 +85,30 @@ export class Director {
     return this.state.pending[0] ?? null;
   }
 
-  /** Ask the DM to open the adventure. */
-  async begin(): Promise<StoryEvent[]> {
-    return this.run(() =>
-      this.conversation.sendUser(
-        `${stateBlock(this.state)}\n\nBegin the adventure. Set the opening scene for the party on the road to the frontier town, introduce a hook, and ask what they do.`,
-      ),
-    );
+  /**
+   * Ask the DM to open the adventure, or the next session (with a recap of the story so far).
+   * `opening` replaces the default instructions; the quality tests use it to set up scenes.
+   */
+  async begin(onText?: TextSink, opening?: string): Promise<StoryEvent[]> {
+    const s = this.state;
+    const start = s.events.length;
+    if (!s.sessionOpen) {
+      s.sessionOpen = true;
+      s.sessionStartEvent = s.events.length;
+      s.events.push({ type: "session_start", session: s.session });
+    }
+    const instructions =
+      opening ??
+      (s.session === 1
+        ? "Begin the adventure. Set the opening scene for the party on the road to the frontier town, introduce a hook, and ask what they do."
+        : `Begin session ${s.session}. Give a short "previously" recap in your own voice, then set the scene where the party left off and ask what they do.`);
+    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
+    return s.events.slice(start);
   }
 
   /** A player says what their character does. */
-  async act(characterId: string, text: string): Promise<StoryEvent[]> {
+  async act(characterId: string, text: string, onText?: TextSink): Promise<StoryEvent[]> {
+    if (!this.state.sessionOpen) throw new AdventureError("Start the next session first");
     if (this.state.pending.length) throw new AdventureError("Resolve the pending roll or battle first");
     if (!this.state.characters[characterId]) throw new AdventureError("Unknown character");
     const clean = text.trim().slice(0, 2000);
@@ -99,45 +116,93 @@ export class Director {
     const start = this.state.events.length;
     this.state.events.push({ type: "player", characterId, text: clean });
     const name = this.state.party.find((c) => c.id === characterId)!.name;
-    await this.run(() => this.conversation.sendUser(`${stateBlock(this.state)}\n\n${name}: ${clean}`));
+    await this.run(() => this.conversation.sendUser(`${stateBlock(this.state)}\n\n${name}: ${clean}`, this.sink), onText);
     return this.state.events.slice(start);
   }
 
   /** The player clicked Roll for the pending check. */
-  async roll(): Promise<StoryEvent[]> {
+  async roll(onText?: TextSink): Promise<StoryEvent[]> {
     const pending = this.state.pending[0];
     if (pending?.type !== "check") throw new AdventureError("No roll is waiting");
     const start = this.state.events.length;
     this.resolveCheck(pending.toolCallId, pending.eventId, pending.request);
     this.state.pending.shift();
-    await this.continueIfReady();
+    await this.continueIfReady(onText);
     return this.state.events.slice(start);
   }
 
   /** The battle on the grid finished. */
-  async finishCombat(outcome: CombatOutcome): Promise<StoryEvent[]> {
+  async finishCombat(outcome: CombatOutcome, onText?: TextSink): Promise<StoryEvent[]> {
     const pending = this.state.pending[0];
     if (pending?.type !== "combat") throw new AdventureError("No battle is waiting");
     const start = this.state.events.length;
     this.applyCombat(pending.toolCallId, pending.eventId, pending.enemies, outcome);
     this.state.pending.shift();
-    await this.continueIfReady();
+    await this.continueIfReady(onText);
     return this.state.events.slice(start);
+  }
+
+  /**
+   * End the session: the memory keeper writes a recap and updates long-term memory, and the
+   * DM's conversation starts fresh next session from that memory. Keeps long campaigns cheap.
+   */
+  async endSession(summarizer: Summarizer): Promise<StoryEvent[]> {
+    const s = this.state;
+    if (!s.sessionOpen) throw new AdventureError("This session has already ended");
+    if (s.pending.length || this.busy) throw new AdventureError("Finish the current roll or battle first");
+    if (this.options.canSpend && !this.options.canSpend()) throw new BudgetExceededError("Monthly AI budget reached");
+    const start = s.events.length;
+    const { summary, costUsd } = await summarizer.summarize({
+      title: s.title,
+      session: s.session,
+      previousRecaps: s.memory.recaps.map((r) => r.text),
+      transcript: transcript(s, s.sessionStartEvent),
+      npcs: Object.values(s.npcs).map((n) => ({ name: n.name, notes: n.notes })),
+      quests: s.quests.map((q) => ({ ...q })),
+    });
+    s.costUsd += costUsd;
+    this.options.onCost?.(costUsd);
+    s.memory.recaps.push({ session: s.session, text: summary.recap });
+    s.memory.threads = summary.threads;
+    for (const n of summary.npcNotes) if (s.npcs[n.name]) s.npcs[n.name]!.notes = n.notes;
+    s.events.push({ type: "session_end", session: s.session, recap: summary.recap });
+    s.session += 1;
+    s.sessionOpen = false;
+    s.collected = [];
+    this.conversation = this.provider.start(systemPrompt(), toolSpecs(encounterMonsters(this.content)));
+    return s.events.slice(start);
   }
 
   // ---------- the loop ----------
 
-  private async run(first: () => Promise<ProviderTurn>): Promise<StoryEvent[]> {
+  /** Narration goes here while a request is running, when the caller wants it streamed. */
+  private sink?: TextSink;
+
+  private async run(first: () => Promise<ProviderTurn>, onText?: TextSink): Promise<StoryEvent[]> {
     if (this.busy) throw new AdventureError("The DM is still thinking");
     if (this.options.canSpend && !this.options.canSpend()) throw new BudgetExceededError("Monthly AI budget reached");
     this.busy = true;
+    // Separate the text of consecutive model calls, as the story feed shows them as separate paragraphs.
+    let written: "nothing" | "text" | "break-due" = "nothing";
+    this.sink = onText
+      ? (delta) => {
+          if (!delta) return;
+          if (written === "break-due") onText("\n\n");
+          written = "text";
+          onText(delta);
+        }
+      : undefined;
+    const nextCall = () => {
+      if (written === "text") written = "break-due";
+    };
     const start = this.state.events.length;
     try {
       let turn = await first();
       for (let step = 0; step < MAX_STEPS; step++) {
         this.record(turn);
+        nextCall();
         if (turn.stop === "pause") {
-          turn = await this.conversation.resume();
+          turn = await this.conversation.resume(this.sink);
           continue;
         }
         if (turn.stop === "refusal") {
@@ -155,20 +220,21 @@ export class Director {
       }
     } finally {
       this.busy = false;
+      this.sink = undefined;
     }
     return this.state.events.slice(start);
   }
 
-  private async continueIfReady(): Promise<void> {
+  private async continueIfReady(onText?: TextSink): Promise<void> {
     if (this.state.pending.length) return;
-    await this.run(() => this.sendCollected());
+    await this.run(() => this.sendCollected(), onText);
   }
 
   /** Answers the DM is still owed after a failed request (network error, budget): send them again. */
-  async retry(): Promise<StoryEvent[]> {
+  async retry(onText?: TextSink): Promise<StoryEvent[]> {
     if (this.state.pending.length || !this.state.collected.length) return [];
     const start = this.state.events.length;
-    await this.run(() => this.sendCollected());
+    await this.run(() => this.sendCollected(), onText);
     return this.state.events.slice(start);
   }
 
@@ -176,7 +242,7 @@ export class Director {
     const results = this.state.collected;
     this.state.collected = [];
     try {
-      return await this.conversation.sendToolResults(results);
+      return await this.conversation.sendToolResults(results, this.sink);
     } catch (e) {
       this.state.collected = results;
       throw e;

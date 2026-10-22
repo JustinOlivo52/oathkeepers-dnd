@@ -41,3 +41,47 @@ export function stateBlock(state: AdventureState): string {
     quests.length ? `Active quests: ${quests.join("; ")}` : "Active quests: none",
   ].join("\n");
 }
+
+/** What the DM remembers from earlier sessions. Empty in the first session. */
+export function memoryBlock(state: AdventureState): string {
+  const { recaps, threads } = state.memory;
+  if (!recaps.length) return "";
+  // The last few recaps in full; older ones are already folded into later recaps.
+  const recent = recaps.slice(-3).map((r) => `Session ${r.session}: ${r.text}`);
+  const npcs = Object.values(state.npcs).map((n) => `- ${n.name} (${n.attitude}): ${n.description} ${n.notes}`.trim());
+  const parts = [
+    "[Story so far]",
+    ...recent,
+    threads.length ? `Open threads:\n${threads.map((t) => `- ${t}`).join("\n")}` : "",
+    npcs.length ? `People the party knows:\n${npcs.join("\n")}` : "",
+  ].filter(Boolean);
+  return `${parts.join("\n")}\n\n`;
+}
+
+/** A session as plain text, for the memory keeper. */
+export function transcript(state: AdventureState, fromEvent: number): string {
+  const name = (id: string) => state.party.find((c) => c.id === id)?.name ?? id;
+  return state.events
+    .slice(fromEvent)
+    .flatMap((e): string[] => {
+      switch (e.type) {
+        case "narration":
+          return [`DM: ${e.text}`];
+        case "player":
+          return [`${name(e.characterId)}: ${e.text}`];
+        case "check_result":
+          return [`(${name(e.characterId)} rolled ${e.total} vs DC ${e.dc}: ${e.success ? "success" : "failure"})`];
+        case "combat_result":
+          return [`(Battle: ${e.summary})`];
+        case "quest":
+          return [`(Quest ${e.quest.status}: ${e.quest.title}. ${e.quest.notes})`];
+        case "item":
+          return [`(${name(e.characterId)} got ${e.name})`];
+        case "scene":
+          return [`(Location: ${e.name})`];
+        default:
+          return [];
+      }
+    })
+    .join("\n");
+}

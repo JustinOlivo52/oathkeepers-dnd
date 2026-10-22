@@ -45,6 +45,8 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; canRetry: boolean } | null>(null);
   const [saved, setSaved] = useState<SavedRef | null>(readSaved);
+  /** Narration streaming in while the DM writes. */
+  const [live, setLive] = useState("");
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
 
   useEffect(() => {
@@ -57,6 +59,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
   const run = async (fn: () => Promise<AdventureSnapshot>) => {
     setBusy(true);
     setError(null);
+    setLive("");
     try {
       setSnap(await fn());
     } catch (e) {
@@ -67,12 +70,14 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
       });
     } finally {
       setBusy(false);
+      setLive("");
     }
   };
 
   const begin = (resume?: SavedRef) => {
     const [mode, provider] = (resume ? `${resume.mode}:${resume.provider}` : choice).split(":") as ["remote" | "local", string];
     const c = clientFor(mode, provider);
+    c.onText = (delta) => setLive((text) => text + delta);
     setClient(c);
     void run(async () => {
       const s = resume ? await c.resume(resume.id) : await c.start(character);
@@ -128,6 +133,15 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
               The server is running without an API key, so only the demo DM is available. Run <code>npm run check-setup</code> in a terminal to see what's wrong, then restart <code>npm run dev</code>.
             </p>
           )}
+          {busy && live && (
+            <div className="feed">
+              <div className="narration live">
+                {live.split(/\n{2,}/).map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            </div>
+          )}
           {error && <p className="warning">{error.message}</p>}
         </section>
       </main>
@@ -139,6 +153,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
       client={client}
       snap={snap}
       busy={busy}
+      live={live}
       error={error}
       run={run}
       onLeave={() => {
@@ -159,12 +174,13 @@ function Adventure(props: {
   client: DmClient;
   snap: AdventureSnapshot;
   busy: boolean;
+  live: string;
   error: { message: string; canRetry: boolean } | null;
   run: (fn: () => Promise<AdventureSnapshot>) => Promise<void>;
   onLeave: () => void;
   onNew: () => void;
 }) {
-  const { client, snap, busy, error, run } = props;
+  const { client, snap, busy, live, error, run } = props;
   const { state, pending } = snap;
   const hero = state.party[0]!;
   const me = state.characters[hero.id]!;
@@ -174,7 +190,7 @@ function Adventure(props: {
 
   useEffect(() => {
     feed.current?.lastElementChild?.scrollIntoView({ block: "end", behavior: "smooth" });
-  }, [state.events.length, busy]);
+  }, [state.events.length, busy, live.length > 0]);
 
   const send = () => {
     const t = text.trim();
@@ -226,7 +242,16 @@ function Adventure(props: {
           {state.events.map((e, i) => (
             <StoryLine key={i} event={e} names={(id) => state.party.find((c) => c.id === id)?.name ?? id} />
           ))}
-          {busy && <li className="thinking">The DM is thinking…</li>}
+          {busy &&
+            (live ? (
+              <li className="narration live">
+                {live.split(/\n{2,}/).map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </li>
+            ) : (
+              <li className="thinking">The DM is thinking…</li>
+            ))}
         </ol>
 
         {pendingRequest && !busy && (
@@ -264,6 +289,16 @@ function Adventure(props: {
           </div>
         )}
 
+        {!state.sessionOpen ? (
+          <div className="prompt-card">
+            <p>
+              <strong>Session {state.session}</strong> is ready when you are. The DM will open with a recap.
+            </p>
+            <button className="primary" disabled={busy} onClick={() => void run(() => client.begin())}>
+              Start session {state.session}
+            </button>
+          </div>
+        ) : (
         <form
           className="composer"
           onSubmit={(e) => {
@@ -289,6 +324,7 @@ function Adventure(props: {
             Send
           </button>
         </form>
+        )}
       </section>
 
       <aside className="adventure-side">
@@ -307,6 +343,17 @@ function Adventure(props: {
         </div>
         {level > hero.level && <p className="note">Level {level} reached! Leveling up arrives in Phase 5.</p>}
 
+        {state.memory.threads.length > 0 && (
+          <Section title="Story so far">
+            <ul>
+              {state.memory.threads.map((t) => (
+                <li key={t} className="small">
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </Section>
+        )}
         <Section title="Party purse">
           <p>{state.gold} gp</p>
         </Section>
@@ -370,6 +417,16 @@ function Adventure(props: {
             )}
           </p>
         </Section>
+        {state.sessionOpen && (
+          <button
+            className="secondary"
+            disabled={busy || !!pending}
+            title={pending ? "Finish the roll or battle first" : "The DM writes a recap and remembers it next session"}
+            onClick={() => confirm("End this session? The DM will write a recap for next time.") && void run(() => client.endSession())}
+          >
+            End session {state.session}
+          </button>
+        )}
         <div className="row">
           <button className="ghost small" onClick={props.onLeave}>
             Back
@@ -467,6 +524,17 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
       return <li className="chip">Long rest: HP restored</li>;
     case "notice":
       return <li className="system">{e.text}</li>;
+    case "session_start":
+      return <li className="session-divider">Session {e.session}</li>;
+    case "session_end":
+      return (
+        <li className="recap">
+          <h4>End of session {e.session}</h4>
+          {e.recap.split(/\n{2,}/).map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </li>
+      );
     case "art":
       return e.kind === "scene" ? (
         <li className="art-scene">

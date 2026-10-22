@@ -2,9 +2,10 @@ import { createServer } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadContent } from "@oathkeepers/content";
-import { DemoProvider, type DmProvider } from "@oathkeepers/dm";
+import { DemoProvider, DemoSummarizer, type DmProvider } from "@oathkeepers/dm";
 import { createApp } from "./app.js";
 import { ClaudeProvider } from "./claude.js";
+import { ClaudeSummarizer } from "./memory.js";
 import { Store } from "./store.js";
 import { loadSettings } from "./env.js";
 
@@ -26,6 +27,8 @@ const app = createApp({
   content: loadContent(),
   store: new Store(process.env.DATA_DIR ?? join(here, "..", "data")),
   providers,
+  // Claude adventures get Haiku recaps; demo adventures get the offline recap.
+  summarizerFor: (name) => (name === "claude" && apiKey ? new ClaudeSummarizer(apiKey) : new DemoSummarizer()),
   ...(budget !== undefined && Number.isFinite(budget) ? { monthlyBudgetUsd: budget } : {}),
 });
 
