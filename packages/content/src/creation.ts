@@ -159,7 +159,10 @@ export function creationOptions(content: Content, draft: CharacterDraft) {
     classChoices: (cls?.choices ?? []).filter((c) => c.level <= draft.level),
     needsSubclass: !!cls && draft.level >= 3,
     backgroundSkills: background?.skills ?? [],
-    classSkillChoice: cls ? { count: cls.skillChoices.count, from: listOrAll(cls.skillChoices.from) } : undefined,
+    // Barbarian Primal Knowledge (level 3): one more skill from the class list.
+    classSkillChoice: cls
+      ? { count: cls.skillChoices.count + (featureIds.includes("primal-knowledge") ? 1 : 0), from: listOrAll(cls.skillChoices.from) }
+      : undefined,
     speciesSkillChoice: species?.skillChoice ? { count: species.skillChoice.count, from: listOrAll(species.skillChoice.from) } : undefined,
     subclassSkillChoice: subclass?.skillChoice
       ? { count: subclass.skillChoice.count, from: listOrAll(subclass.skillChoice.from) }

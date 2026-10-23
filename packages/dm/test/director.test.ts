@@ -423,3 +423,17 @@ describe("Out-of-battle class features", () => {
     expect(state.characters[pip.id]!.resources).toEqual({ "spell-slot-1": 0, "spell-slot-2": 1, "arcane-recovery": 0 });
   });
 });
+
+describe("Tactical Mind", () => {
+  it("a fighter's failed check can spend a Second Wind use for +1d10", async () => {
+    // d20 shows 10, Athletics +5 makes 15 against DC 20; the d10 rolls a 5.
+    const provider = new ScriptedProvider([turn([""], [check("c1", { dc: 20 })]), turn(["You make it."])]);
+    const state = Director.newAdventure(content, [bram], provider.name, "t");
+    const director = new Director(content, provider, state, scriptedRng(Array(20).fill(10)));
+    await director.act(bram.id, "I climb");
+    await director.roll();
+    const result = state.events.find((e) => e.type === "check_result") as { success: boolean; total: number };
+    expect(result.success).toBe(true);
+    expect(state.characters[bram.id]!.resources).toEqual({ "second-wind": 1 });
+  });
+});

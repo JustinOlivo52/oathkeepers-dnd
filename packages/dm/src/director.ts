@@ -2,6 +2,7 @@ import {
   abilityCheck,
   EventLog,
   roll,
+  rollDie,
   savingThrow,
   SKILLS,
   type Rng,
@@ -522,7 +523,22 @@ export class Director {
         : r.skill
           ? abilityCheck(this.rng, log, creature, { ...opts, skill: r.skill })
           : abilityCheck(this.rng, log, creature, { ...opts, ability: r.ability });
-    const { roll, success } = result;
+    const { roll } = result;
+    let success = result.success;
+    // Fighter: Tactical Mind. A failed ability check can spend a Second Wind use for +1d10; the use is kept if it still fails.
+    let tactical = "";
+    const state = this.state.characters[r.characterId]!;
+    const secondWind = state.resources?.["second-wind"] ?? creature.resources["second-wind"]?.current ?? 0;
+    if (r.kind !== "save" && !success && creature.features.includes("tactical-mind") && secondWind > 0 && roll.total + 10 >= r.dc) {
+      const bonus = rollDie(this.rng, 10);
+      if (roll.total + bonus >= r.dc) {
+        roll.total += bonus;
+        roll.modifier += bonus;
+        success = true;
+        state.resources = { ...state.resources, "second-wind": secondWind - 1 };
+        tactical = ` Tactical Mind added ${bonus} (one Second Wind use spent).`;
+      }
+    }
     this.state.events.push({
       type: "check_result",
       id: eventId,
@@ -536,7 +552,7 @@ export class Director {
     });
     this.ok(
       toolCallId,
-      `${data.name} rolled ${roll.total} (d20 ${roll.natural}${roll.mode !== "normal" ? ` with ${roll.mode}` : ""}, modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}) against DC ${r.dc}: ${success ? "SUCCESS" : "FAILURE"}${roll.natural === 20 ? " (natural 20)" : roll.natural === 1 ? " (natural 1)" : ""}.`,
+      `${data.name} rolled ${roll.total} (d20 ${roll.natural}${roll.mode !== "normal" ? ` with ${roll.mode}` : ""}, modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}) against DC ${r.dc}: ${success ? "SUCCESS" : "FAILURE"}${roll.natural === 20 ? " (natural 20)" : roll.natural === 1 ? " (natural 1)" : ""}.${tactical}`,
     );
   }
 

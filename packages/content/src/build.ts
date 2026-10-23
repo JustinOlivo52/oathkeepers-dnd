@@ -56,10 +56,35 @@ export const IMPLEMENTED_FEATURES = new Set([
   "font-of-magic",
   "metamagic",
   "arcane-recovery",
+  // Step 2: Cleric, Monk, Wizard, Barbarian, Fighter
+  "disciple-of-life",
+  "preserve-life",
+  "divine-spark",
+  "turn-undead",
+  "unarmored-movement",
+  "uncanny-metabolism",
+  "deflect-attacks",
+  "open-hand-technique",
+  "potent-cantrip",
+  "danger-sense",
+  "primal-knowledge",
+  "tactical-mind",
+]);
+
+/** Features that only matter in the story (the DM handles them); the sheet labels them instead of "coming soon". */
+export const STORY_FEATURES = new Set([
+  "thieves-cant",
+  "second-story-work",
+  "fast-hands",
+  "druidic",
+  "ritual-adept",
+  "evocation-savant",
+  "hunters-lore",
+  "wild-companion",
 ]);
 
 export function unimplementedFeatures(creature: Creature): string[] {
-  return creature.features.filter((f) => !IMPLEMENTED_FEATURES.has(f));
+  return creature.features.filter((f) => !IMPLEMENTED_FEATURES.has(f) && !STORY_FEATURES.has(f));
 }
 
 export type ArmorCategory = "light" | "medium" | "heavy" | "shield";
@@ -102,6 +127,8 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     // Invocations and Metamagic act like features in battle: "agonizing-blast", "metamagic-careful"...
     ...invocations,
     ...metamagic.map((m) => `metamagic-${m}`),
+    // Cleric Channel Divinity options (level 2).
+    ...(cls.id === "cleric" && data.level >= 2 ? ["divine-spark", "turn-undead"] : []),
   ];
   const has = (f: string) => features.includes(f);
   const hasFeat = (f: string) => data.feats.some((x) => x.id === f);
@@ -134,6 +161,10 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
 
   let speedFt = lineage?.speedFt ?? species.speedFt;
   if (armor?.strengthRequirement && data.abilities.str < armor.strengthRequirement) speedFt -= 10;
+  // Monk Unarmored Movement: faster without armor or a shield (2024 table).
+  if (features.includes("unarmored-movement") && !armor && !data.equipment.shield) {
+    speedFt += data.level >= 18 ? 30 : data.level >= 14 ? 25 : data.level >= 10 ? 20 : data.level >= 6 ? 15 : 10;
+  }
 
   const { weapon: proficientWith } = classProficiencies(cls, data.classChoices);
   // Pact of the Blade bonds the first melee weapon: proficient, and Charisma can drive it.
@@ -271,6 +302,7 @@ function featureResources(cls: ClassData, features: string[], level: number, dat
     out["bardic-inspiration"] = { current: uses, max: uses, recharge: level >= 5 ? "short" : "long" };
   }
   if (features.includes("innate-sorcery")) out["innate-sorcery"] = long(2);
+  if (features.includes("uncanny-metabolism")) out["uncanny-metabolism"] = long(1);
   if (features.includes("magical-cunning")) out["magical-cunning"] = long(1);
   if (features.includes("favored-enemy")) out["favored-enemy"] = long(level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2);
   return out;

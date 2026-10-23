@@ -191,7 +191,7 @@ export const SpellSchema = z.object({
   target: z.enum(["enemy", "ally", "point", "self"]),
   targets: z.number().int().min(1).optional(),
   targetsPerSlot: z.number().int().min(1).optional(),
-  area: z.object({ shape: z.enum(["sphere", "cone", "cube"]), sizeFt: z.number().int().min(5) }).optional(),
+  area: z.object({ shape: z.enum(["sphere", "cone", "cube", "square"]), sizeFt: z.number().int().min(5) }).optional(),
   attack: z.enum(["melee", "ranged"]).optional(),
   save: ability.optional(),
   halfOnSave: z.boolean().optional(),
@@ -209,7 +209,13 @@ export const SpellSchema = z.object({
   /** Damage types to choose from (Chromatic Orb); the caster picks the one the target resists least. */
   damageTypes: z.array(damageType).optional(),
   concentration: z.boolean().optional(),
-  effect: z.enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon"]).optional(),
+  effect: z
+    .enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon", "restrain", "command", "heroism", "divine-favor", "smite"])
+    .optional(),
+  /** Smite spells: extra damage and an effect on the caster's next melee weapon hit. */
+  smite: z
+    .object({ dice, type: damageType, perSlot: dice.optional(), rider: z.enum(["push-prone", "burning", "frightened"]), save: ability })
+    .optional(),
   onlyType: z.string().optional(),
   description: z.string(),
 });

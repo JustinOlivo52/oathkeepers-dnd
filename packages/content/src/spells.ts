@@ -147,6 +147,7 @@ export function buildSpells(content: Content, data: CharacterData, cls: ClassDat
         ...(s.onlyType ? { onlyType: s.onlyType } : {}),
         ...(s.pushFt ? { pushFt: s.pushFt } : pact && invocations.has("repelling-blast") ? { pushFt: 10 } : {}),
         ...(s.damageTypes ? { damageTypes: s.damageTypes } : {}),
+        ...(s.smite ? { smite: s.smite } : {}),
         attackBonus: pb + mod,
         saveDc: 8 + pb + mod,
       };

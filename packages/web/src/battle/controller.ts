@@ -35,7 +35,7 @@ export type Mode =
   /** Casting a spell: pick targets (several for Bless) or a square. */
   | { kind: "spell"; spellId: string; slot?: number; picked: string[] };
 
-export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration";
+export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration" | "divine-spark";
 export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "lay-on-hands": true,
   "hunters-mark": false,
@@ -43,12 +43,16 @@ export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "flurry-of-blows": false,
   "spiritual-weapon": false,
   "bardic-inspiration": true,
+  "divine-spark": false,
 };
+/** Features that can target anyone: Divine Spark heals allies or hurts enemies. */
+const TARGETS_ANYONE = new Set<TargetedFeature>(["divine-spark"]);
 
 export type QuickAction =
   | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
   | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind"
-  | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points";
+  | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points"
+  | "preserve-life" | "turn-undead" | "break-free";
 
 export interface LogLine {
   text: string;
@@ -151,7 +155,7 @@ export class BattleController {
 
     if (this.mode.kind === "feature") {
       const feature = this.mode.feature;
-      if (!target || (TARGETS_ALLY[feature] ? target.side !== me.side : target.side === me.side)) {
+      if (!target || (!TARGETS_ANYONE.has(feature) && (TARGETS_ALLY[feature] ? target.side !== me.side : target.side === me.side))) {
         this.mode = { kind: "move" };
         this.refresh();
         return;
@@ -163,6 +167,7 @@ export class BattleController {
         else if (feature === "martial-arts") this.combat.martialArts(me.id, target.id);
         else if (feature === "spiritual-weapon") this.combat.spiritualWeaponAttack(me.id, target.id);
         else if (feature === "bardic-inspiration") this.combat.bardicInspiration(me.id, target.id);
+        else if (feature === "divine-spark") this.combat.divineSpark(me.id, target.id);
         else this.combat.flurryOfBlows(me.id, target.id);
       });
       return;
@@ -321,6 +326,9 @@ export class BattleController {
         "make-slot-2": () => c.createSpellSlot(id, 2),
         "slot-1-to-points": () => c.convertSpellSlot(id, 1),
         "slot-2-to-points": () => c.convertSpellSlot(id, 2),
+        "preserve-life": () => void c.preserveLife(id),
+        "turn-undead": () => c.turnUndead(id),
+        "break-free": () => void c.breakFree(id),
       };
       run[action]();
     });
@@ -431,8 +439,9 @@ export class BattleController {
       }
     } else if (this.mode.kind === "feature") {
       const ally = TARGETS_ALLY[this.mode.feature];
+      const anyone = TARGETS_ANYONE.has(this.mode.feature);
       o.targets = [...this.combat.creatures.values()]
-        .filter((c) => !c.dead && c.position && (ally ? c.side === me.side : c.side !== me.side))
+        .filter((c) => !c.dead && c.position && (anyone || (ally ? c.side === me.side : c.side !== me.side)))
         .map((c) => ({ point: c.position!, size: c.footprint ?? 1, ok: true }));
     } else {
       const attackId = this.mode.attackId;

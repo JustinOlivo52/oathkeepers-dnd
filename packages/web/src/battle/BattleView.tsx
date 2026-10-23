@@ -161,6 +161,14 @@ function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext
     const marked = combat.markedBy(me.id);
     add({ id: "hm", label: `Hunter's Mark (${uses("favored-enemy")}${uses("spell-slot-1") ? ` +${uses("spell-slot-1")} slots` : ""})`, title: `Bonus Action: your hits on the target deal 1d6 force${marked ? `. Now marked: ${marked.name}` : ""}`, disabled: !bonus || (!uses("favored-enemy") && !uses("spell-slot-1") && !(marked && marked.dead)), target: "hunters-mark" });
   }
+  if (me.conditions.includes("restrained") && me.effects.some((e) => e.id === "entangled")) {
+    add({ id: "free", label: "Break free", title: "Action: Strength (Athletics) check against the spell's DC", disabled: turn.actions < 1, action: "break-free" });
+  }
+  if (has("divine-spark")) add({ id: "spark", label: `Divine Spark (${uses("channel-divinity")})`, title: "Channel Divinity, Action: heal an ally or yourself 1d8 + Wis, or hit an enemy with radiant light (Con save for half), 30 ft", disabled: turn.actions < 1 || !uses("channel-divinity"), target: "divine-spark" });
+  if (has("preserve-life")) add({ id: "pl", label: "Preserve Life", title: `Channel Divinity, Action: share ${5 * me.level} HP among bloodied allies within 30 ft (each up to half their HP max)`, disabled: turn.actions < 1 || !uses("channel-divinity"), action: "preserve-life" });
+  if (has("turn-undead")) add({ id: "tu", label: "Turn Undead", title: "Channel Divinity, Action: undead within 30 ft make a Wisdom save or flee until they take damage", disabled: turn.actions < 1 || !uses("channel-divinity"), action: "turn-undead" });
+  const smite = me.effects.find((e) => e.id === "smite-ready");
+  if (smite) add({ id: "smite-ready", label: `${me.spells?.find((s) => s.id === smite.spell)?.name ?? "Smite"} ready`, title: "Your next melee weapon hit carries the smite", disabled: true, on: true });
   if (has("bardic-inspiration")) add({ id: "bi", label: `Bardic Inspiration (${uses("bardic-inspiration")})`, title: "Bonus Action: an ally within 60 ft gets a die to add when an attack or save fails. Cutting Words uses the same dice, automatically, as a reaction.", disabled: !bonus || !uses("bardic-inspiration"), target: "bardic-inspiration" });
   if (has("innate-sorcery")) {
     const active = me.effects.some((e) => e.id === "innate-sorcery");

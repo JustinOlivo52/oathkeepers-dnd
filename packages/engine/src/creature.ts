@@ -70,6 +70,8 @@ export interface ActiveEffect {
   dc?: number;
   /** Bardic Inspiration die, like "d6". */
   die?: string;
+  /** A number the effect needs: Heroism's temporary HP, a smite's extra slot levels. */
+  value?: number;
 }
 
 export interface Creature {

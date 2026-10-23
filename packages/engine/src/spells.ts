@@ -16,7 +16,7 @@ export interface SpellDef {
   /** How many creatures you can pick; more with higher slots via `targetsPerSlot`. */
   targets?: number;
   targetsPerSlot?: number;
-  area?: { shape: "sphere" | "cone" | "cube"; sizeFt: number };
+  area?: { shape: "sphere" | "cone" | "cube" | "square"; sizeFt: number };
   /** Spell attack, or a saving throw. */
   attack?: "melee" | "ranged";
   save?: Ability;
@@ -30,7 +30,11 @@ export interface SpellDef {
   heal?: { dice: string; perSlot?: string };
   concentration?: boolean;
   /** Extra effect, implemented by id in the engine. */
-  effect?: "slow" | "no-reactions" | "mockery" | "guided" | "bless" | "shield-of-faith" | "hold" | "teleport" | "spiritual-weapon";
+  effect?:
+    | "slow" | "no-reactions" | "mockery" | "guided" | "bless" | "shield-of-faith" | "hold" | "teleport" | "spiritual-weapon"
+    | "restrain" | "command" | "heroism" | "divine-favor" | "smite";
+  /** Smite spells: extra damage and a rider on the next melee weapon hit. */
+  smite?: { dice: string; type: DamageType; perSlot?: string; rider: "push-prone" | "burning" | "frightened"; save: Ability };
   /** Only works on this creature type, like Hold Person on humanoids. */
   onlyType?: string;
   /** Push a target this far straight away on a hit or a failed save (Large or smaller). */
@@ -56,10 +60,17 @@ export function upcast(dice: string, perSlot: string | undefined, extraLevels: n
  * Squares an area spell covers. Spheres are centred on a square's corner area around `at` (the square
  * and everything within the radius). Cones and cubes start at the caster and point toward `at`.
  */
-export function areaSquares(map: GridMap, shape: "sphere" | "cone" | "cube", sizeFt: number, at: Point, caster: Point, casterSize = 1): Point[] {
+export function areaSquares(map: GridMap, shape: "sphere" | "cone" | "cube" | "square", sizeFt: number, at: Point, caster: Point, casterSize = 1): Point[] {
   const out: Point[] = [];
   const inMap = (p: Point) => p.x >= 0 && p.y >= 0 && p.x < map.width && p.y < map.height;
   const r = sizeFt / 5;
+  if (shape === "square") {
+    // A square on the ground centred on the chosen square (20 ft = 4 x 4).
+    const start = { x: at.x - Math.floor((r - 1) / 2), y: at.y - Math.floor((r - 1) / 2) };
+    for (let y = start.y; y < start.y + r; y++)
+      for (let x = start.x; x < start.x + r; x++) if (inMap({ x, y }) && map.walkable({ x, y })) out.push({ x, y });
+    return out;
+  }
   if (shape === "sphere") {
     for (let y = at.y - r; y <= at.y + r; y++)
       for (let x = at.x - r; x <= at.x + r; x++) {

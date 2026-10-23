@@ -216,10 +216,19 @@ Class features, round 2:
 - Chromatic Orb picks the damage type the target resists least
 - Rules fix: creatures can move through the space of an incapacitated creature (a downed character in a corridor no longer blocks a fight forever)
 
+Class features, round 3:
+- Cleric: Disciple of Life, Preserve Life, Channel Divinity's Divine Spark and Turn Undead (turned undead flee until damaged)
+- Monk: Unarmored Movement, Uncanny Metabolism (on rolling initiative), Deflect Attacks (automatic reaction, with the Focus Point redirect), Open Hand Technique (Flurry hits topple, or addle the already prone)
+- Wizard: Potent Cantrip. Barbarian: Danger Sense, Primal Knowledge (an extra skill in the builder). Fighter: Tactical Mind (a failed story check can spend a Second Wind use for +1d10)
+- New spells: Entangle (restrained; break free with an action), Command ("Grovel"), Heroism, Divine Favor, Thunderous, Searing and Wrathful Smite. Smites are cast before the hit and ride on the next melee weapon hit (simpler than the 2024 "cast after you hit" timing)
+- Conditions in battle: restrained, frightened, burning
+- Story-only features (Thieves' Cant, Druidic, Ritual Adept...) are labeled "story" on the character sheet
+- Every class's level 1 to 3 features now work except the Druid's Wild Shape and Land's Aid
+
 Not yet:
+- Druid Wild Shape and Land's Aid
 - Spells above level 2, reactions (Shield, Hellish Rebuke), out-of-combat spells (rituals, utility)
-- Cleric Disciple of Life and Preserve Life; Monk Unarmored Movement, Deflect Attacks, Open Hand Technique; Wizard Potent Cantrip and Evocation Savant; Barbarian Danger Sense; Druid Wild Shape and Land's Aid
-- More Ranger and Paladin spells
+- Command only offers "Grovel"
 - Monsters casting spells
 - Barbarian Danger Sense, Rogue Fast Hands, Monk Deflect Attacks (these need saves, objects or reactions in battle)
 - Companion battle sprites: requested from Codex in batch 2, section 5; the game uses `hero-<character id>` art automatically once it exists
