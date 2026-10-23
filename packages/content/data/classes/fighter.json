@@ -37,7 +37,12 @@
     ]
   },
   "weaponMastery": {
-    "count": 3
+    "count": 3,
+    "byLevel": {
+      "4": 4,
+      "10": 5,
+      "16": 6
+    }
   },
   "features": [
     {
@@ -69,6 +74,21 @@
       "level": 3,
       "id": "subclass",
       "name": "Fighter Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 5,
+      "id": "extra-attack",
+      "name": "Extra Attack"
+    },
+    {
+      "level": 5,
+      "id": "tactical-shift",
+      "name": "Tactical Shift"
     }
   ],
   "resources": [

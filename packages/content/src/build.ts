@@ -71,6 +71,18 @@ export const IMPLEMENTED_FEATURES = new Set([
   "tactical-mind",
   "wild-shape",
   "lands-aid",
+  // Levels 4 and 5
+  "ability-score-improvement",
+  "extra-attack",
+  "fast-movement",
+  "font-of-inspiration",
+  "sear-undead",
+  "wild-resurgence",
+  "tactical-shift",
+  "stunning-strike",
+  "cunning-strike",
+  "uncanny-dodge",
+  "sorcerous-restoration",
 ]);
 
 /** Features that only matter in the story (the DM handles them); the sheet labels them instead of "coming soon". */
@@ -83,6 +95,9 @@ export const STORY_FEATURES = new Set([
   "evocation-savant",
   "hunters-lore",
   "wild-companion",
+  "slow-fall",
+  "faithful-steed",
+  "memorize-spell",
 ]);
 
 export function unimplementedFeatures(creature: Creature): string[] {
@@ -137,8 +152,9 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
 
   // HP: max hit die at level 1, then the fixed average (half the die + 1) per level, plus Con each level.
   const bonusHpPerLevel = (species.hpPerLevel ?? 0) + (subclass?.hpPerLevel ?? 0);
-  const maxHp =
-    cls.hitDie + mod("con") + (data.level - 1) * (cls.hitDie / 2 + 1 + mod("con")) + bonusHpPerLevel * data.level;
+  // HP: the full hit die at level 1, then each level's roll (if rolled) or the fixed average, plus Con each level.
+  let maxHp = cls.hitDie + mod("con") + bonusHpPerLevel * data.level;
+  for (let level = 2; level <= data.level; level++) maxHp += Math.max(1, (data.hpRolls?.[String(level)] ?? cls.hitDie / 2 + 1) + mod("con"));
 
   const armor = data.equipment.armor ? lookup(content.armor, data.equipment.armor, "armor") : undefined;
   const dex = mod("dex");
@@ -163,6 +179,8 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
 
   let speedFt = lineage?.speedFt ?? species.speedFt;
   if (armor?.strengthRequirement && data.abilities.str < armor.strengthRequirement) speedFt -= 10;
+  // Barbarian Fast Movement: +10 ft without heavy armor.
+  if (features.includes("fast-movement") && armor?.category !== "heavy") speedFt += 10;
   // Monk Unarmored Movement: faster without armor or a shield (2024 table).
   if (features.includes("unarmored-movement") && !armor && !data.equipment.shield) {
     speedFt += data.level >= 18 ? 30 : data.level >= 14 ? 25 : data.level >= 10 ? 20 : data.level >= 6 ? 15 : 10;
@@ -191,6 +209,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
       damageType: w.damageType,
       ability,
       ...(w.properties.includes("finesse") ? { finesse: true } : {}),
+      ...(hasFeat("savage-attacker") ? { savage: true } : {}),
       ...(w.kind === "melee" ? { reachFt: w.properties.includes("reach") ? 10 : 5 } : {}),
       ...(w.rangeFt ? { rangeFt: w.rangeFt } : {}),
       ...(hasMastery ? { mastery: w.mastery } : {}),

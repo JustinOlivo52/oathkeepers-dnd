@@ -34,6 +34,8 @@ export interface Attack {
   attackBonus: number;
   /** Dice notation including modifiers, e.g. "1d8+5". */
   damage: string;
+  /** Savage Attacker feat: once per turn, roll this weapon's damage twice and use the higher. */
+  savage?: boolean;
   /** A spell attack rather than a weapon: weapon-only features (Sneak Attack, Smite...) don't apply. */
   spell?: boolean;
   /** Ability the attack uses: Rage boosts Strength attacks, Sneak Attack needs finesse or ranged. */

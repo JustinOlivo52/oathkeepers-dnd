@@ -67,6 +67,26 @@
       "level": 3,
       "id": "subclass",
       "name": "Monk Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 4,
+      "id": "slow-fall",
+      "name": "Slow Fall"
+    },
+    {
+      "level": 5,
+      "id": "extra-attack",
+      "name": "Extra Attack"
+    },
+    {
+      "level": 5,
+      "id": "stunning-strike",
+      "name": "Stunning Strike"
     }
   ],
   "resources": [
@@ -75,7 +95,9 @@
       "recharge": "short",
       "usesByLevel": {
         "2": 2,
-        "3": 3
+        "3": 3,
+        "4": 4,
+        "5": 5
       }
     }
   ],

@@ -56,6 +56,12 @@ export interface CharacterDraft {
   metamagic?: string[];
 }
 
+/** Weapon Mastery count at a level (Fighters and Barbarians gain more). */
+export function masteryCount(cls: ClassData, level: number): number {
+  const byLevel = Object.entries(cls.weaponMastery?.byLevel ?? {}).filter(([l]) => Number(l) <= level).sort((a, b) => Number(b[0]) - Number(a[0]));
+  return byLevel[0]?.[1] ?? cls.weaponMastery?.count ?? 0;
+}
+
 /** Eldritch Invocations known by Warlock level (2024). */
 export function invocationCount(level: number): number {
   return level >= 18 ? 10 : level >= 15 ? 9 : level >= 12 ? 8 : level >= 9 ? 7 : level >= 7 ? 6 : level >= 5 ? 5 : level >= 2 ? 3 : 1;
@@ -179,7 +185,7 @@ export function creationOptions(content: Content, draft: CharacterDraft) {
     weaponMastery:
       cls?.weaponMastery && featureIds.includes("weapon-mastery")
         ? {
-            count: cls.weaponMastery.count,
+            count: masteryCount(cls, draft.level),
             weapons: weapons.filter((w) => !cls.weaponMastery!.meleeOnly || w.kind === "melee"),
           }
         : undefined,

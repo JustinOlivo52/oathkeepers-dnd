@@ -55,6 +55,16 @@
       "level": 3,
       "id": "subclass",
       "name": "Sorcerer Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 5,
+      "id": "sorcerous-restoration",
+      "name": "Sorcerous Restoration"
     }
   ],
   "resources": [
@@ -63,7 +73,9 @@
       "recharge": "long",
       "usesByLevel": {
         "2": 2,
-        "3": 3
+        "3": 3,
+        "4": 4,
+        "5": 5
       }
     }
   ],

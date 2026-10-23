@@ -1,7 +1,6 @@
 import type { Attack, Creature, Side } from "./creature.js";
 import { addCondition, footprintOf, hasCondition, isConscious, removeCondition } from "./creature.js";
 import { abilityModifier } from "./abilities.js";
-import { rollDie } from "./rng.js";
 import { abilityCheck, saveModifier, savingThrow } from "./checks.js";
 import { areaSquares, slotResource, upcast, type SpellDef } from "./spells.js";
 import { applyDamage, deathSave, heal } from "./damage.js";
@@ -35,6 +34,8 @@ export interface TurnState {
   moved?: boolean;
   /** Made an attack with the Attack action this turn (Martial Arts and Flurry need it). */
   attacked?: boolean;
+  /** Attacks left in the current Attack action (Extra Attack). */
+  extraAttacks?: number;
 }
 
 /** Choices made with an attack. */
@@ -45,6 +46,10 @@ export interface AttackOptions {
   empower?: number;
   /** Sorcerer Seeking Spell: reroll the d20 on a miss. */
   seeking?: boolean;
+  /** Monk: Stunning Strike on a hit (1 Focus Point). */
+  stun?: boolean;
+  /** Rogue: Cunning Strike, trading a Sneak Attack die for an effect. */
+  cunning?: "poison" | "trip" | "withdraw";
 }
 
 /** Sorcery Point cost of each Metamagic option. Empowered and Seeking can be added to another option. */
@@ -53,7 +58,7 @@ const STACKING_METAMAGIC = new Set(["empowered", "seeking"]);
 
 /** Can't take actions or reactions: unconscious (0 HP) or paralyzed. Others can move through its space. */
 export function incapacitated(c: Creature): boolean {
-  return !isConscious(c) || hasCondition(c, "paralyzed");
+  return !isConscious(c) || hasCondition(c, "paralyzed") || hasCondition(c, "stunned");
 }
 
 /** Monk Martial Arts die by monk level (2024). */
@@ -106,6 +111,10 @@ const DIVINE_FAVOR = "divine-favor";
 const SMITE_READY = "smite-ready";
 const GROVEL = "grovel";
 const TURNED = "turned";
+const STUNNED = "stunned";
+const POISONED = "poisoned";
+const AIDED = "aid";
+const SPIRIT_GUARDIANS = "spirit-guardians";
 /** Level 1 spell slots for half casters (Paladin, Ranger), by class level. */
 export const SPELL_SLOT = "spell-slot-1";
 export const POTION = "potion-of-healing";
@@ -203,6 +212,8 @@ export class Combat {
     const ender = this.get(ending);
     const held = ender.effects.find((e) => e.id === HELD);
     if (held && isConscious(ender) && this.save(ender, "wis", held.dc ?? 10).success) this.endEffect(ender, HELD);
+    const sick = ender.effects.find((e) => e.id === POISONED);
+    if (sick && isConscious(ender) && this.save(ender, "con", sick.dc ?? 10).success) this.endEffect(ender, POISONED);
     const afraid = ender.effects.find((e) => e.id === FRIGHTENED);
     if (afraid && isConscious(ender) && this.save(ender, "wis", afraid.dc ?? 10).success) this.endEffect(ender, FRIGHTENED);
     this.log.push({ type: "turn_end", creatureId: ending });
@@ -290,6 +301,14 @@ export class Combat {
       disadvantage = true;
       notes.push("restrained");
     }
+    if (hasCondition(target, "stunned")) {
+      advantage = true;
+      notes.push("target stunned");
+    }
+    if (hasCondition(attacker, "poisoned")) {
+      disadvantage = true;
+      notes.push("poisoned");
+    }
     if (hasCondition(attacker, "frightened")) {
       disadvantage = true;
       notes.push("frightened");
@@ -329,10 +348,15 @@ export class Combat {
   attack(attackerId: string, targetId: string, attackId: string, options: AttackOptions = {}): { hit: boolean; critical: boolean } {
     const attacker = this.requireActive(attackerId);
     const turn = this.turn!;
-    if (turn.actions < 1) throw new RulesError(`${attacker.name} has no action left`);
+    if (turn.actions < 1 && !turn.extraAttacks) throw new RulesError(`${attacker.name} has no action left`);
     const check = this.checkAttack(attackerId, targetId, attackId);
     if (!check.ok) throw new RulesError(check.reason);
-    turn.actions -= 1;
+    // Extra Attack: the Attack action gives a second attack, which can follow a move.
+    if (turn.extraAttacks) turn.extraAttacks -= 1;
+    else {
+      turn.actions -= 1;
+      if (attacker.features.includes("extra-attack")) turn.extraAttacks = 1;
+    }
     turn.attacked = true;
     const result = this.resolveAttack(attacker, this.get(targetId), attacker.attacks.find((a) => a.id === attackId)!, check, options);
     this.checkVictory();
@@ -352,9 +376,9 @@ export class Combat {
       const r = rollD20(this.rng, attack.attackBonus + sacred, check.mode);
       // Bless: add 1d4 to the attack roll.
       if (this.hasEffect(attacker, BLESSED)) {
-        const d4 = roll(this.rng, "1d4");
-        r.total += d4.total;
-        r.modifier += d4.total;
+        const d4 = this.bonusRoll(attacker, "bless", "1d4");
+        r.total += d4;
+        r.modifier += d4;
       }
       return r;
     };
@@ -394,14 +418,28 @@ export class Combat {
       const strength = attack.ability === "str" && attack.kind === "melee" && !check.ranged;
       // Rage: +2 damage on Strength attacks (levels 1 to 8).
       const rageBonus = strength && this.hasEffect(attacker, RAGING) ? 2 : 0;
-      const dmg = roll(this.rng, rageBonus ? `${attack.damage}+${rageBonus}` : attack.damage, { critical });
+      let dmg = roll(this.rng, rageBonus ? `${attack.damage}+${rageBonus}` : attack.damage, { critical });
+      // Savage Attacker: once per turn, roll weapon damage twice and keep the higher.
+      if (attack.savage && !attack.spell && this.takeOncePerTurn(attacker, "savage-attacker")) {
+        const again = roll(this.rng, rageBonus ? `${attack.damage}+${rageBonus}` : attack.damage, { critical });
+        const [kept, dropped] = again.total > dmg.total ? [again, dmg] : [dmg, again];
+        this.log.push({ type: "bonus_roll", creatureId: attacker.id, source: "savage-attacker", roll: dropped });
+        dmg = kept;
+      }
       if (options.empower) this.empower(dmg, options.empower);
-      this.dealDamage(attacker, target, this.deflect(attacker, target, attack, dmg.total), attack.damageType, dmg, critical);
+      this.dealDamage(attacker, target, this.uncannyDodge(attacker, target, this.deflect(attacker, target, attack, dmg.total)), attack.damageType, dmg, critical);
       if (attack.extraDamage && !target.dead) {
         const extra = roll(this.rng, attack.extraDamage.dice, { critical });
         this.dealDamage(attacker, target, extra.total, attack.extraDamage.type, extra, critical);
       }
-      this.damageRiders(attacker, target, attack, check, { critical, woundedBefore, strength, smite: !!options.smite });
+      this.damageRiders(attacker, target, attack, check, {
+        critical,
+        woundedBefore,
+        strength,
+        smite: !!options.smite,
+        ...(options.stun ? { stun: true } : {}),
+        ...(options.cunning ? { cunning: options.cunning } : {}),
+      });
       if (mastery === "sap" && !target.dead) this.applyEffect(target, SAPPED, attacker.id);
       if (mastery === "vex" && !target.dead) {
         target.effects = target.effects.filter((e) => !(e.id === VEXED && e.sourceId === attacker.id));
@@ -443,7 +481,7 @@ export class Combat {
     target: Creature,
     attack: Attack,
     check: AttackCheck,
-    hit: { critical: boolean; woundedBefore: boolean; strength: boolean; smite: boolean },
+    hit: { critical: boolean; woundedBefore: boolean; strength: boolean; smite: boolean; stun?: boolean; cunning?: AttackOptions["cunning"] },
   ): void {
     const extra = (source: string, dice: string, type: Attack["damageType"]) => {
       if (target.dead) return;
@@ -459,8 +497,14 @@ export class Combat {
       const helped = check.mode === "advantage" || [...this.creatures.values()].some(
         (c) => c.side === attacker.side && c.id !== attacker.id && isConscious(c) && (this.distanceBetween(c, target) ?? Infinity) <= 5,
       );
-      if (helped) extra("sneak-attack", `${Math.ceil(attacker.level / 2)}d6`, attack.damageType);
-      else this.oncePerTurn.delete(`${attacker.id}:sneak-attack`);
+      if (helped) {
+        let dice = Math.ceil(attacker.level / 2);
+        // Cunning Strike: give up one Sneak Attack die for an effect (DC 8 + Dex + proficiency).
+        const cunning = hit.cunning && has("cunning-strike") && dice > 1 ? hit.cunning : undefined;
+        if (cunning) dice -= 1;
+        extra("sneak-attack", `${dice}d6`, attack.damageType);
+        if (cunning && !target.dead) this.cunningStrike(attacker, target, cunning);
+      } else this.oncePerTurn.delete(`${attacker.id}:sneak-attack`);
     }
     if (target.effects.some((e) => e.id === HUNTERS_MARK && e.sourceId === attacker.id)) extra("hunters-mark", "1d6", "force");
     if (has("hunters-prey") && weapon && hit.woundedBefore && this.takeOncePerTurn(attacker, "colossus-slayer")) extra("colossus-slayer", "1d8", attack.damageType);
@@ -469,6 +513,20 @@ export class Combat {
       extra("frenzy", "2d6", attack.damageType);
     }
     if (weapon && this.hasEffect(attacker, DIVINE_FAVOR)) extra("divine-favor", "1d4", "radiant");
+    // Monk: Stunning Strike, once per turn on a monk weapon or unarmed hit, for a Focus Point.
+    const monkHit = weapon && attack.kind === "melee" && (attack.id === "unarmed-strike" || attack.ability === "dex" || has("martial-arts"));
+    if (hit.stun && monkHit && has("stunning-strike") && (attacker.resources["focus-points"]?.current ?? 0) > 0 && !target.dead && this.takeOncePerTurn(attacker, "stunning-strike")) {
+      attacker.resources["focus-points"]!.current -= 1;
+      this.log.push({ type: "feature_used", creatureId: attacker.id, featureId: "stunning-strike" });
+      if (!this.save(target, "con", this.classDc(attacker, "wis")).success) {
+        addCondition(target, "stunned");
+        target.effects.push({ id: STUNNED, sourceId: attacker.id, expiresAtTurnStartOf: attacker.id });
+        this.log.push({ type: "condition", creatureId: target.id, condition: "stunned", added: true });
+      } else {
+        // 2024: even on a save, the next attack against it has advantage.
+        target.effects.push({ id: GUIDED, sourceId: attacker.id, expiresAtTurnStartOf: attacker.id });
+      }
+    }
     const ready = attacker.effects.find((e) => e.id === SMITE_READY);
     const smite = ready && attacker.spells?.find((s) => s.id === ready.spell)?.smite;
     if (ready && smite && weapon && attack.kind === "melee") {
@@ -511,7 +569,7 @@ export class Combat {
     if (!physical || !target.features.includes("deflect-attacks") || !isConscious(target) || !this.hasReaction(target) || target.side === attacker.side) return amount;
     this.reactionsUsed.add(target.id);
     const dex = abilityModifier(target.abilities.dex);
-    const cut = roll(this.rng, `1d10+${dex + target.level}`).total;
+    const cut = this.bonusRoll(target, "deflect-attacks", `1d10+${dex + target.level}`);
     this.log.push({ type: "reaction", creatureId: target.id, reaction: "deflect-attacks", targetId: attacker.id });
     const left = Math.max(0, amount - cut);
     const focus = target.resources["focus-points"];
@@ -526,9 +584,38 @@ export class Combat {
     return left;
   }
 
+  /** Rogue: Uncanny Dodge. A reaction that halves an attack's damage (saved for hits worth halving). */
+  private uncannyDodge(attacker: Creature, target: Creature, amount: number): number {
+    if (amount < 4 || !target.features.includes("uncanny-dodge") || !isConscious(target) || !this.hasReaction(target) || !this.canSee(target, attacker)) return amount;
+    this.reactionsUsed.add(target.id);
+    this.log.push({ type: "reaction", creatureId: target.id, reaction: "uncanny-dodge", targetId: attacker.id });
+    return Math.floor(amount / 2);
+  }
+
   /** 8 + proficiency + an ability modifier: monk techniques, Channel Divinity and the like. */
   private classDc(c: Creature, ability: "wis" | "cha" | "int"): number {
     return 8 + c.proficiencyBonus + abilityModifier(c.abilities[ability]);
+  }
+
+  private cunningStrike(rogue: Creature, target: Creature, kind: "poison" | "trip" | "withdraw"): void {
+    this.log.push({ type: "feature_used", creatureId: rogue.id, featureId: `cunning-strike-${kind}` });
+    const dc = 8 + rogue.proficiencyBonus + abilityModifier(rogue.abilities.dex);
+    if (kind === "withdraw") {
+      // Move up to half speed without provoking opportunity attacks.
+      if (this.turn?.creatureId === rogue.id) {
+        this.turn.movementFt += Math.floor(rogue.speedFt / 2);
+        this.turn.disengaged = true;
+      }
+    } else if (kind === "trip") {
+      if (footprintOf(target) <= 2 && !hasCondition(target, "prone") && !this.save(target, "dex", dc).success) {
+        addCondition(target, "prone");
+        this.log.push({ type: "condition", creatureId: target.id, condition: "prone", added: true });
+      }
+    } else if (!hasCondition(target, "poisoned") && !this.save(target, "con", dc).success) {
+      addCondition(target, "poisoned");
+      target.effects.push({ id: POISONED, sourceId: target.id, dc, turnEndsLeft: 10 });
+      this.log.push({ type: "condition", creatureId: target.id, condition: "poisoned", added: true });
+    }
   }
 
   /** Fiend Warlock: dropping a foe (yours, or an ally's within 10 ft of you) grants Charisma + level temporary HP. */
@@ -569,7 +656,7 @@ export class Combat {
   private useInspiration(c: Creature, r: { total: number; modifier: number }, target: number): void {
     const inspired = c.effects.find((e) => e.id === INSPIRED);
     if (!inspired?.die || r.total + Number(inspired.die.slice(1)) < target) return;
-    const bonus = roll(this.rng, `1${inspired.die}`).total;
+    const bonus = this.bonusRoll(c, "bardic-inspiration", `1${inspired.die}`);
     r.total += bonus;
     r.modifier += bonus;
     this.endEffect(c, INSPIRED);
@@ -586,7 +673,7 @@ export class Combat {
       if (r.total - Number(die.slice(1)) >= ac) continue;
       this.spendResource(bard, "bardic-inspiration");
       this.reactionsUsed.add(bard.id);
-      const cut = roll(this.rng, `1${die}`).total;
+      const cut = this.bonusRoll(bard, "cutting-words", `1${die}`);
       r.total -= cut;
       r.modifier -= cut;
       this.log.push({ type: "reaction", creatureId: bard.id, reaction: "cutting-words", targetId: attacker.id });
@@ -598,7 +685,7 @@ export class Combat {
   private empower(r: ReturnType<typeof roll>, count: number): void {
     const dice = r.results.flatMap((g, gi) => g.faces.map((face, fi) => ({ gi, fi, face, sides: g.sides })));
     for (const d of dice.filter((d) => d.face <= d.sides / 2).sort((a, b) => a.face - b.face).slice(0, count)) {
-      const again = rollDie(this.rng, d.sides);
+      const again = this.bonusRoll(this.turn ? this.get(this.turn.creatureId) : [...this.creatures.values()][0]!, "empowered", `1d${d.sides}`);
       r.results[d.gi]!.faces[d.fi] = again;
       r.total += again - d.face;
     }
@@ -653,6 +740,13 @@ export class Combat {
     this.spendResource(c, slotResource(level));
     points.current += level;
     this.log.push({ type: "feature_used", creatureId: c.id, featureId: "font-of-magic" });
+  }
+
+  /** Roll dice that adjust something else, and log them so every die stays on record. */
+  private bonusRoll(c: Creature, source: string, notation: string): number {
+    const r = roll(this.rng, notation);
+    this.log.push({ type: "bonus_roll", creatureId: c.id, source, roll: r });
+    return r.total;
   }
 
   private takeOncePerTurn(c: Creature, feature: string): boolean {
@@ -992,7 +1086,7 @@ export class Combat {
       if (!targets.length) throw new RulesError("Choose a target");
       if (targets.length > max) throw new RulesError(`${spell.name} can target ${max} at most`);
       for (const t of targets) {
-        if (t.dead) throw new RulesError(`${t.name} is dead`);
+        if (spell.effect === "revivify" ? !t.dead : t.dead) throw new RulesError(spell.effect === "revivify" ? `${t.name} isn't dead` : `${t.name} is dead`);
         if (spell.target === "enemy" ? t.side === c.side : t.side !== c.side) throw new RulesError(`${spell.name} targets ${spell.target === "enemy" ? "enemies" : "allies"}`);
         if (!inRange(t)) throw new RulesError(`${t.name} is out of range or sight`);
         if (spell.onlyType && t.creatureType && t.creatureType !== spell.onlyType) throw new RulesError(`${spell.name} only works on ${spell.onlyType}s`);
@@ -1051,6 +1145,32 @@ export class Combat {
         const r = roll(this.rng, dice);
         heal(this.log, t, r.total + disciple, r);
       }
+    } else if (spell.effect === "aid") {
+      const bonus = 5 * (1 + extra);
+      for (const t of targets) {
+        if (t.effects.some((e) => e.id === AIDED)) continue;
+        t.effects.push({ id: AIDED, sourceId: c.id, value: bonus });
+        t.maxHp += bonus;
+        heal(this.log, t, bonus);
+      }
+    } else if (spell.effect === "restoration") {
+      for (const t of targets) {
+        for (const [effect, condition] of [[HELD, "paralyzed"], [POISONED, "poisoned"]] as const) {
+          if (this.hasEffect(t, effect)) this.endEffect(t, effect);
+          else if (hasCondition(t, condition)) {
+            removeCondition(t, condition);
+            this.log.push({ type: "condition", creatureId: t.id, condition, added: false });
+          }
+        }
+      }
+    } else if (spell.effect === "revivify") {
+      for (const t of targets) {
+        t.dead = false;
+        t.hp = 0;
+        heal(this.log, t, 1);
+      }
+    } else if (spell.effect === "spirit-guardians") {
+      c.effects.push({ id: SPIRIT_GUARDIANS, sourceId: c.id, concentration: true, spell: spell.id, dc, value: extra });
     } else if (spell.effect === "divine-favor") {
       c.effects = c.effects.filter((e) => e.id !== DIVINE_FAVOR);
       c.effects.push({ id: DIVINE_FAVOR, sourceId: c.id, spell: spell.id });
@@ -1077,9 +1197,11 @@ export class Combat {
         for (let i = 0; i < hits && !t.dead && !this.isOver; i++) {
           const check = this.checkWith(c, t, attack);
           if (!check.ok) throw new RulesError(check.reason);
+          const hpBefore = t.hp;
           const { hit } = this.resolveAttack(c, t, attack, check, { ...(empower ? { empower } : {}), ...(meta.has("seeking") ? { seeking: true } : {}) });
           if (hit) this.spellRider(c, t, spell);
           if (hit && spell.pushFt) this.push(t, c, spell.pushFt);
+          if (hit && spell.effect === "vampiric") heal(this.log, c, Math.floor(Math.max(0, hpBefore - t.hp) / 2));
           this.checkVictory();
         }
       }
@@ -1110,7 +1232,7 @@ export class Combat {
         if (!saved && spell.pushFt) this.push(t, c, spell.pushFt);
       }
     }
-    if (spell.concentration && !targets.some((t) => t.effects.some((e) => e.sourceId === c.id && e.concentration)) && !this.hasEffect(c, SPIRITUAL_WEAPON)) {
+    if (spell.concentration && !targets.some((t) => t.effects.some((e) => e.sourceId === c.id && e.concentration)) && !this.hasEffect(c, SPIRITUAL_WEAPON) && !this.hasEffect(c, SPIRIT_GUARDIANS)) {
       // Nothing took hold (everyone saved): concentration has nothing to hold.
       c.effects = c.effects.filter((e) => e.id !== CONCENTRATING);
     }
@@ -1221,14 +1343,14 @@ export class Combat {
     const dex = ability === "dex";
     const dangerSense = dex && c.features.includes("danger-sense") && !incapacitated(c);
     const mode = resolveMode(!!opts.advantage || dangerSense, !!opts.disadvantage || (dex && hasCondition(c, "restrained")));
-    if (hasCondition(c, "paralyzed") && (ability === "str" || ability === "dex")) {
+    if ((hasCondition(c, "paralyzed") || hasCondition(c, "stunned")) && (ability === "str" || ability === "dex")) {
       const r = rollD20(this.rng, saveModifier(c, ability), mode);
       this.log.push({ type: "check", creatureId: c.id, kind: "save", ability, dc, roll: r, success: false });
       return { success: false };
     }
     const r = rollD20(this.rng, saveModifier(c, ability), mode);
     if (this.hasEffect(c, BLESSED)) {
-      const d4 = roll(this.rng, "1d4").total;
+      const d4 = this.bonusRoll(c, "bless", "1d4");
       r.total += d4;
       r.modifier += d4;
     }
@@ -1274,6 +1396,20 @@ export class Combat {
     c.footprint = form.footprint;
     c.tempHp = Math.max(c.tempHp, c.level);
     this.log.push({ type: "transform", creatureId: c.id, formId });
+  }
+
+  /** Druid: Wild Resurgence (level 5). Once per turn, no action: a spell slot buys back a Wild Shape use when none are left. */
+  wildResurgence(creatureId: string): void {
+    const c = this.requireActive(creatureId);
+    this.requireFeature(c, "wild-resurgence");
+    const uses = c.resources["wild-shape"];
+    if (!uses || uses.current > 0) throw new RulesError("You still have Wild Shape uses");
+    const slot = [1, 2, 3, 4, 5].find((n) => (c.resources[slotResource(n)]?.current ?? 0) > 0);
+    if (!slot) throw new RulesError("No spell slot to spend");
+    if (!this.takeOncePerTurn(c, "wild-resurgence")) throw new RulesError("Once per turn");
+    this.spendResource(c, slotResource(slot));
+    uses.current += 1;
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: "wild-resurgence" });
   }
 
   /** Leave Wild Shape as a Bonus Action (it also ends on its own at 0 HP). */
@@ -1381,6 +1517,12 @@ export class Combat {
     for (const t of this.enemiesOf(c)) {
       if (t.creatureType !== "undead" || !isConscious(t) || (this.distanceBetween(c, t) ?? Infinity) > 30) continue;
       if (this.save(t, "wis", this.classDc(c, "wis")).success) continue;
+      // Sear Undead (level 5): the turned also take radiant damage, Wis-modifier d8s.
+      if (c.features.includes("sear-undead")) {
+        const r = roll(this.rng, `${Math.max(1, abilityModifier(c.abilities.wis))}d8`);
+        this.dealDamage(c, t, r.total, "radiant", r);
+        if (!isConscious(t)) continue;
+      }
       t.effects.push({ id: TURNED, sourceId: c.id });
       this.log.push({ type: "effect_applied", targetId: t.id, effectId: TURNED, sourceId: c.id });
     }
@@ -1411,6 +1553,11 @@ export class Combat {
     turn.bonusActions -= 1;
     this.log.push({ type: "feature_used", creatureId: c.id, featureId: "second-wind" });
     const r = roll(this.rng, `1d10+${c.level}`);
+    // Tactical Shift (level 5): move up to half speed without opportunity attacks.
+    if (c.features.includes("tactical-shift")) {
+      turn.movementFt += Math.floor(c.speedFt / 2);
+      turn.disengaged = true;
+    }
     return heal(this.log, c, r.total, r);
   }
 
@@ -1434,7 +1581,7 @@ export class Combat {
     const c = this.requireActive(creatureId);
     const t = this.turn!;
     const left = (id: string) => (c.resources[id]?.current ?? 0) > 0;
-    if (t.actions > 0) return true;
+    if (t.actions > 0 || (t.extraAttacks ?? 0) > 0) return true;
     // Action Surge isn't counted: a fighter saving it would otherwise never have their turn end on its own.
     if (t.bonusActions > 0 && c.hp < c.maxHp && (left(POTION) || left("lay-on-hands") || (c.features.includes("second-wind") && left("second-wind")))) return true;
     if (t.bonusActions > 0 && t.attacked && c.features.includes("martial-arts") && this.enemiesWithin(c, 5).length) return true;
@@ -1573,6 +1720,22 @@ export class Combat {
         this.turn.movementFt = 0;
       }
       if (hasCondition(c, "restrained")) this.turn.movementFt = 0;
+      if (hasCondition(c, "stunned") && isConscious(c)) {
+        this.turn.actions = 0;
+        this.turn.bonusActions = 0;
+        this.turn.movementFt = 0;
+      }
+      // Spirit Guardians: enemies that start their turn within 15 ft of the cleric take radiant damage (Wis save for half).
+      for (const g of this.creatures.values()) {
+        const aura = g.effects.find((e) => e.id === SPIRIT_GUARDIANS);
+        if (!aura || g.side === c.side || !isConscious(g) || !isConscious(c) || (this.distanceBetween(g, c) ?? Infinity) > 15) continue;
+        const spell = g.spells?.find((s) => s.id === "spirit-guardians");
+        if (!spell?.damage) continue;
+        const r = roll(this.rng, upcast(spell.damage.dice, spell.damage.perSlot, aura.value ?? 0));
+        const saved = this.save(c, "wis", aura.dc ?? spell.saveDc).success;
+        this.dealDamage(g, c, saved ? Math.floor(r.total / 2) : r.total, "radiant", r);
+        this.checkVictory();
+      }
       if (this.hasEffect(c, TURNED) && isConscious(c)) {
         // Turned undead can only flee.
         this.turn.actions = 0;
@@ -1647,7 +1810,13 @@ export class Combat {
 
   private endEffect(target: Creature, effectId: string): void {
     target.effects = target.effects.filter((e) => e.id !== effectId);
-    const tied: Record<string, "paralyzed" | "restrained" | "frightened"> = { [HELD]: "paralyzed", [ENTANGLED]: "restrained", [FRIGHTENED]: "frightened" };
+    const tied: Record<string, "paralyzed" | "restrained" | "frightened" | "stunned" | "poisoned"> = {
+      [HELD]: "paralyzed",
+      [ENTANGLED]: "restrained",
+      [FRIGHTENED]: "frightened",
+      [STUNNED]: "stunned",
+      [POISONED]: "poisoned",
+    };
     const condition = tied[effectId];
     if (condition && hasCondition(target, condition)) {
       removeCondition(target, condition);

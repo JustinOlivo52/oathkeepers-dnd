@@ -53,6 +53,11 @@
       "level": 3,
       "id": "subclass",
       "name": "Warlock Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
     }
   ],
   "resources": [],
@@ -78,6 +83,12 @@
           "spells": [
             "burning-hands",
             "scorching-ray"
+          ]
+        },
+        {
+          "level": 5,
+          "spells": [
+            "fireball"
           ]
         }
       ]

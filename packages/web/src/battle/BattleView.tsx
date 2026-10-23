@@ -130,10 +130,12 @@ interface FeatureButton {
   on?: boolean;
   /** Wild Shape into this beast. */
   wildShape?: string;
+  stunToggle?: true;
+  cunningToggle?: true;
 }
 
 /** Buttons for the class features this creature has, greyed out when they can't be used right now. */
-function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext = false): FeatureButton[] {
+function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext = false, stunNext = false, cunningNext?: string): FeatureButton[] {
   const has = (f: string) => me.features.includes(f);
   const uses = (r: string) => me.resources[r]?.current ?? 0;
   const bonus = turn.bonusActions > 0;
@@ -180,6 +182,15 @@ function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext
   if (has("turn-undead")) add({ id: "tu", label: "Turn Undead", title: "Channel Divinity, Action: undead within 30 ft make a Wisdom save or flee until they take damage", disabled: turn.actions < 1 || !uses("channel-divinity"), action: "turn-undead" });
   const smite = me.effects.find((e) => e.id === "smite-ready");
   if (smite) add({ id: "smite-ready", label: `${me.spells?.find((s) => s.id === smite.spell)?.name ?? "Smite"} ready`, title: "Your next melee weapon hit carries the smite", disabled: true, on: true });
+  if (has("stunning-strike")) {
+    add({ id: "stun", label: `Stunning Strike on hit: ${stunNext ? "on" : "off"} (${uses("focus-points")})`, title: "1 Focus Point, once per turn: a hit makes the target save (Con) or be stunned until your next turn", disabled: !uses("focus-points"), stunToggle: true, on: stunNext });
+  }
+  if (has("cunning-strike")) {
+    add({ id: "cunning", label: `Cunning Strike: ${cunningNext ?? "off"}`, title: "Trade a Sneak Attack die: poison (Con save), trip (Dex save or prone) or withdraw (move half speed without opportunity attacks). Click to cycle.", disabled: false, cunningToggle: true, on: !!cunningNext });
+  }
+  if (has("wild-resurgence") && me.resources["wild-shape"] && !uses("wild-shape")) {
+    add({ id: "resurge", label: "Wild Resurgence", title: "No action, once per turn: spend a spell slot to regain a Wild Shape use", disabled: ![1, 2, 3].some((n) => uses(`spell-slot-${n}`)), action: "wild-resurgence" });
+  }
   if (has("bardic-inspiration")) add({ id: "bi", label: `Bardic Inspiration (${uses("bardic-inspiration")})`, title: "Bonus Action: an ally within 60 ft gets a die to add when an attack or save fails. Cutting Words uses the same dice, automatically, as a reaction.", disabled: !bonus || !uses("bardic-inspiration"), target: "bardic-inspiration" });
   if (has("innate-sorcery")) {
     const active = me.effects.some((e) => e.id === "innate-sorcery");
@@ -478,7 +489,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
         {myTurn && turn ? (
           <>
             <p className="turn-info">
-              Your turn. Action {turn.actions > 0 ? "ready" : "used"}
+              Your turn. Action {turn.actions > 0 ? "ready" : turn.extraAttacks ? `used, ${turn.extraAttacks} more attack` : "used"}
               {turn.actions > 1 ? ` (${turn.actions})` : ""} · Bonus {turn.bonusActions > 0 ? "ready" : "used"} · Move {turn.movementFt} ft
             </p>
             <div className="action-bar">
@@ -486,7 +497,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
                 <button
                   key={a.id}
                   className={(mode.kind === "attack" || mode.kind === "confirm") && mode.attackId === a.id ? "on" : ""}
-                  disabled={turn.actions < 1}
+                  disabled={turn.actions < 1 && !turn.extraAttacks}
                   onClick={() => controller.selectAttack(a.id)}
                   title={`${signed(a.attackBonus)} to hit, ${a.damage} ${a.damageType}`}
                 >
@@ -502,14 +513,24 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
               <button disabled={turn.actions < 1} onClick={() => controller.act("dodge")}>
                 Dodge
               </button>
-              {featureButtons(me, turn, combat, controller.smiteNext).map((b) => (
+              {featureButtons(me, turn, combat, controller.smiteNext, controller.stunNext, controller.cunningNext).map((b) => (
                 <button
                   key={b.id}
                   className={`feature ${b.on ? "on" : ""}`}
                   disabled={b.disabled}
                   title={b.title}
                   onClick={() =>
-                    b.wildShape ? controller.wildShape(b.wildShape) : b.target ? controller.selectFeature(b.target) : b.toggle ? controller.toggleSmite() : controller.act(b.action!)
+                    b.wildShape
+                      ? controller.wildShape(b.wildShape)
+                      : b.stunToggle
+                        ? controller.toggleStun()
+                        : b.cunningToggle
+                          ? controller.cycleCunning()
+                          : b.target
+                            ? controller.selectFeature(b.target)
+                            : b.toggle
+                              ? controller.toggleSmite()
+                              : controller.act(b.action!)
                   }
                 >
                   {b.label}

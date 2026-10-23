@@ -35,7 +35,7 @@ export function takeAutoTurn(combat: Combat): void {
     } else if (combat.map) gridTurn(combat, me);
     else {
       const attack = me.attacks.find((a) => a.kind === "melee") ?? me.attacks[0];
-      while (attack && turn.actions > 0 && !combat.isOver) {
+      while (attack && (turn.actions > 0 || (turn.extraAttacks ?? 0) > 0) && !combat.isOver) {
         const target = combat.enemiesOf(me).filter(isConscious).sort((a, b) => a.hp - b.hp)[0];
         if (!target) break;
         combat.attack(me.id, target.id, attack.id);
@@ -57,13 +57,20 @@ function gridTurn(combat: Combat, me: Creature): void {
 
   if (me.spells?.length) castSpells(combat, me);
 
-  for (let guard = 0; guard < 8 && turn.actions > 0 && !combat.isOver && isConscious(me); guard++) {
+  const canAttack = () => turn.actions > 0 || (turn.extraAttacks ?? 0) > 0;
+  for (let guard = 0; guard < 10 && canAttack() && !combat.isOver && isConscious(me); guard++) {
     const option = bestAttackNow(combat, me);
     if (option) {
       const melee = option.attack.kind === "melee" && (combat.distanceBetween(me, option.target) ?? 0) <= (option.attack.reachFt ?? 5);
       if (melee && option.attack.ability === "str" && !turn.attacked && me.features.includes("reckless-attack")) combat.recklessAttack(me.id);
       if (!melee && !turn.moved && !turn.attacked && turn.bonusActions > 0 && me.features.includes("steady-aim")) combat.steadyAim(me.id);
-      combat.attack(me.id, option.target.id, option.attack.id, { smite: melee && wantsSmite(me, option.target) });
+      const focus = me.resources["focus-points"]?.current ?? 0;
+      const cunning = me.features.includes("cunning-strike") ? (footprintOf(option.target) <= 2 && !hasCondition(option.target, "prone") ? "trip" : "poison") : undefined;
+      combat.attack(me.id, option.target.id, option.attack.id, {
+        smite: melee && wantsSmite(me, option.target),
+        ...(melee && me.features.includes("stunning-strike") && focus >= 2 && option.target.hp >= 15 ? { stun: true } : {}),
+        ...(cunning ? { cunning } : {}),
+      });
       continue;
     }
     if (turn.movementFt >= 5 && approach(combat, me)) continue;

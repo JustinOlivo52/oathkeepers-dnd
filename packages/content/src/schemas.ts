@@ -54,7 +54,9 @@ export const ClassSchema = z.object({
   spellcasting: z.object({ ability, progression: z.enum(["full", "half", "pact"]) }).optional(),
   /** Ability added to 10 + Dex for AC while not wearing armor. */
   unarmoredDefense: ability.optional(),
-  weaponMastery: z.object({ count: z.number().int(), meleeOnly: z.boolean().optional() }).optional(),
+  weaponMastery: z
+    .object({ count: z.number().int(), meleeOnly: z.boolean().optional(), /** More masteries at these levels. */ byLevel: z.record(z.string().regex(/^\d+$/), z.number().int()).optional() })
+    .optional(),
   expertise: z.array(z.object({ level: z.number().int(), count: z.number().int(), from: z.array(skill).optional() })).optional(),
   /** Choices made at a level, like the Cleric's Divine Order. */
   choices: z
@@ -191,7 +193,7 @@ export const SpellSchema = z.object({
   target: z.enum(["enemy", "ally", "point", "self"]),
   targets: z.number().int().min(1).optional(),
   targetsPerSlot: z.number().int().min(1).optional(),
-  area: z.object({ shape: z.enum(["sphere", "cone", "cube", "square"]), sizeFt: z.number().int().min(5) }).optional(),
+  area: z.object({ shape: z.enum(["sphere", "cone", "cube", "square", "line"]), sizeFt: z.number().int().min(5) }).optional(),
   attack: z.enum(["melee", "ranged"]).optional(),
   save: ability.optional(),
   halfOnSave: z.boolean().optional(),
@@ -210,7 +212,7 @@ export const SpellSchema = z.object({
   damageTypes: z.array(damageType).optional(),
   concentration: z.boolean().optional(),
   effect: z
-    .enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon", "restrain", "command", "heroism", "divine-favor", "smite"])
+    .enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon", "restrain", "command", "heroism", "divine-favor", "smite", "aid", "restoration", "revivify", "spirit-guardians", "vampiric"])
     .optional(),
   /** Smite spells: extra damage and an effect on the caster's next melee weapon hit. */
   smite: z
@@ -243,6 +245,8 @@ export const CharacterSchema = z.object({
   tools: z.array(z.string()).default([]),
   alignment: z.string().optional(),
   notes: z.string().optional(),
+  /** HP gained from rolling at each level above 1, by level ("4": 7). Missing levels use the average. */
+  hpRolls: z.record(z.string().regex(/^\d+$/), z.number().int().min(1)).optional(),
   /** Cantrips and prepared spells. Missing: the class's default picks. */
   spells: z.array(id).optional(),
   /** Warlock Eldritch Invocations. */

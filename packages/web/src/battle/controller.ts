@@ -53,7 +53,7 @@ export type QuickAction =
   | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
   | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind"
   | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points"
-  | "preserve-life" | "turn-undead" | "break-free" | "leave-wild-shape";
+  | "preserve-life" | "turn-undead" | "break-free" | "leave-wild-shape" | "wild-resurgence";
 
 export interface LogLine {
   text: string;
@@ -73,6 +73,10 @@ export class BattleController {
   message: string | null = null;
   /** Paladin: cast Divine Smite on the next melee hit. */
   smiteNext = false;
+  /** Monk: try Stunning Strike on hits. */
+  stunNext = false;
+  /** Rogue: the Cunning Strike to use on the next Sneak Attack. */
+  cunningNext: "poison" | "trip" | "withdraw" | undefined;
   /** Sorcerer: Metamagic to add to the next spell. */
   metamagic: string[] = [];
   lines: LogLine[] = [];
@@ -182,7 +186,7 @@ export class BattleController {
 
     if (target && target.side !== me.side) {
       const attackId = this.mode.kind === "move" ? this.defaultAttack(me, target)?.id : this.mode.attackId;
-      if (attackId && this.combat.turn!.actions > 0 && this.combat.checkAttack(me.id, target.id, attackId).ok) {
+      if (attackId && (this.combat.turn!.actions > 0 || !!this.combat.turn!.extraAttacks) && this.combat.checkAttack(me.id, target.id, attackId).ok) {
         this.mode = { kind: "confirm", attackId, targetId: target.id };
         this.refresh();
       }
@@ -269,6 +273,17 @@ export class BattleController {
     await this.tryRules(() => this.combat.wildShape(this.active!.id, formId));
   }
 
+  toggleStun(): void {
+    this.stunNext = !this.stunNext;
+    this.emit();
+  }
+
+  cycleCunning(): void {
+    const order = [undefined, "trip", "poison", "withdraw"] as const;
+    this.cunningNext = order[(order.indexOf(this.cunningNext) + 1) % order.length];
+    this.emit();
+  }
+
   toggleMetamagic(option: string): void {
     this.metamagic = this.metamagic.includes(option) ? this.metamagic.filter((m) => m !== option) : [...this.metamagic, option];
     this.emit();
@@ -307,7 +322,7 @@ export class BattleController {
     const before = this.combat.log.events.length;
     const smite = this.smiteNext;
     this.message = null;
-    this.combat.attack(this.active!.id, targetId, attackId, { smite });
+    this.combat.attack(this.active!.id, targetId, attackId, { smite, ...(this.stunNext ? { stun: true } : {}), ...(this.cunningNext ? { cunning: this.cunningNext } : {}) });
     this.mode = { kind: "move" };
     this.lastRoll = this.describeRoll(this.combat.log.events.slice(before));
     await this.flush();
@@ -344,6 +359,7 @@ export class BattleController {
         "turn-undead": () => c.turnUndead(id),
         "break-free": () => void c.breakFree(id),
         "leave-wild-shape": () => c.leaveWildShape(id),
+        "wild-resurgence": () => c.wildResurgence(id),
       };
       run[action]();
     });
@@ -464,7 +480,7 @@ export class BattleController {
       const attackId = this.mode.attackId;
       o.targets = this.combat
         .enemiesOf(me)
-        .map((e) => ({ point: e.position!, size: e.footprint ?? 1, ok: this.combat.turn!.actions > 0 && this.combat.checkAttack(me.id, e.id, attackId).ok }));
+        .map((e) => ({ point: e.position!, size: e.footprint ?? 1, ok: (this.combat.turn!.actions > 0 || !!this.combat.turn!.extraAttacks) && this.combat.checkAttack(me.id, e.id, attackId).ok }));
       if (this.mode.kind === "confirm") {
         o.targets = o.targets.filter((t) => samePoint(t.point, this.combat.get((this.mode as { targetId: string }).targetId).position!));
       }
