@@ -224,3 +224,13 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .kit input { margin-top: 3px; }
 .shop h4 { display: flex; justify-content: space-between; align-items: baseline; }
 .gold-left { color: var(--accent); font-weight: 600; }
+
+/* Builder: art */
+.card.art { background-size: cover; background-position: center; min-height: 110px; justify-content: flex-end; text-shadow: 0 1px 3px #000; color: #fff; position: relative; }
+.card.art span { color: #e8e2d6; }
+.card.art::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(transparent 30%, rgba(0, 0, 0, 0.7)); }
+.card.art > * { position: relative; }
+.portrait-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-bottom: 6px; }
+.portrait-choice { padding: 0; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--panel-2); cursor: pointer; }
+.portrait-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portrait-choice.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }

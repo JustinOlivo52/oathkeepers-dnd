@@ -45,11 +45,14 @@ function catalogSprite(entry: ArtEntry, fallbackHpOffset: number): SpriteSheetIn
 }
 
 /** The sprite sheet for a creature: its hero archetype, or its monster's art from the catalog. */
-export function spriteFor(c: Creature, heroArchetype: string, monsterId?: string): SpriteSheetInfo {
+export function spriteFor(c: Creature, heroArchetype: string, monsterId?: string, classId?: string): SpriteSheetInfo {
   if (!monsterId) {
-    // A character's own sprite (premade companions have one once the art exists), else their class family's.
+    // A character's own sprite (premade companions), else their class's (small for halflings and gnomes), else their class family's.
+    const ready = (id: string) => content.art.find((e) => e.id === id && e.sprite && e.artStatus === "ready");
     const hero =
       content.art.find((e) => e.id === `hero-${c.id}` && e.sprite) ??
+      (classId && c.small ? ready(`hero-class-${classId}-small`) : undefined) ??
+      (classId ? ready(`hero-class-${classId}`) : undefined) ??
       content.art.find((e) => e.id === `hero-${heroArchetype}`) ??
       content.art.find((e) => e.id === "hero-martial")!;
     return catalogSprite(hero, 138);

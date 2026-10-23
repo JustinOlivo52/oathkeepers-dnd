@@ -10,6 +10,7 @@ import { Battle, type BattleOutcome } from "../battle/BattleView";
 import { RemoteBattle } from "../battle/RemoteBattle";
 import type { BattleUpdate } from "../battle/controller";
 import { LevelUp } from "./LevelUp";
+import { portraitUrl } from "../art";
 import type { PlayerAccount } from "../player";
 import { narrator } from "./narrator";
 import { VoiceControls } from "./VoiceControls";
@@ -534,7 +535,11 @@ function Adventure(props: {
 
       <aside className="adventure-side">
         <div className="hero-card">
-          <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${sheetFor(hero)}.png)` }} />
+          {portraitUrl(hero) ? (
+            <img className="hero-portrait picked" src={portraitUrl(hero)} alt="" />
+          ) : (
+            <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${sheetFor(hero)}.png)` }} />
+          )}
           <div>
             <strong>{hero.name}</strong>
             <p className="muted small">
@@ -587,6 +592,7 @@ function Adventure(props: {
                 const s = state.characters[c.id]!;
                 return (
                   <li key={c.id}>
+                    {portraitUrl(c) && <img className="ally-portrait" src={portraitUrl(c)} alt="" />}
                     <strong>{c.name}</strong>{" "}
                     <span className="muted small">
                       {content.classes.find((x) => x.id === c.class)?.name}

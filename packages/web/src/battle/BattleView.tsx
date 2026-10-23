@@ -62,7 +62,7 @@ export type { BattleOutcome };
 
 /** Sprites for everyone in a battle: heroes by class family (or their own art), monsters by bestiary id, druids by shape. */
 export function spritesFor(combat: Combat, classOf: Map<string, string>) {
-  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", c.wildShape?.formId ?? c.monsterId);
+  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", c.wildShape?.formId ?? c.monsterId, classOf.get(c.id));
   const formSheets = [...combat.creatures.values()].flatMap((c) => (c.forms ?? []).map((f) => spriteFor(c, "martial", f.id)));
   return { sheetFor, formSheets };
 }

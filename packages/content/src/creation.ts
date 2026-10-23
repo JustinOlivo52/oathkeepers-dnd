@@ -13,6 +13,7 @@ export interface CharacterDraft {
   name: string;
   alignment?: string;
   notes?: string;
+  portraitId?: string;
   story: CharacterStory;
   level: number;
 
@@ -393,6 +394,7 @@ export function finalizeCharacter(content: Content, draft: CharacterDraft, id = 
     ...(o.metamagic ? { metamagic: [...(draft.metamagic ?? [])] } : {}),
     ...(draft.alignment ? { alignment: draft.alignment } : {}),
     ...(draft.notes ? { notes: draft.notes } : {}),
+    ...(draft.portraitId ? { portrait: draft.portraitId } : {}),
     ...(storyOf(draft.story) ? { story: storyOf(draft.story) } : {}),
   };
 }

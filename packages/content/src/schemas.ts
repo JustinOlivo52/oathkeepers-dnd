@@ -271,6 +271,8 @@ export const CharacterSchema = z.object({
   tools: z.array(z.string()).default([]),
   alignment: z.string().optional(),
   notes: z.string().optional(),
+  /** Art id of the portrait picked in the builder (kind "portrait"). */
+  portrait: z.string().optional(),
   /** Who the character is, for the DM: woven into the story. */
   story: z
     .object({

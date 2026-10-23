@@ -81,6 +81,8 @@ export interface Creature {
   name: string;
   side: Side;
   kind: "character" | "monster";
+  /** Small characters (halflings, gnomes) get the small battle sprite. */
+  small?: boolean;
   /** Character level, or challenge rating for monsters. */
   level: number;
   abilities: AbilityScores;

@@ -93,3 +93,5 @@
 .table-members .dot.on { background: var(--good); }
 .invite-code { font-size: 1.2em; letter-spacing: 0.2em; color: var(--accent); }
 .table-news { font-style: italic; }
+.hero-portrait.picked { object-fit: cover; border-radius: 8px; background: none; }
+.ally-portrait { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 6px; }

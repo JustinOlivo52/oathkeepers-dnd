@@ -237,6 +237,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     name: data.name,
     side,
     kind: "character",
+    ...(data.size === "small" ? { small: true } : {}),
     level: data.level,
     abilities: { ...data.abilities },
     proficiencyBonus: pb,

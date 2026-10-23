@@ -27,6 +27,7 @@ import {
 import { ABILITIES, abilityModifier, mathRng, type Ability, type Skill } from "@oathkeepers/engine";
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { loadDraft, saveDraft } from "../storage";
+import { artUrl, cardUrl, PLAYER_PORTRAITS } from "../art";
 import { ChipPicker } from "./ChipPicker";
 import { Sheet } from "./Sheet";
 
@@ -107,7 +108,8 @@ export function Builder(props: {
               <button
                 key={c.id}
                 type="button"
-                className={`card${draft.classId === c.id ? " on" : ""}`}
+                className={`card${draft.classId === c.id ? " on" : ""}${cardUrl("class", c.id) ? " art" : ""}`}
+                style={cardUrl("class", c.id) ? { backgroundImage: `url(${cardUrl("class", c.id)})` } : undefined}
                 onClick={() =>
                   update((d) => {
                     if (d.classId === c.id) return;
@@ -120,9 +122,11 @@ export function Builder(props: {
                       expertise: [],
                       fightingStyleId: undefined,
                       weaponMasteries: [],
+                      classKitId: undefined,
                       armorId: undefined,
                       shield: false,
                       weaponIds: [],
+                      packId: undefined,
                       spells: [],
                       invocations: [],
                       metamagic: [],
@@ -186,7 +190,7 @@ export function Builder(props: {
                 key={b.id}
                 type="button"
                 className={`card${draft.backgroundId === b.id ? " on" : ""}`}
-                onClick={() => update((d) => ((d.backgroundId = b.id), (d.boosts = {})))}
+                onClick={() => update((d) => ((d.backgroundId = b.id), (d.boosts = {}), (d.backgroundKitId = undefined)))}
               >
                 <strong>{b.name}</strong>
                 <span>{b.abilities.map((a) => a.toUpperCase()).join(", ")}</span>
@@ -203,7 +207,8 @@ export function Builder(props: {
               <button
                 key={s.id}
                 type="button"
-                className={`card${draft.speciesId === s.id ? " on" : ""}`}
+                className={`card${draft.speciesId === s.id ? " on" : ""}${cardUrl("species", s.id) ? " art" : ""}`}
+                style={cardUrl("species", s.id) ? { backgroundImage: `url(${cardUrl("species", s.id)})` } : undefined}
                 onClick={() =>
                   update((d) => {
                     if (d.speciesId === s.id) return;
@@ -644,6 +649,10 @@ export function Builder(props: {
             <h4>Languages (Common, plus two)</h4>
             <ChipPicker options={o.languages} selected={draft.languages} max={2} label={(l) => l} onChange={(next) => update((d) => (d.languages = next))} />
           </div>
+          <div className="group">
+            <h4>Portrait</h4>
+            <PortraitPicker draft={draft} onPick={(id) => update((d) => (d.portraitId = d.portraitId === id ? undefined : id))} />
+          </div>
           <div className="group story-fields">
             <h4>Who they are</h4>
             <p className="muted small">Optional. The DM reads this and weaves it into the story: old friends, enemies, temptations.</p>
@@ -779,6 +788,30 @@ export function SpellPicker(props: { cls: ClassData; level: number; always: stri
       <button type="button" className="ghost small" onClick={() => props.onChange(defaultSpells(content, props.cls, props.level, props.always, props.classChoices))}>
         Pick for me
       </button>
+    </>
+  );
+}
+
+/** Portraits for the character's species first (or all of them), from the art library. */
+function PortraitPicker({ draft, onPick }: { draft: CharacterDraft; onPick: (id: string) => void }) {
+  const [all, setAll] = useState(false);
+  if (!PLAYER_PORTRAITS.length) return <p className="muted small">Portraits come with the next art batch. Until then your class art is used.</p>;
+  const mine = PLAYER_PORTRAITS.filter((p) => !draft.speciesId || p.tags.includes(draft.speciesId as never));
+  const shown = all || !mine.length ? PLAYER_PORTRAITS : mine;
+  return (
+    <>
+      <div className="portrait-grid" role="radiogroup" aria-label="Portrait">
+        {shown.map((p) => (
+          <button key={p.id} type="button" role="radio" aria-checked={draft.portraitId === p.id} className={`portrait-choice${draft.portraitId === p.id ? " on" : ""}`} onClick={() => onPick(p.id)} title={p.title}>
+            <img src={artUrl(p.image!)} alt={p.title} loading="lazy" />
+          </button>
+        ))}
+      </div>
+      {mine.length > 0 && mine.length < PLAYER_PORTRAITS.length && (
+        <button type="button" className="ghost small" onClick={() => setAll(!all)}>
+          {all ? "Only my species" : "Show all species"}
+        </button>
+      )}
     </>
   );
 }
