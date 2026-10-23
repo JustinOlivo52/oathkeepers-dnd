@@ -21,7 +21,7 @@ import {
 } from "@oathkeepers/content";
 import type { DmConversation, DmProvider, ProviderTurn, Summarizer, TextSink, ToolCall } from "./provider.js";
 import { memoryBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
-import { levelForXp, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
+import { levelForXp, MAX_PLAYERS, XP_FOR_LEVEL, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
 import { TOOL_INPUTS, toolSpecs, type ToolName } from "./tools.js";
 
 /** Most model calls in a row for one player action before we stop and hand control back. */
@@ -128,7 +128,8 @@ export class Director {
       (s.session === 1
         ? "Begin the adventure. Set the opening scene for the party on the road to the frontier town, introduce a hook, and ask what they do."
         : `Begin session ${s.session}. Give a short "previously" recap in your own voice, then set the scene where the party left off and ask what they do.`);
-    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
+    const notes = this.takeNotes();
+    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${notes}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
     return s.events.slice(start);
   }
 
@@ -142,7 +143,8 @@ export class Director {
     const start = this.state.events.length;
     this.state.events.push({ type: "player", characterId, text: clean });
     const name = this.state.party.find((c) => c.id === characterId)!.name;
-    await this.run(() => this.conversation.sendUser(`${stateBlock(this.state)}\n\n${name}: ${clean}`, this.sink), onText);
+    const notes = this.takeNotes();
+    await this.run(() => this.conversation.sendUser(`${notes}${stateBlock(this.state)}\n\n${name}: ${clean}`, this.sink), onText);
     return this.state.events.slice(start);
   }
 
@@ -372,8 +374,8 @@ export class Director {
       }
       case "grant_xp": {
         const i = input as { amount: number; reason: string };
-        for (const c of s.party) this.addXp(c.id, i.amount, i.reason);
-        return this.ok(call.id, `Each character gained ${i.amount} XP.`);
+        for (const c of s.party) this.addXp(c.id, this.isAway(c.id) ? Math.floor(i.amount / 2) : i.amount, i.reason);
+        return this.ok(call.id, `Each character gained ${i.amount} XP${s.party.some((c) => this.isAway(c.id)) ? " (half for anyone sitting out)" : ""}.`);
       }
       case "give_item": {
         const i = input as { character_id: string; name: string; quantity: number };
@@ -595,7 +597,8 @@ export class Director {
     const xpEach =
       outcome.winner === "party"
         ? Math.floor(
-            outcome.defeated.reduce((n, id) => n + (this.content.monsters.find((m) => m.id === id)?.xp ?? 0), 0) / s.party.length,
+            outcome.defeated.reduce((n, id) => n + (this.content.monsters.find((m) => m.id === id)?.xp ?? 0), 0) /
+              Math.max(1, s.party.filter((c) => c.id in outcome.hp).length),
           )
         : 0;
     const total = enemies.reduce((n, e) => n + e.count, 0);
@@ -604,7 +607,8 @@ export class Director {
         ? `The party won in ${outcome.rounds} rounds, defeating ${outcome.defeated.length} of ${total} enemies.`
         : `The party was defeated after ${outcome.rounds} rounds. They are unconscious but stable at 1 HP. Decide what happens: captured, robbed and left for dead, or rescued.`;
     s.events.push({ type: "combat_result", id: eventId, winner: outcome.winner, rounds: outcome.rounds, summary });
-    if (xpEach > 0) for (const c of s.party) this.addXp(c.id, xpEach, "battle");
+    // Those who fought get the full share; anyone sitting out gets half.
+    if (xpEach > 0) for (const c of s.party) this.addXp(c.id, c.id in outcome.hp ? xpEach : Math.floor(xpEach / 2), "battle");
     const hp = s.party.map((c) => `${c.name} ${s.characters[c.id]!.hp}/${s.characters[c.id]!.maxHp} HP`).join(", ");
     this.ok(toolCallId, `${summary} ${xpEach ? `Each character gained ${xpEach} XP. ` : ""}Party now: ${hp}. Narrate the aftermath.`);
   }
@@ -623,6 +627,59 @@ export class Director {
         this.levelUp(characterId, defaultLevelUpChoice(this.content, data));
       }
     }
+  }
+
+  // ---------- the table (multiplayer) ----------
+
+  /** A player joins at a natural break, bringing a character (or coming back to theirs). */
+  join(playerId: string, playerName: string, data: CharacterData): StoryEvent[] {
+    const s = this.state;
+    if (s.pending.some((p) => p.type === "combat")) throw new AdventureError("Join after the battle: new players arrive at a break in the action");
+    s.members ??= [];
+    const existing = s.members.find((m) => m.playerId === playerId);
+    if (existing) {
+      existing.away = false;
+      return this.tableNews(`${playerName} is back with ${s.party.find((c) => c.id === existing.characterId)?.name ?? "their character"}.`, `${playerName}'s character rejoins the scene. Bring them back in naturally.`);
+    }
+    if (s.members.length >= MAX_PLAYERS) throw new AdventureError(`This table already has ${MAX_PLAYERS} players`);
+    if (s.party.some((c) => c.id === data.id)) throw new AdventureError(`${data.name} is already in this party. Bring a different character`);
+    s.party.push(data);
+    const built = buildCharacter(this.content, data);
+    s.characters[data.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: Math.max(XP_FOR_LEVEL[data.level] ?? 0, 900), inventory: [{ name: POTION_ITEM, quantity: STARTING_POTIONS }] };
+    s.members.push({ playerId, name: playerName, characterId: data.id, away: false });
+    return this.tableNews(
+      `${playerName} joins the table as ${data.name}.`,
+      `A new player joined: ${data.name} (id: ${data.id}), level ${data.level} ${data.species} ${data.class}, played by ${playerName}. Work them into the scene naturally and give them a moment to act.`,
+    );
+  }
+
+  /** A player steps away: their character sits out (in a battle already under way, the computer runs it until the end). */
+  stepAway(playerId: string): StoryEvent[] {
+    const m = this.state.members?.find((x) => x.playerId === playerId);
+    if (!m) throw new AdventureError("You're not at this table");
+    if (m.playerId === this.state.owner) throw new AdventureError("The table's owner can't step away; end the session instead");
+    m.away = true;
+    const name = this.state.party.find((c) => c.id === m.characterId)?.name ?? "Their character";
+    return this.tableNews(`${m.name} stepped away. ${name} sits out for now.`, `${name}'s player stepped away. Have ${name} step back from the action for now (resting, scouting, minding the camp); don't narrate their choices.`);
+  }
+
+  /** Characters whose player is away sit out battles and get half XP. */
+  isAway(characterId: string): boolean {
+    return !!this.state.members?.some((m) => m.characterId === characterId && m.away);
+  }
+
+  private tableNews(text: string, note: string): StoryEvent[] {
+    const event: StoryEvent = { type: "table", text };
+    this.state.events.push(event);
+    (this.state.notes ??= []).push(note);
+    return [event];
+  }
+
+  /** Table news for the DM, once. */
+  private takeNotes(): string {
+    const notes = this.state.notes ?? [];
+    this.state.notes = [];
+    return notes.length ? `[Table]\n${notes.map((n) => `- ${n}`).join("\n")}\n\n` : "";
   }
 
   /** Enough XP for the next level, and not past the game's level cap yet. */

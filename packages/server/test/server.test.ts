@@ -90,6 +90,6 @@ describe("server API", () => {
     expect((await api("/api/adventures", { character: { name: "x" } })).status).toBe(400);
     expect((await api("/api/adventures/nope")).status).toBe(404);
     const start = await api("/api/adventures", { character: content.characters[0] });
-    expect((await api(`/api/adventures/${start.json.state.id}/combat`, { winner: "party" })).status).toBe(400);
+    expect((await api(`/api/adventures/${start.json.state.id}/battle/action`, { creatureId: "bram-holloway", action: { type: "end-turn" } })).status).toBe(409);
   });
 });

@@ -82,3 +82,14 @@
 .my-adventures h3 { margin: 0 0 6px; font: 18px Georgia, serif; }
 .my-adventures ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .my-adventures li { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; }
+
+/* Shared tables */
+.join-table { margin-top: 14px; }
+.join-table h3 { margin: 0 0 6px; font: 18px Georgia, serif; }
+.join-table input { width: 9em; text-transform: uppercase; letter-spacing: 0.15em; }
+.table-members { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 4px; }
+.table-members li { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.table-members .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex: none; }
+.table-members .dot.on { background: var(--good); }
+.invite-code { font-size: 1.2em; letter-spacing: 0.2em; color: var(--accent); }
+.table-news { font-style: italic; }

@@ -191,6 +191,30 @@ export class Combat {
     });
   }
 
+  /**
+   * Bring this battle up to date with a snapshot, changing creatures in place (screens hold references to them).
+   * Used by players' browsers to follow the server's battle.
+   */
+  load(s: CombatSnapshot): void {
+    for (const fresh of structuredClone(s.creatures)) {
+      const mine = this.creatures.get(fresh.id);
+      if (!mine) {
+        this.creatures.set(fresh.id, fresh);
+        continue;
+      }
+      for (const k of Object.keys(mine) as (keyof Creature)[]) if (!(k in fresh)) delete mine[k];
+      Object.assign(mine, fresh);
+    }
+    this.order = [...s.order];
+    this.round = s.round;
+    this.turn = s.turn ? structuredClone(s.turn) : null;
+    this.winner = s.winner;
+    this.turnIndex = s.turnIndex;
+    this.turnSerial = s.turnSerial;
+    this.oncePerTurn = new Map(s.oncePerTurn);
+    this.reactionsUsed = new Set(s.reactionsUsed);
+  }
+
   /** Rebuild a battle from a snapshot. Placement isn't re-checked: the snapshot came from a valid battle. */
   static fromSnapshot(s: CombatSnapshot, rng: Rng, log: EventLog): Combat {
     const map = s.map ? new GridMap(s.map.width, s.map.height, [...s.map.tiles]) : undefined;

@@ -1,4 +1,5 @@
 import {
+  applyAction,
   areaSquares,
   Combat,
   distanceFt,
@@ -9,6 +10,10 @@ import {
   type AttackCheck,
   type Creature,
   type LoggedEvent,
+  type BattleAction,
+  type CombatSnapshot,
+  type SimpleAction,
+  type TargetFeature,
   type Point,
   type SpellDef,
 } from "@oathkeepers/engine";
@@ -26,6 +31,20 @@ function readAutoEnd(): boolean {
   }
 }
 
+/** A battle update from the server: the state now, and the log events since `from`. */
+export interface BattleUpdate {
+  snapshot: CombatSnapshot;
+  events: LoggedEvent[];
+  from: number;
+}
+
+/** How a browser plays a battle that runs on the server: send an action, get back what happened. */
+export interface BattleLink {
+  send(creatureId: string, action: BattleAction): Promise<BattleUpdate>;
+  /** The whole battle again, when updates were missed. */
+  refresh(): Promise<BattleUpdate>;
+}
+
 export type Mode =
   | { kind: "move" }
   | { kind: "attack"; attackId: string }
@@ -35,7 +54,7 @@ export type Mode =
   /** Casting a spell: pick targets (several for Bless) or a square. */
   | { kind: "spell"; spellId: string; slot?: number; picked: string[] };
 
-export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration" | "divine-spark" | "lands-aid";
+export type TargetedFeature = TargetFeature | "lands-aid";
 export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "lay-on-hands": true,
   "hunters-mark": false,
@@ -49,11 +68,7 @@ export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
 /** Features that can target anyone: Divine Spark heals allies or hurts enemies. */
 const TARGETS_ANYONE = new Set<TargetedFeature>(["divine-spark"]);
 
-export type QuickAction =
-  | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
-  | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind"
-  | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points"
-  | "preserve-life" | "turn-undead" | "break-free" | "leave-wild-shape" | "wild-resurgence";
+export type QuickAction = SimpleAction;
 
 export interface LogLine {
   text: string;
@@ -87,11 +102,25 @@ export class BattleController {
   private played = 0;
   private listeners = new Set<() => void>();
 
+  /** Updates from the server, played one after another. */
+  private syncing: Promise<void> = Promise.resolve();
+
   constructor(
     readonly combat: Combat,
-    /** Creatures the person at the keyboard controls. Everyone else uses rule-based tactics. */
+    /** Creatures the person at the keyboard controls. Everyone else uses rule-based tactics (or other players). */
     readonly playerIds: Set<string>,
-  ) {}
+    /** Set when the battle runs on the server (multiplayer); otherwise it runs here. */
+    private readonly link?: BattleLink,
+  ) {
+    // Joining a shared battle midway: the board already shows where everyone stands, so only list the recent moves.
+    if (link) {
+      for (const e of combat.log.events.slice(-12)) {
+        const text = describeEvent(e, (id) => combat.get(id).name);
+        if (text) this.lines.push({ text, className: e.type });
+      }
+      this.played = combat.log.events.length;
+    }
+  }
 
   subscribe(fn: () => void): () => void {
     this.listeners.add(fn);
@@ -105,9 +134,52 @@ export class BattleController {
   async attach(scene: BattleScene): Promise<void> {
     this.scene = scene;
     await scene.whenReady;
+    if (this.link) {
+      await this.flush();
+      return;
+    }
     if (this.combat.round === 0) this.combat.start();
     await this.flush();
     await this.runOthers();
+  }
+
+  /** A server update (from this player's action, or from someone else's): catch up and play it. */
+  receive(update: BattleUpdate): Promise<void> {
+    this.syncing = this.syncing.then(async () => {
+      if (update.from > this.combat.log.events.length && this.link) update = await this.link.refresh();
+      this.combat.load(update.snapshot);
+      this.combat.log.append(update.events.filter((e) => e.seq >= this.combat.log.events.length));
+      await this.flush();
+    });
+    return this.syncing;
+  }
+
+  /** Do one action: on the server for a shared battle, here otherwise. Shows the rules' reason if it's refused. */
+  private async perform(action: BattleAction): Promise<boolean> {
+    const id = this.active!.id;
+    if (this.link) {
+      this.busy = true;
+      this.refresh();
+      try {
+        await this.receive(await this.link.send(id, action));
+        return true;
+      } catch (e) {
+        this.message = e instanceof Error ? e.message : String(e);
+        this.busy = false;
+        this.refresh();
+        return false;
+      }
+    }
+    try {
+      applyAction(this.combat, id, action);
+    } catch (e) {
+      this.message = e instanceof Error ? e.message : String(e);
+      await this.flush();
+      return false;
+    }
+    await this.flush();
+    if (action.type === "end-turn") await this.runOthers();
+    return true;
   }
 
   get active(): Creature | undefined {
@@ -160,7 +232,7 @@ export class BattleController {
 
     if (this.mode.kind === "feature" && this.mode.feature === "lands-aid") {
       this.mode = { kind: "move" };
-      await this.tryRules(() => this.combat.landsAid(me.id, p));
+      await this.perform({ type: "point", feature: "lands-aid", point: p });
       return;
     }
 
@@ -172,15 +244,7 @@ export class BattleController {
         return;
       }
       this.mode = { kind: "move" };
-      await this.tryRules(() => {
-        if (feature === "lay-on-hands") this.combat.layOnHands(me.id, target.id);
-        else if (feature === "hunters-mark") this.combat.huntersMark(me.id, target.id);
-        else if (feature === "martial-arts") this.combat.martialArts(me.id, target.id);
-        else if (feature === "spiritual-weapon") this.combat.spiritualWeaponAttack(me.id, target.id);
-        else if (feature === "bardic-inspiration") this.combat.bardicInspiration(me.id, target.id);
-        else if (feature === "divine-spark") this.combat.divineSpark(me.id, target.id);
-        else this.combat.flurryOfBlows(me.id, target.id);
-      });
+      if (feature !== "lands-aid") await this.perform({ type: "target", feature, targetId: target.id });
       return;
     }
 
@@ -198,8 +262,7 @@ export class BattleController {
       return;
     }
     if (samePoint(p, me.position!) || !this.combat.reachable(me.id).has(key(p))) return;
-    this.combat.move(me.id, this.combat.pathTo(me.id, p));
-    await this.flush();
+    await this.perform({ type: "move", path: this.combat.pathTo(me.id, p) });
   }
 
   /** The attack used when clicking an enemy directly: the first one that can hit it, preferring no disadvantage. */
@@ -261,7 +324,7 @@ export class BattleController {
     this.mode = { kind: "move" };
     const before = this.combat.log.events.length;
     const metamagic = this.metamagic;
-    await this.tryRules(() => this.combat.castSpell(this.active!.id, spellId, { ...opts, ...(slot ? { slotLevel: slot } : {}), ...(metamagic.length ? { metamagic } : {}) }));
+    await this.perform({ type: "cast", spellId, ...opts, ...(slot ? { slotLevel: slot } : {}), ...(metamagic.length ? { metamagic } : {}) });
     if (!this.message) this.metamagic = [];
     if (!this.message) this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
   }
@@ -270,7 +333,7 @@ export class BattleController {
     if (!this.canAct) return;
     this.mode = { kind: "move" };
     this.message = null;
-    await this.tryRules(() => this.combat.wildShape(this.active!.id, formId));
+    await this.perform({ type: "wild-shape", formId });
   }
 
   toggleStun(): void {
@@ -294,16 +357,6 @@ export class BattleController {
     this.emit();
   }
 
-  /** Run a rules call; if the rules refuse it, show why instead of failing. */
-  private async tryRules(fn: () => void): Promise<void> {
-    try {
-      fn();
-    } catch (e) {
-      this.message = e instanceof Error ? e.message : String(e);
-    }
-    await this.flush();
-  }
-
   selectAttack(attackId: string): void {
     if (!this.canAct) return;
     this.mode = this.mode.kind === "attack" && this.mode.attackId === attackId ? { kind: "move" } : { kind: "attack", attackId };
@@ -322,47 +375,16 @@ export class BattleController {
     const before = this.combat.log.events.length;
     const smite = this.smiteNext;
     this.message = null;
-    this.combat.attack(this.active!.id, targetId, attackId, { smite, ...(this.stunNext ? { stun: true } : {}), ...(this.cunningNext ? { cunning: this.cunningNext } : {}) });
     this.mode = { kind: "move" };
-    this.lastRoll = this.describeRoll(this.combat.log.events.slice(before));
-    await this.flush();
+    await this.perform({ type: "attack", targetId, attackId, options: { smite, ...(this.stunNext ? { stun: true } : {}), ...(this.cunningNext ? { cunning: this.cunningNext } : {}) } });
+    this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
   }
 
   async act(action: QuickAction): Promise<void> {
     if (!this.canAct) return;
-    const id = this.active!.id;
-    const c = this.combat;
     this.mode = { kind: "move" };
     this.message = null;
-    await this.tryRules(() => {
-      const run: Record<QuickAction, () => void> = {
-        dash: () => c.dash(id),
-        disengage: () => c.disengage(id),
-        dodge: () => c.dodge(id),
-        "second-wind": () => c.secondWind(id),
-        "action-surge": () => c.actionSurge(id),
-        potion: () => c.drinkPotion(id),
-        "bonus-dash": () => c.dash(id, { bonus: true }),
-        "bonus-disengage": () => c.disengage(id, { bonus: true }),
-        rage: () => c.rage(id),
-        reckless: () => c.recklessAttack(id),
-        "steady-aim": () => c.steadyAim(id),
-        "sacred-weapon": () => c.sacredWeapon(id),
-        "patient-defense": () => c.patientDefense(id),
-        "step-of-the-wind": () => c.stepOfTheWind(id),
-        "innate-sorcery": () => c.innateSorcery(id),
-        "make-slot-1": () => c.createSpellSlot(id, 1),
-        "make-slot-2": () => c.createSpellSlot(id, 2),
-        "slot-1-to-points": () => c.convertSpellSlot(id, 1),
-        "slot-2-to-points": () => c.convertSpellSlot(id, 2),
-        "preserve-life": () => void c.preserveLife(id),
-        "turn-undead": () => c.turnUndead(id),
-        "break-free": () => void c.breakFree(id),
-        "leave-wild-shape": () => c.leaveWildShape(id),
-        "wild-resurgence": () => c.wildResurgence(id),
-      };
-      run[action]();
-    });
+    await this.perform({ type: "simple", action });
   }
 
   async endTurn(): Promise<void> {
@@ -373,9 +395,7 @@ export class BattleController {
     this.message = null;
     this.smiteNext = false;
     this.metamagic = [];
-    this.combat.endTurn();
-    await this.flush();
-    await this.runOthers();
+    await this.perform({ type: "end-turn" });
   }
 
   setAutoEnd(on: boolean): void {

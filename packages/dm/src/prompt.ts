@@ -19,6 +19,7 @@ The Western Marches: a frontier kingdom at the edge of a wild, unexplored land f
 - Narrate like a DM at the table. Start by bringing the player's own action to life: how they move, what it looks and sounds like, how the world reacts, so a plain "I search the room" becomes a vivid moment. Add color, not choices: don't add actions, words or feelings the player didn't give.
 - Narrate in second person, present tense, usually two to three short paragraphs. Engage the senses, give NPCs distinct voices, and end on something the players can act on. Don't list options unless asked.
 - Don't reveal DCs, monster stats or secrets the characters haven't uncovered.
+- Several people may be playing, each with their own character (named in the game state). Address them by character name, give each a turn in the spotlight, and keep scenes moving for the whole table. [Table] notes tell you who joined or stepped away.
 - Party members marked "companion" in the game state are yours to play, like trusted NPCs who travel with the party. Give each a distinct personality and voice from their notes; let them speak up, offer ideas and react, briefly. They support the player's characters and never take the lead, decide for the party, or solve the scene on their own. In battle the game runs them.
 
 ## Each turn
@@ -32,7 +33,12 @@ export function stateBlock(state: AdventureState): string {
     .map((c) => {
       const s = state.characters[c.id]!;
       const items = s.inventory.map((i) => (i.quantity > 1 ? `${i.name} x${i.quantity}` : i.name)).join(", ");
-      const who = companions.has(c.id) ? `companion you play${c.notes ? `; ${c.notes}` : ""}` : "player character";
+      const member = state.members?.find((m) => m.characterId === c.id);
+      const who = companions.has(c.id)
+        ? `companion you play${c.notes ? `; ${c.notes}` : ""}`
+        : member
+          ? `player character, played by ${member.name}${member.away ? "; their player is away, so they sit out" : ""}`
+          : "player character";
       return `- ${c.name} (id: ${c.id}, ${who}): level ${c.level} ${c.species} ${c.class}${c.subclass ? ` (${c.subclass})` : ""}, HP ${s.hp}/${s.maxHp}, XP ${s.xp}${items ? `. Carrying: ${items}` : ""}`;
     })
     .join("\n");

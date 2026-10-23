@@ -277,3 +277,18 @@ Not yet:
 - Monk Slow Fall and Paladin Faithful Steed are story-only
 - Feats that need their own choices (Magic Initiate, Skilled) at level 4
 - Druid 3rd-level spells
+
+### Phase 6 progress (multiplayer)
+
+Done:
+- Shared tables: the host signs in, starts an adventure and clicks Invite friends for a 6-letter code. Friends sign in, open Adventure, enter the code and pick a character. Up to 6 players (`MAX_PLAYERS`).
+- Joining is refused during a battle, so players drop in at natural breaks. Stepping away sits your character out of battles at half XP; rejoining with the code brings it back.
+- Live table connection (`GET /api/adventures/:id/stream`, server-sent events): the DM's words as they are written, story updates, battle moves, who is online, and whether the DM is busy. One DM request runs at a time per table; others get a clear "wait".
+- Battles run on the server (`packages/server/src/battle.ts`). Each player moves only their own character; the computer plays monsters, AI companions and absent players. Everyone at the table is taken to the grid when a fight starts and sees every move. The battle is saved with the adventure, so a restart resumes it.
+- Permissions: only the host starts and ends sessions and creates invites; you roll and drink potions only for your own character (companions and absent players' characters are anyone's); strangers get 403.
+- The DM's prompt says who plays each character, and narration opens with table news (who joined or stepped away).
+
+Not yet:
+- Hosting: friends need to reach the server (a public Codespaces port for testing, or a deployed host such as Railway, Render or Fly)
+- Real sign-in (name + PIN is a stand-in)
+- Voice chat between players

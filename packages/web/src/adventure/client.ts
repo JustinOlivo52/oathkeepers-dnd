@@ -1,8 +1,8 @@
-import { mathRng } from "@oathkeepers/engine";
+import { mathRng, type BattleAction, type CombatSnapshot, type LoggedEvent } from "@oathkeepers/engine";
 import type { CharacterData, LevelUpChoice } from "@oathkeepers/content";
 import { DemoProvider, DemoSummarizer, Director, type AdventureState, type CombatOutcome, type Pending, type StoryEvent, type TextSink } from "@oathkeepers/dm";
 import { content } from "../content";
-import { authHeaders } from "../player";
+import { authHeaders, playerToken } from "../player";
 
 export interface AdventureSnapshot {
   events: StoryEvent[];
@@ -10,6 +10,32 @@ export interface AdventureSnapshot {
   pending: Pending | null;
   spentThisMonthUsd?: number | null;
   monthlyBudgetUsd?: number | null;
+  /** A battle is running on the server (shared tables). */
+  battle?: boolean;
+  /** Player ids connected to the table right now. */
+  online?: string[];
+}
+
+/** The server's battle, as one player sees it. */
+export interface RemoteBattleView {
+  snapshot: CombatSnapshot;
+  events: LoggedEvent[];
+  from: number;
+  tiles: string;
+  battlefield: string;
+  classes: Record<string, string>;
+  /** Creature id -> the player who controls it, "anyone" (companions, absent players) or null (the computer). */
+  controllers: Record<string, string | null>;
+  over: boolean;
+}
+
+/** What the live table connection reports. */
+export interface TableHandlers {
+  story(snapshot: AdventureSnapshot): void;
+  text(delta: string): void;
+  battle(update: RemoteBattleView): void;
+  online(ids: string[]): void;
+  busy(busy: boolean): void;
 }
 
 /** How the Adventure screen reaches the DM: the game server (Claude), or a demo DM running in the browser. */
@@ -63,19 +89,69 @@ export class ServerError extends Error {
 export class RemoteClient implements DmClient {
   private id = "";
   onText?: TextSink;
+  /** The live connection to the table, when open. Narration then arrives through it, for everyone. */
+  private source?: EventSource;
   constructor(
     private readonly provider: string,
     readonly label: string,
   ) {}
 
   private async call(path: string, body?: unknown): Promise<AdventureSnapshot> {
-    const stream = body !== undefined && !!this.onText;
+    const stream = body !== undefined && !!this.onText && !this.source;
     const res = await fetch(`/api/adventures${path}`, {
       method: body === undefined ? "GET" : "POST",
       headers: { "content-type": "application/json", ...authHeaders(), ...(stream ? { accept: "text/event-stream" } : {}) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
     const snapshot = stream && res.ok && res.body ? await this.readStream(res.body) : await this.readJson(res);
+    this.id = snapshot.state.id;
+    return snapshot;
+  }
+
+  private async request<T>(path: string, body?: unknown): Promise<T> {
+    const res = await fetch(path, {
+      method: body === undefined ? "GET" : "POST",
+      headers: { "content-type": "application/json", ...authHeaders() },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
+    const json = (await res.json().catch(() => ({}))) as T & { error?: string };
+    if (!res.ok) throw new ServerError(res.status, json.error ?? `Server error ${res.status}`);
+    return json;
+  }
+
+  /** Follow the table live: other players' turns, the DM's words, battle moves. EventSource reconnects on its own. */
+  connect(handlers: TableHandlers): () => void {
+    this.source?.close();
+    const token = playerToken();
+    const source = new EventSource(`/api/adventures/${this.id}/stream${token ? `?token=${encodeURIComponent(token)}` : ""}`);
+    this.source = source;
+    const on = <T,>(event: string, fn: (data: T) => void) => source.addEventListener(event, (e) => fn(JSON.parse((e as MessageEvent<string>).data) as T));
+    on("story", handlers.story);
+    on("text", handlers.text);
+    on("battle", handlers.battle);
+    on("online", handlers.online);
+    on("busy", handlers.busy);
+    return () => {
+      source.close();
+      if (this.source === source) this.source = undefined;
+    };
+  }
+
+  battle(from = 0) {
+    return this.request<RemoteBattleView>(`/api/adventures/${this.id}/battle?from=${from}`);
+  }
+  battleAction(creatureId: string, action: BattleAction) {
+    return this.request<RemoteBattleView & { story: AdventureSnapshot }>(`/api/adventures/${this.id}/battle/action`, { creatureId, action });
+  }
+  invite() {
+    return this.call(`/${this.id}/invite`, {});
+  }
+  leave() {
+    return this.call(`/${this.id}/leave`, {});
+  }
+  /** Sit down at a friend's table with their invite code. */
+  async join(code: string, character: CharacterData): Promise<AdventureSnapshot> {
+    const snapshot = await this.request<AdventureSnapshot>("/api/tables/join", { code, character });
     this.id = snapshot.state.id;
     return snapshot;
   }

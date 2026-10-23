@@ -79,6 +79,7 @@ function createBattle({ character, enemies, seed, battlefield, startingHp, potio
     controller: new BattleController(combat, new Set([character.id])),
     sheetFor,
     formSheets,
+    classOf,
     outcome: () => battleOutcome(combat),
   };
 }
@@ -350,6 +351,30 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
 /** One battle on the grid. With `onFinish`, the end banner hands the outcome back (to the DM) instead of offering a rematch. */
 export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onRestart?: () => void; onFinish?: (outcome: BattleOutcome) => void }) {
   const battle = useMemo(() => createBattle(setup), [setup]);
+  return (
+    <BattleBoard
+      battle={battle}
+      seedNote={setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
+      {...(onRestart ? { onRestart } : {})}
+      {...(onFinish ? { onFinish: () => onFinish(battle.outcome()) } : {})}
+    />
+  );
+}
+
+/** Everything a battle screen needs, however the battle is run (here, or on the server). */
+export interface BoardBattle {
+  combat: Combat;
+  map: Combat["map"] & object;
+  tileset: ReturnType<typeof tilesetFor>;
+  controller: BattleController;
+  sheetFor: (c: Creature) => ReturnType<typeof spriteFor>;
+  formSheets: ReturnType<typeof spriteFor>[];
+  /** Character id -> class, for the panel header. */
+  classOf?: Map<string, string>;
+}
+
+/** A battle on the grid. With `onFinish`, the end banner returns to the story instead of offering a rematch. */
+export function BattleBoard({ battle, seedNote = "", onRestart, onFinish }: { battle: BoardBattle; seedNote?: string; onRestart?: () => void; onFinish?: () => void }) {
   const { controller, combat, map } = battle;
   const host = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<BattleScene | null>(null);
@@ -383,7 +408,8 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
     return () => { sceneRef.current = null; game.destroy(true); };
   }, [battle]);
 
-  const me = [...combat.creatures.values()].find((c) => controller.playerIds.has(c.id))!;
+  // In a shared battle someone may only be watching (their character sat this one out).
+  const me = [...combat.creatures.values()].find((c) => controller.playerIds.has(c.id)) ?? [...combat.creatures.values()].find((c) => c.side === "party")!;
   const turn = combat.turn;
   const myTurn = controller.canAct;
   const preview = controller.preview();
@@ -391,7 +417,8 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
   const mode = controller.mode;
   const confirmTarget = mode.kind === "confirm" ? combat.get(mode.targetId) : undefined;
   const confirmAttack = mode.kind === "confirm" ? me.attacks.find((a) => a.id === mode.attackId) : undefined;
-  const heroSheet = `hero-${PALETTE_BY_CLASS[setup.character.class] ?? "martial"}`;
+  const heroClass = battle.classOf?.get(me.id) ?? "fighter";
+  const heroSheet = `hero-${PALETTE_BY_CLASS[heroClass] ?? "martial"}`;
 
   return (
     <div className="battle-layout">
@@ -429,10 +456,10 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
           <div className={`banner ${combat.winner}`}>
             <strong>{combat.winner === "party" ? "Victory!" : "Defeat"}</strong>
             <span>
-              {combat.round} rounds.{setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
+              {combat.round} rounds.{seedNote}
             </span>
             {onFinish ? (
-              <button className="primary" onClick={() => onFinish(battle.outcome())}>
+              <button className="primary" onClick={onFinish}>
                 Return to the story
               </button>
             ) : (
@@ -447,7 +474,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
       <aside className="panel">
         <div className="me">
           <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${heroSheet}.png)` }} />
-          <div><p className="eyebrow">{setup.character.class} · Level {setup.character.level}</p><strong>{me.name}</strong><div className="hero-health"><meter min={0} max={me.maxHp} value={Math.max(0, me.hp)} aria-label={`${me.name} hit points`} /><span>{me.hp}/{me.maxHp} HP · AC {me.ac}</span></div></div>
+          <div><p className="eyebrow">{heroClass} · Level {me.level}</p><strong>{me.name}</strong><div className="hero-health"><meter min={0} max={me.maxHp} value={Math.max(0, me.hp)} aria-label={`${me.name} hit points`} /><span>{me.hp}/{me.maxHp} HP · AC {me.ac}</span></div></div>
         </div>
 
         {myTurn && turn ? (

@@ -65,7 +65,8 @@ export type StoryEvent =
   | { type: "session_end"; session: number; recap: string }
   | { type: "session_start"; session: number }
   | { type: "art"; artId: string; kind: "scene" | "npc"; image: string; title: string; caption: string; npcName?: string }
-  | { type: "notice"; text: string };
+  | { type: "notice"; text: string }
+  | { type: "table"; text: string };
 
 export type Battlefield = "abbey" | "forest" | "dungeon";
 
@@ -85,14 +86,31 @@ export interface CharacterState {
   hitDiceSpent?: number;
 }
 
+export interface TableMember {
+  playerId: string;
+  name: string;
+  characterId: string;
+  /** Stepped away: their character sits out of battles and gets half XP. */
+  away: boolean;
+}
+
+/** Most player characters at one table. */
+export const MAX_PLAYERS = 6;
+
 export interface AdventureState {
   id: string;
   title: string;
   party: CharacterData[];
   /** Party members the computer runs: the DM voices them in the story, tactics play them in battle. */
   companions?: string[];
-  /** Player id of whoever started it, when they were signed in. Only they can play it. */
+  /** Player id of whoever started it, when they were signed in. They run the table. */
   owner?: string;
+  /** Human players at the table and the character each plays. The owner is one of them. */
+  members?: TableMember[];
+  /** Code friends use to join this table, while it's open. */
+  invite?: string;
+  /** Table news for the DM, sent with the next player message ("Kara joined the party"). */
+  notes?: string[];
   characters: Record<string, CharacterState>;
   gold: number;
   scene: { name: string; description: string };

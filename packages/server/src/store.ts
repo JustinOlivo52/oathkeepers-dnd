@@ -1,10 +1,14 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { readdirSync } from "node:fs";
 import type { AdventureState } from "@oathkeepers/dm";
+import type { SavedBattle } from "./battle.js";
 
 export interface SavedSession {
   state: AdventureState;
   conversation: unknown;
+  /** A battle in progress. */
+  battle?: SavedBattle;
 }
 
 /** Saves each adventure as a JSON file, and tracks AI spending per calendar month. */
@@ -21,6 +25,16 @@ export class Store {
 
   save(id: string, session: SavedSession): void {
     writeFileSync(join(this.dir, "sessions", `${id}.json`), JSON.stringify(session));
+  }
+
+  /** The adventure with this open invite code, if any. Reads saved adventures from disk. */
+  findByInvite(code: string): string | undefined {
+    if (!/^[A-Z]{6}$/.test(code)) return undefined;
+    for (const file of readdirSync(join(this.dir, "sessions")).filter((f) => f.endsWith(".json"))) {
+      const saved = JSON.parse(readFileSync(join(this.dir, "sessions", file), "utf8")) as SavedSession;
+      if (saved.state.invite === code) return saved.state.id;
+    }
+    return undefined;
   }
 
   private spendFile(): string {
