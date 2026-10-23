@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   creationOptions,
   defaultSpells,
@@ -15,6 +15,7 @@ import {
   formatGp,
   startingLoadout,
   STORY_FIELDS,
+  quickBuild,
   suggestStory,
   validateDraft,
   type AbilityRoll,
@@ -39,6 +40,32 @@ const STORY_LABELS: Record<(typeof STORY_FIELDS)[number], { label: string; place
   flaws: { label: "Flaws", placeholder: "A weakness the DM can tempt" },
   backstory: { label: "Backstory", placeholder: "Where they come from and why they're on the frontier" },
 };
+
+/** Plain-language help shown in guided mode. */
+const STEP_HELP: Record<CreationStep, string> = {
+  class: "Your class is what you do, in a fight and out of it. New to D&D? Fighter is simple and tough, Rogue is sneaky and precise, Cleric heals and protects, Wizard casts powerful spells but is fragile.",
+  background: "Where your character came from before adventuring. It adds two skills, a feat and +3 to ability scores.",
+  species: "Your character's people. It sets your size, speed and a few special traits.",
+  abilities: "Six scores that say what you're good at. Put the highest in your class's main abilities (shown on the class card). Not sure? Quick build does it for you.",
+  skills: "What you're trained at outside combat. Pick ones that fit the character you imagine.",
+  features: "Class abilities that come with a choice. The first option is always a fine pick.",
+  equipment: "Your class's starting pack (Option A) is the easy choice. Taking gold lets you shop for your own gear.",
+  spells: "The spells you know. The suggested ones are solid for a first character.",
+  details: "Name, portrait and personality. The DM uses the story to make the adventure about you.",
+};
+
+/** Guided mode: one step at a time. */
+const GuideContext = createContext<{ guided: boolean; current: CreationStep }>({ guided: false, current: "class" });
+
+const GUIDED_KEY = "oathkeepers.builder-guided.v1";
+function readGuided(hasCharacters: boolean): boolean {
+  try {
+    const v = localStorage.getItem(GUIDED_KEY);
+    return v === null ? !hasCharacters : v === "1";
+  } catch {
+    return !hasCharacters;
+  }
+}
 
 const STEPS: { id: CreationStep; title: string }[] = [
   { id: "class", title: "1. Class" },
@@ -67,6 +94,25 @@ export function Builder(props: {
   onAdventure: (c: CharacterData) => void;
 }) {
   const [draft, setDraft] = useState<CharacterDraft>(loadDraft);
+  const [guided, setGuided] = useState(() => readGuided(props.savedCharacters.length > 0));
+  const [stepIndex, setStepIndex] = useState(0);
+  const setGuidedMode = (on: boolean) => {
+    setGuided(on);
+    try {
+      localStorage.setItem(GUIDED_KEY, on ? "1" : "0");
+    } catch {
+      // Storage blocked: the choice lasts for this visit.
+    }
+  };
+  const goTo = (i: number) => {
+    setStepIndex(Math.max(0, Math.min(STEPS.length - 1, i)));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const runQuickBuild = () => {
+    setDraft((d) => quickBuild(content, d, mathRng));
+    setRolls(null);
+    if (guided) goTo(STEPS.length - 1);
+  };
   const [rolls, setRolls] = useState<AbilityRoll[] | null>(null);
   const [savedMessage, setSavedMessage] = useState("");
   useEffect(() => saveDraft(draft), [draft]);
@@ -102,6 +148,34 @@ export function Builder(props: {
   return (
     <main className="builder">
       <div className="steps">
+        <div className="builder-toolbar">
+          <label className="check">
+            <input type="checkbox" checked={guided} onChange={(e) => setGuidedMode(e.target.checked)} />
+            Guided (one step at a time)
+          </label>
+          <button type="button" className="secondary" disabled={!draft.classId} title={draft.classId ? "Fill in every choice you haven't made" : "Pick a class first"} onClick={runQuickBuild}>
+            Quick build
+          </button>
+          {!draft.classId && <span className="muted small">Pick a class, then Quick build fills in the rest.</span>}
+        </div>
+        {guided && (
+          <ol className="step-dots" aria-label="Steps">
+            {STEPS.map((st, i) => (
+              <li key={st.id}>
+                <button
+                  type="button"
+                  className={`${i === stepIndex ? "on" : ""}${draft.classId && !stepIssues(st.id).length ? " done" : ""}`}
+                  aria-current={i === stepIndex ? "step" : undefined}
+                  onClick={() => goTo(i)}
+                  title={st.title}
+                >
+                  {i + 1}
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+        <GuideContext.Provider value={{ guided, current: STEPS[stepIndex]!.id }}>
         <Step id="class" issues={stepIssues("class")}>
           <div className="cards">
             {content.classes.map((c) => (
@@ -678,6 +752,21 @@ export function Builder(props: {
             ))}
           </div>
         </Step>
+        </GuideContext.Provider>
+        {guided && (
+          <div className="step-nav">
+            <button type="button" className="ghost" disabled={stepIndex === 0} onClick={() => goTo(stepIndex - 1)}>
+              Back
+            </button>
+            {stepIndex < STEPS.length - 1 ? (
+              <button type="button" className="primary" onClick={() => goTo(stepIndex + 1)}>
+                Next: {STEPS[stepIndex + 1]!.title.replace(/^\d+\. /, "")}
+              </button>
+            ) : (
+              <span className="muted small">{issues.length ? `${issues.length} thing${issues.length > 1 ? "s" : ""} left to choose` : "Ready! Save your character to finish."}</span>
+            )}
+          </div>
+        )}
       </div>
 
       <aside className="side">
@@ -817,8 +906,10 @@ function PortraitPicker({ draft, onPick }: { draft: CharacterDraft; onPick: (id:
 }
 
 function Step(props: { id: CreationStep; issues: { message: string }[]; children: React.ReactNode }) {
+  const guide = useContext(GuideContext);
   const title = STEPS.find((s) => s.id === props.id)!.title;
   const done = props.issues.length === 0;
+  if (guide.guided && guide.current !== props.id) return null;
   return (
     <section className={`step${done ? " done" : ""}`}>
       <h2>
@@ -827,6 +918,7 @@ function Step(props: { id: CreationStep; issues: { message: string }[]; children
         </span>
         {title}
       </h2>
+      {guide.guided && <p className="step-help">{STEP_HELP[props.id]}</p>}
       {props.children}
       {!done && (
         <ul className="issues">

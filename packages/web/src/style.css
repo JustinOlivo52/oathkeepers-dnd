@@ -234,3 +234,12 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .portrait-choice { padding: 0; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--panel-2); cursor: pointer; }
 .portrait-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portrait-choice.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+
+/* Builder: guided mode */
+.builder-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 12px; }
+.step-dots { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 12px; }
+.step-dots button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--panel-2); cursor: pointer; }
+.step-dots button.done { border-color: var(--good); }
+.step-dots button.on { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+.step-help { margin: 0 0 12px; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 4px; font-size: 14px; }
+.step-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }

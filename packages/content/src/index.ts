@@ -59,6 +59,7 @@ export * from "./spells.js";
 export * from "./levelup.js";
 export * from "./battle.js";
 export * from "./story.js";
+export * from "./quickbuild.js";
 
 /** Validate every data file at load time so bad data fails loudly, with the file and field named. */
 function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): z.infer<T> {
