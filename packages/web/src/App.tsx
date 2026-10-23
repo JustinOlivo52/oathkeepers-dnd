@@ -39,8 +39,8 @@ export function App() {
     if (player) void currentPlayer().then((p) => p && applyPlayer(p));
   }, [tab]);
 
-  const handleSignIn = async (name: string, pin: string) => {
-    let p = await signIn(name, pin);
+  const handleSignIn = async (name: string, pin: string, groupCode?: string) => {
+    let p = await signIn(name, pin, groupCode);
     // Bring this browser's characters into the account the first time.
     for (const c of characters) if (!p.characters.some((x) => x.id === c.id)) p = await saveRemoteCharacter(c);
     applyPlayer(p);

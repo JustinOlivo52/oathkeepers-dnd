@@ -40,13 +40,14 @@ async function request(path: string, method = "GET", body?: unknown): Promise<{ 
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
   const json = (await res.json().catch(() => ({}))) as { player: PlayerAccount; token?: string; error?: string };
-  if (!res.ok) throw new Error(json.error ?? `Server error ${res.status}`);
+  if (!res.ok) throw Object.assign(new Error(json.error ?? `Server error ${res.status}`), { status: res.status });
   if (json.token) setToken(json.token);
   return json;
 }
 
-export async function signIn(name: string, pin: string): Promise<PlayerAccount> {
-  return (await request("/sign-in", "POST", { name, pin })).player;
+/** `groupCode`: needed to create a new player on a hosted server that has one. */
+export async function signIn(name: string, pin: string, groupCode?: string): Promise<PlayerAccount> {
+  return (await request("/sign-in", "POST", { name, pin, ...(groupCode ? { groupCode } : {}) })).player;
 }
 
 /** The signed-in player, or null if this device isn't signed in (or the token expired). */

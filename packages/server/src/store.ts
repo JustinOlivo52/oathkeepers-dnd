@@ -1,5 +1,6 @@
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { writeFileAtomic } from "./files.js";
 import { readdirSync } from "node:fs";
 import type { AdventureState } from "@oathkeepers/dm";
 import type { SavedBattle } from "./battle.js";
@@ -24,7 +25,7 @@ export class Store {
   }
 
   save(id: string, session: SavedSession): void {
-    writeFileSync(join(this.dir, "sessions", `${id}.json`), JSON.stringify(session));
+    writeFileAtomic(join(this.dir, "sessions", `${id}.json`), JSON.stringify(session));
   }
 
   /** The adventure with this open invite code, if any. Reads saved adventures from disk. */
@@ -55,6 +56,6 @@ export class Store {
     if (!usd) return;
     const data = existsSync(this.spendFile()) ? (JSON.parse(readFileSync(this.spendFile(), "utf8")) as Record<string, number>) : {};
     data[this.month()] = (data[this.month()] ?? 0) + usd;
-    writeFileSync(this.spendFile(), JSON.stringify(data, null, 2));
+    writeFileAtomic(this.spendFile(), JSON.stringify(data, null, 2));
   }
 }

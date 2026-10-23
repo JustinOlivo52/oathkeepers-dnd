@@ -24,17 +24,18 @@ npm run dev            # game server + web app: open http://localhost:5173
 npm run eval:dm        # DM quality tests against Claude (needs your key, about $0.10 to $0.30)
 npm test            # run all tests
 npm run typecheck   # TypeScript checks
-npm run build       # production build (what Netlify runs)
+npm run build       # production build of the web app
+npm start           # production server: serves the build and the API on one port
 npm run demo        # watch a random fight in the terminal
 npm run demo -- 7 3 # seed 7, three goblins
 npm run balance -- 3 # win rate vs 3 goblins on generated maps
 npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (needs Python 3 + Pillow)
 ```
 
-## Deploy (Netlify)
+## Deploy
 
-`netlify.toml` is set up: build command `npm run build`, publish folder `packages/web/dist`, Node 22.
-Netlify hosts the web app only. Without the game server, Adventure mode uses the offline demo DM.
+The full game (AI DM, accounts, shared tables) runs as one Docker container: see [docs/deploy.md](docs/deploy.md).
+`netlify.toml` still works for a static, offline-demo-only copy (no AI DM, no multiplayer).
 
 ## Layout
 

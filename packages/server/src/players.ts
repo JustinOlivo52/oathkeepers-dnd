@@ -1,7 +1,8 @@
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { CharacterData } from "@oathkeepers/content";
+import { writeFileAtomic } from "./files.js";
 
 /**
  * Players sign in with a name and a short PIN. Good enough for a group of friends on one server; not real
@@ -44,7 +45,8 @@ export class PlayerStore {
   }
 
   /** Sign in, or create the player if the name is new. Returns a token for this device. */
-  signIn(rawName: string, pin: string): { token: string; player: PublicPlayer; created: boolean } {
+  /** Sign in, or create the player if the name is new. With `allowNew: false`, only existing players get in. */
+  signIn(rawName: string, pin: string, allowNew = true): { token: string; player: PublicPlayer; created: boolean } {
     const name = rawName.trim().replace(/\s+/g, " ");
     if (name.length < 2 || name.length > 30) throw new PlayerError(400, "Use a name of 2 to 30 characters");
     if (!/^\d{4,8}$/.test(pin)) throw new PlayerError(400, "The PIN is 4 to 8 digits");
@@ -55,6 +57,7 @@ export class PlayerStore {
 
     let player = this.load(id);
     const created = !player;
+    if (!player && !allowNew) throw new PlayerError(403, "New players need the group code from whoever runs this game");
     if (!player) {
       const salt = randomBytes(16).toString("hex");
       player = { id, name, salt, pinHash: hashPin(pin, salt), tokens: [], characters: [], adventures: [], created: new Date().toISOString() };
@@ -117,7 +120,7 @@ export class PlayerStore {
   }
 
   private save(player: Player): void {
-    writeFileSync(join(this.dir, `${player.id}.json`), JSON.stringify(player, null, 2));
+    writeFileAtomic(join(this.dir, `${player.id}.json`), JSON.stringify(player, null, 2));
   }
 }
 

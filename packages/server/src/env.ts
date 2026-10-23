@@ -34,7 +34,8 @@ export function loadSettings(): EnvResult {
       messages.push({ level: "warn", text: `Found ".env.txt" but not ".env". Rename it to exactly ".env" (Windows hides the .txt part).` });
     } else if (existsSync(join(PROJECT_ROOT, "env"))) {
       messages.push({ level: "warn", text: `Found a file named "env" without the dot. Rename it to ".env".` });
-    } else {
+    } else if (!process.env.ANTHROPIC_API_KEY) {
+      // On a host the key comes from its settings, not a file, so a missing .env is only worth mentioning when there's no key.
       messages.push({ level: "warn", text: `No .env file found. Copy .env.example to .env in ${PROJECT_ROOT} and add your key.` });
     }
   }

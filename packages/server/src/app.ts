@@ -1,5 +1,5 @@
 import type { LevelUpChoice } from "@oathkeepers/content";
-import { randomUUID } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { mathRng, RulesError, type BattleAction, type Rng } from "@oathkeepers/engine";
 import { CharacterSchema, type BoardData, type Content } from "@oathkeepers/content";
@@ -30,6 +30,11 @@ export interface AppOptions {
   players?: PlayerStore;
   /** Hand-made battle boards by id. */
   boards?: Map<string, BoardData>;
+  /**
+   * When set (a public server), new players need this code to make an account,
+   * and the paid AI DM is only for signed-in players. Keeps strangers from spending your API budget.
+   */
+  groupCode?: string;
 }
 
 /** Someone watching a table's live stream. */
@@ -156,7 +161,9 @@ export function createApp(options: AppOptions) {
     if (!players) throw new HttpError(404, "Player accounts are off on this server");
     if (method === "POST" && path === "/api/players/sign-in") {
       if (typeof body.name !== "string" || typeof body.pin !== "string") throw new HttpError(400, "Send name and pin");
-      return players.signIn(body.name, body.pin);
+      const code = typeof body.groupCode === "string" ? body.groupCode.trim() : "";
+      const allowNew = !options.groupCode || safeEqualText(code.toLowerCase(), options.groupCode.toLowerCase());
+      return players.signIn(body.name, body.pin, allowNew);
     }
     if (!me) throw new HttpError(401, "Sign in first");
     if (method === "GET" && path === "/api/players/me") return { player: players.view(me) };
@@ -180,7 +187,7 @@ export function createApp(options: AppOptions) {
 
   async function route(method: string, path: string, body: Record<string, unknown>, me: Player | undefined, token: string | undefined, onText?: TextSink) {
     if (method === "GET" && path === "/api/health") {
-      return { ok: true, providers: providers.map((p) => p.name), accounts: !!players, spentThisMonthUsd: store.spentThisMonth(), monthlyBudgetUsd: options.monthlyBudgetUsd ?? null };
+      return { ok: true, providers: providers.map((p) => p.name), accounts: !!players, groupCode: !!options.groupCode, spentThisMonthUsd: store.spentThisMonth(), monthlyBudgetUsd: options.monthlyBudgetUsd ?? null };
     }
     if (path.startsWith("/api/players/")) return playerRoute(method, path, body, me, token);
 
@@ -191,6 +198,7 @@ export function createApp(options: AppOptions) {
       if (!companions.success) throw new HttpError(400, `Send up to ${Director.MAX_COMPANIONS} valid companions`);
       const party = [parsed.data, ...companions.data.filter((c, i, all) => c.id !== parsed.data.id && all.findIndex((x) => x.id === c.id) === i)];
       const p = provider(typeof body.provider === "string" ? body.provider : undefined);
+      if (options.groupCode && !me && p.name !== "demo") throw new HttpError(401, "Sign in to play with the AI DM");
       const id = randomUUID();
       const state = Director.newAdventure(content, party, p.name, id, party.slice(1).map((c) => c.id));
       if (me) {
@@ -313,7 +321,8 @@ export function createApp(options: AppOptions) {
   function stream(id: string, me: Player | undefined, req: IncomingMessage, res: ServerResponse) {
     const t = tableFor(id);
     if (!isMember(t.director.state, me)) throw new HttpError(403, "This adventure belongs to another player");
-    res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
+    // x-accel-buffering: proxies in front of hosted servers deliver each event right away instead of holding them.
+    res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive", "x-accel-buffering": "no" });
     const sub: Subscriber = { playerId: me?.id, send: (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`) };
     t.subscribers.add(sub);
     broadcast(t, "online", online(t));
@@ -339,7 +348,7 @@ export function createApp(options: AppOptions) {
       const live = /^\/api\/adventures\/([a-z0-9-]+)\/stream$/.exec(url.pathname);
       if (live && req.method === "GET") return stream(live[1]!, me, req, res);
       if (streaming) {
-        res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
+        res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive", "x-accel-buffering": "no" });
         const result = await route(req.method ?? "GET", url.pathname, body, me, token, (delta) => sse("text", delta));
         sse("done", result);
         res.end();
@@ -393,3 +402,9 @@ function send(res: ServerResponse, status: number, body: unknown): void {
   res.end(JSON.stringify(body));
 }
 
+/** Compare secrets without leaking how much matched through timing. */
+function safeEqualText(a: string, b: string): boolean {
+  const x = Buffer.from(a);
+  const y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
+}
