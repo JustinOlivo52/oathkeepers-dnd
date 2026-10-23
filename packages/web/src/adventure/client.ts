@@ -1,5 +1,5 @@
 import { mathRng } from "@oathkeepers/engine";
-import type { CharacterData } from "@oathkeepers/content";
+import type { CharacterData, LevelUpChoice } from "@oathkeepers/content";
 import { DemoProvider, DemoSummarizer, Director, type AdventureState, type CombatOutcome, type Pending, type StoryEvent, type TextSink } from "@oathkeepers/dm";
 import { content } from "../content";
 
@@ -24,6 +24,7 @@ export interface DmClient {
   retry(): Promise<AdventureSnapshot>;
   drinkPotion(characterId: string): Promise<AdventureSnapshot>;
   magicalCunning(characterId: string): Promise<AdventureSnapshot>;
+  levelUp(characterId: string, choice: LevelUpChoice): Promise<AdventureSnapshot>;
   /** Start the next session (after ending one). */
   begin(): Promise<AdventureSnapshot>;
   endSession(): Promise<AdventureSnapshot>;
@@ -129,6 +130,9 @@ export class RemoteClient implements DmClient {
   magicalCunning(characterId: string) {
     return this.call(`/${this.id}/magical-cunning`, { characterId });
   }
+  levelUp(characterId: string, choice: LevelUpChoice) {
+    return this.call(`/${this.id}/level-up`, { characterId, choice });
+  }
   begin() {
     return this.call(`/${this.id}/begin`, {});
   }
@@ -190,6 +194,9 @@ export class LocalDemoClient implements DmClient {
   }
   async magicalCunning(characterId: string) {
     return this.snapshot(this.director!.magicalCunning(characterId));
+  }
+  async levelUp(characterId: string, choice: LevelUpChoice) {
+    return this.snapshot(this.director!.levelUp(characterId, choice));
   }
   async begin() {
     return this.snapshot(await this.director!.begin(this.onText));

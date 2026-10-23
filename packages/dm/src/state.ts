@@ -52,6 +52,8 @@ export type StoryEvent =
   | { type: "combat_result"; id: string; winner: "party" | "enemies"; rounds: number; summary: string }
   | { type: "xp"; characterId: string; amount: number; total: number; reason: string }
   | { type: "level_up"; characterId: string; level: number }
+  /** A character actually went up a level (the player chose, or a companion leveled on its own). */
+  | { type: "leveled"; characterId: string; level: number; hpGain: number; features: string[] }
   | { type: "item"; characterId: string; name: string; quantity: number }
   | { type: "gold"; amount: number; total: number }
   | { type: "scene"; name: string; description: string }

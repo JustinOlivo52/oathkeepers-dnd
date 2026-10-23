@@ -437,3 +437,22 @@ describe("Tactical Mind", () => {
     expect(state.characters[bram.id]!.resources).toEqual({ "second-wind": 1 });
   });
 });
+
+describe("Leveling up in an adventure", () => {
+  it("the player levels up with XP; companions level themselves", async () => {
+    const [, wren] = content.characters;
+    const provider = new ScriptedProvider([turn([""], [call("x1", "grant_xp", { amount: 1800, reason: "Saved the town" })]), turn(["Cheers ring out."])]);
+    const state = Director.newAdventure(content, [bram, wren!], provider.name, "lv", [wren!.id]);
+    const director = new Director(content, provider, state, seededRng(1));
+    expect(() => director.levelUp(bram.id, { hp: "average" })).toThrow(/XP/);
+    await director.act(bram.id, "We celebrate");
+    // Wren (companion) is level 4 already; Bram waits for the player.
+    expect(state.party[1]!.level).toBe(4);
+    expect(state.party[0]!.level).toBe(3);
+    const hpBefore = state.characters[bram.id]!.maxHp;
+    director.levelUp(bram.id, { hp: "average", feat: { id: "ability-score-improvement", increases: { str: 2 } }, weaponMasteries: [...bram.weaponMasteries, "greatsword"] });
+    expect(state.party[0]!.level).toBe(4);
+    expect(state.characters[bram.id]!.maxHp).toBe(hpBefore + 8);
+    expect(state.events.filter((e) => e.type === "leveled")).toHaveLength(2);
+  });
+});

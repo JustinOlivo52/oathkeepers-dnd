@@ -625,7 +625,7 @@ export function Builder(props: {
 }
 
 /** Cantrips and prepared spells from the class list, with the counts the class allows at this level. */
-function SpellPicker(props: { cls: ClassData; level: number; always: string[]; classChoices: Record<string, string>; selected: string[]; onChange: (ids: string[]) => void }) {
+export function SpellPicker(props: { cls: ClassData; level: number; always: string[]; classChoices: Record<string, string>; selected: string[]; onChange: (ids: string[]) => void }) {
   const { cantrips, leveled } = spellOptions(content, props.cls, props.level, props.always);
   const counts = spellCounts(props.cls, props.level, props.classChoices);
   const name = (id: string) => content.spells.find((s) => s.id === id)?.name ?? id;

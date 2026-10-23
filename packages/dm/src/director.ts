@@ -7,7 +7,18 @@ import {
   SKILLS,
   type Rng,
 } from "@oathkeepers/engine";
-import { buildCharacter, isEncounterReady, pickArt, type CharacterData, type Content } from "@oathkeepers/content";
+import {
+  applyLevelUp,
+  buildCharacter,
+  defaultLevelUpChoice,
+  isEncounterReady,
+  levelUpOptions,
+  MAX_LEVEL,
+  pickArt,
+  type CharacterData,
+  type Content,
+  type LevelUpChoice,
+} from "@oathkeepers/content";
 import type { DmConversation, DmProvider, ProviderTurn, Summarizer, TextSink, ToolCall } from "./provider.js";
 import { memoryBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
 import { levelForXp, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
@@ -596,6 +607,44 @@ export class Director {
     this.state.events.push({ type: "xp", characterId, amount, total: c.xp, reason });
     const after = levelForXp(c.xp);
     if (after > before) this.state.events.push({ type: "level_up", characterId, level: after });
+    // AI companions level up on their own with sensible picks.
+    if ((this.state.companions ?? []).includes(characterId)) {
+      while (this.canLevelUp(characterId)) {
+        const data = this.state.party.find((p) => p.id === characterId)!;
+        this.levelUp(characterId, defaultLevelUpChoice(this.content, data));
+      }
+    }
+  }
+
+  /** Enough XP for the next level, and not past the game's level cap yet. */
+  canLevelUp(characterId: string): boolean {
+    const data = this.state.party.find((p) => p.id === characterId);
+    const c = this.state.characters[characterId];
+    return !!data && !!c && data.level < MAX_LEVEL && levelForXp(c.xp) > data.level;
+  }
+
+  /** Go up one level with the player's choices. HP rises by the gain; the rest of the sheet is rebuilt from the new level. */
+  levelUp(characterId: string, choice: LevelUpChoice): StoryEvent[] {
+    if (!this.canLevelUp(characterId)) throw new AdventureError("Not enough XP to level up yet");
+    const i = this.state.party.findIndex((p) => p.id === characterId);
+    const data = this.state.party[i]!;
+    const options = levelUpOptions(this.content, data);
+    const hpRoll = choice.hp === "roll" ? rollDie(this.rng, options.hitDie) : undefined;
+    let next: CharacterData;
+    try {
+      next = applyLevelUp(this.content, data, choice, hpRoll);
+    } catch (e) {
+      throw new AdventureError(e instanceof Error ? e.message : String(e));
+    }
+    const c = this.state.characters[characterId]!;
+    const before = buildCharacter(this.content, data).maxHp;
+    const after = buildCharacter(this.content, next).maxHp;
+    this.state.party[i] = next;
+    c.maxHp = after;
+    c.hp = Math.min(after, c.hp + Math.max(0, after - before));
+    const event: StoryEvent = { type: "leveled", characterId, level: next.level, hpGain: after - before, features: options.newFeatures.map((f) => f.name) };
+    this.state.events.push(event);
+    return [event];
   }
 }
 

@@ -69,3 +69,11 @@
 .companions { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .companions li { display: grid; gap: 2px; }
 .companions meter { width: 100%; }
+
+.level-up { position: fixed; inset: 0; z-index: 50; background: rgba(5, 8, 10, 0.72); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
+.level-up-card { width: min(640px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; background: var(--panel, #151d20); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: grid; gap: 12px; }
+.level-up-card h2 { margin: 2px 0 0; font: 26px Georgia, serif; }
+.level-up-card h4 { margin: 0 0 6px; }
+.level-up-card .radio { display: flex; gap: 8px; align-items: center; margin: 4px 0; }
+.level-up-card .issues { color: #e8a07a; margin: 0; padding-left: 18px; }
+.level-up-button { width: 100%; margin-top: 8px; }

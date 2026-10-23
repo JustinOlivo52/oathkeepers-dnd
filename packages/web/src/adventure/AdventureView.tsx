@@ -1,12 +1,13 @@
 import "./adventure.css";
 import { useEffect, useRef, useState } from "react";
-import type { CharacterData } from "@oathkeepers/content";
+import { MAX_LEVEL, type CharacterData } from "@oathkeepers/content";
 import { POTION_ITEM, XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
 
 /** Matches Director.MAX_COMPANIONS (kept here so the web bundle doesn't pull in the director for one number). */
 const MAX_COMPANIONS = 3;
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { Battle, type BattleOutcome } from "../battle/BattleView";
+import { LevelUp } from "./LevelUp";
 import { narrator } from "./narrator";
 import { VoiceControls } from "./VoiceControls";
 import { findServer, LocalDemoClient, RemoteClient, ServerError, type AdventureSnapshot, type DmClient, type ServerInfo } from "./client";
@@ -230,6 +231,7 @@ function Adventure(props: {
   const potionsOf = (id: string) => state.characters[id]?.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0;
   const [text, setText] = useState("");
   const [fighting, setFighting] = useState(false);
+  const [leveling, setLeveling] = useState(false);
   const feed = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
@@ -396,7 +398,25 @@ function Adventure(props: {
             </p>
           </div>
         </div>
-        {level > hero.level && <p className="note">Level {level} reached! Leveling up arrives in Phase 5.</p>}
+        {level > hero.level &&
+          (hero.level < MAX_LEVEL ? (
+            <button className="primary level-up-button" disabled={busy || pending?.type === "combat"} onClick={() => setLeveling(true)}>
+              Level up to {hero.level + 1}
+            </button>
+          ) : (
+            <p className="note">Level {MAX_LEVEL} is the highest level for now. Your XP keeps counting.</p>
+          ))}
+        {leveling && (
+          <LevelUp
+            character={hero}
+            busy={busy}
+            onCancel={() => setLeveling(false)}
+            onConfirm={(choice) => {
+              setLeveling(false);
+              void run(() => client.levelUp(hero.id, choice));
+            }}
+          />
+        )}
         {hero.class === "warlock" && hero.level >= 2 && (
           <button
             className="ghost small"
@@ -588,7 +608,13 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
         </li>
       );
     case "level_up":
-      return <li className="chip gold">{names(e.characterId)} reached level {e.level}!</li>;
+      return <li className="chip gold">{names(e.characterId)} has enough XP for level {e.level}!</li>;
+    case "leveled":
+      return (
+        <li className="chip gold">
+          {names(e.characterId)} is now level {e.level} (+{e.hpGain} HP){e.features.length ? `: ${e.features.join(", ")}` : ""}
+        </li>
+      );
     case "item":
       return (
         <li className="chip">
