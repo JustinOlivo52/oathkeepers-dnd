@@ -145,9 +145,11 @@
   "resources": [
     {
       "id": "wild-shape",
-      "recharge": "short",
+      "recharge": "long",
       "usesByLevel": {
-        "2": 2
+        "2": 2,
+        "6": 3,
+        "17": 4
       }
     }
   ],

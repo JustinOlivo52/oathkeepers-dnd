@@ -103,7 +103,9 @@ function createBattle({ character, enemies: groups, seed, battlefield, startingH
   placeCreatures(field.map, [...enemies].sort((a, b) => (b.footprint ?? 1) - (a.footprint ?? 1)), field.enemySpawns, field.largeEnemySpawns, taken);
   const combat = new Combat([...party, ...enemies], mathRng, new EventLog(), field.map);
   const classOf = new Map([character, ...companions.map((x) => x.character)].map((ch) => [ch.id, ch.class]));
-  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", monsterOf.get(c.id));
+  // A druid in Wild Shape uses the beast's sprite.
+  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", c.wildShape?.formId ?? monsterOf.get(c.id));
+  const formSheets = party.flatMap((c) => (c.forms ?? []).map((f) => spriteFor(c, "martial", f.id)));
   const outcome = (): BattleOutcome => ({
     winner: combat.winner ?? "enemies",
     rounds: combat.round,
@@ -114,7 +116,7 @@ function createBattle({ character, enemies: groups, seed, battlefield, startingH
       party.map((c) => [c.id, Object.fromEntries(Object.entries(c.resources).filter(([id]) => id !== POTION).map(([id, r]) => [id, r.current]))]),
     ),
   });
-  return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
+  return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, formSheets, outcome };
 }
 
 interface FeatureButton {
@@ -126,6 +128,8 @@ interface FeatureButton {
   target?: TargetedFeature;
   toggle?: true;
   on?: boolean;
+  /** Wild Shape into this beast. */
+  wildShape?: string;
 }
 
 /** Buttons for the class features this creature has, greyed out when they can't be used right now. */
@@ -164,6 +168,13 @@ function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext
   if (me.conditions.includes("restrained") && me.effects.some((e) => e.id === "entangled")) {
     add({ id: "free", label: "Break free", title: "Action: Strength (Athletics) check against the spell's DC", disabled: turn.actions < 1, action: "break-free" });
   }
+  if (has("wild-shape")) {
+    if (me.wildShape) add({ id: "ws-leave", label: "Leave Wild Shape", title: "Bonus Action: return to your own form", disabled: !bonus, action: "leave-wild-shape" });
+    else
+      for (const f of me.forms ?? [])
+        add({ id: `ws-${f.id}`, label: `Wild Shape: ${f.name} (${uses("wild-shape")})`, title: `Bonus Action: become a ${f.name} (AC ${f.ac}, speed ${f.speedFt} ft). You keep your HP and gain ${me.level} temporary HP, but can't cast spells.`, disabled: !bonus || !uses("wild-shape"), wildShape: f.id });
+  }
+  if (has("lands-aid")) add({ id: "la", label: "Land's Aid", title: "Action and a Wild Shape use: a 10 ft burst within 60 ft, 2d6 necrotic to enemies (Con save for half), and the most hurt ally in it regains 2d6 HP", disabled: turn.actions < 1 || !uses("wild-shape"), target: "lands-aid" });
   if (has("divine-spark")) add({ id: "spark", label: `Divine Spark (${uses("channel-divinity")})`, title: "Channel Divinity, Action: heal an ally or yourself 1d8 + Wis, or hit an enemy with radiant light (Con save for half), 30 ft", disabled: turn.actions < 1 || !uses("channel-divinity"), target: "divine-spark" });
   if (has("preserve-life")) add({ id: "pl", label: "Preserve Life", title: `Channel Divinity, Action: share ${5 * me.level} HP among bloodied allies within 30 ft (each up to half their HP max)`, disabled: turn.actions < 1 || !uses("channel-divinity"), action: "preserve-life" });
   if (has("turn-undead")) add({ id: "tu", label: "Turn Undead", title: "Channel Divinity, Action: undead within 30 ft make a Wisdom save or flee until they take damage", disabled: turn.actions < 1 || !uses("channel-divinity"), action: "turn-undead" });
@@ -377,7 +388,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
       onHover: (p) => controller.onHover(p),
       onClick: (p) => void controller.onClick(p),
       onLoadError: () => setBoardError("Artwork could not load. Reload the page to try again."),
-    }, SPELL_EFFECTS);
+    }, SPELL_EFFECTS, battle.formSheets);
     sceneRef.current = scene;
     const game = new Phaser.Game({
       type: Phaser.AUTO,
@@ -497,7 +508,9 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
                   className={`feature ${b.on ? "on" : ""}`}
                   disabled={b.disabled}
                   title={b.title}
-                  onClick={() => (b.target ? controller.selectFeature(b.target) : b.toggle ? controller.toggleSmite() : controller.act(b.action!))}
+                  onClick={() =>
+                    b.wildShape ? controller.wildShape(b.wildShape) : b.target ? controller.selectFeature(b.target) : b.toggle ? controller.toggleSmite() : controller.act(b.action!)
+                  }
                 >
                   {b.label}
                 </button>
@@ -547,7 +560,11 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
         )}
         {warning && <p className="warning">{warning}</p>}
         {controller.message && <p className="warning">{controller.message}</p>}
-        {mode.kind === "feature" && <p className="preview">{TARGETS_ALLY[mode.feature] ? "Click yourself or an ally." : "Click an enemy."} Click the button again to cancel.</p>}
+        {mode.kind === "feature" && (
+          <p className="preview">
+            {mode.feature === "lands-aid" ? "Point at where the 10 ft burst goes (it spares your allies)." : mode.feature === "divine-spark" ? "Click an ally to heal or an enemy to strike." : TARGETS_ALLY[mode.feature] ? "Click yourself or an ally." : "Click an enemy."} Click the button again to cancel.
+          </p>
+        )}
         {controller.lastRoll && <p className="roll">{controller.lastRoll}</p>}
 
         <details className="battle-journal"><summary>Battle journal <span>{controller.lines.length} events</span></summary><ol className="log battle-log">

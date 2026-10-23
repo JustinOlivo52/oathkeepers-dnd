@@ -505,8 +505,8 @@ export class Director {
       for (const [id, r] of Object.entries(built.resources)) {
         if (!c.resources || c.resources[id] === undefined) continue;
         if (r.recharge === "short") delete c.resources[id];
-        // 2024 Second Wind: a short rest gives back one use.
-        else if (id === "second-wind") c.resources[id] = Math.min(r.max, c.resources[id]! + 1);
+        // 2024 Second Wind and Wild Shape: a short rest gives back one use.
+        else if (id === "second-wind" || id === "wild-shape") c.resources[id] = Math.min(r.max, c.resources[id]! + 1);
       }
     }
     return healed;

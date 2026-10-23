@@ -107,6 +107,8 @@ export class BattleScene extends Phaser.Scene {
     private readonly tileset: TilesetInfo,
     private readonly callbacks: SceneCallbacks,
     private readonly effects: VfxInfo[] = [],
+    /** Sheets for shapes creatures may take mid-battle (Wild Shape). */
+    private readonly extraSheets: SpriteSheetInfo[] = [],
   ) {
     super("battle");
   }
@@ -200,7 +202,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private sheets(): SpriteSheetInfo[] {
-    const byKey = new Map(this.creatures.map((c) => this.sheetFor(c)).map((s) => [s.key, s] as const));
+    const byKey = new Map([...this.creatures.map((c) => this.sheetFor(c)), ...this.extraSheets].map((s) => [s.key, s] as const));
     return [...byKey.values()];
   }
 
@@ -390,10 +392,26 @@ export class BattleScene extends Phaser.Scene {
         this.float(this.tokens.get(e.creatureId)!.sprite, "Opportunity attack!", "#ffd84a", -30);
         await this.wait(350);
         return;
+      case "transform": {
+        const t = this.tokens.get(e.creatureId)!;
+        const sheet = this.sheetFor(t.creature);
+        this.float(t.sprite, e.formId ? "Wild Shape" : "Back to form", "#9be08a", -30);
+        await this.tween({ targets: t.sprite, alpha: 0.2, duration: 160 });
+        t.sheet = sheet;
+        t.sprite.setTexture(sheet.key, 0).setOrigin(sheet.anchor.x / sheet.frameWidth, sheet.anchor.y / sheet.frameHeight).setFlipX(false);
+        t.sprite.play(`${sheet.key}:idle`);
+        await this.tween({ targets: t.sprite, alpha: 1, duration: 160 });
+        this.drawHp(t);
+        return;
+      }
       case "spell_cast": {
         const caster = this.tokens.get(e.creatureId)!;
         const spell = caster.creature.spells?.find((x) => x.id === e.spellId);
-        if (!spell) return;
+        if (!spell) {
+          // Class features that look like spells (Land's Aid).
+          if (e.area) await this.areaFlash(e.spellId, "necrotic", e.area, SPELL_COLORS.necrotic!);
+          return;
+        }
         caster.sprite.play(`${caster.sheet.key}:attack`);
         this.float(caster.sprite, spell.name, "#d8c4ff", -30);
         const color = SPELL_COLORS[spell.heal ? "heal" : spell.damage?.type ?? (spell.effect === "hold" ? "control" : "buff")]!;

@@ -433,6 +433,7 @@ export class Combat {
     if (dealt > 0) this.checkConcentration(target, dealt);
     if (dealt > 0 && this.hasEffect(target, TURNED)) this.endEffect(target, TURNED);
     if (!isConscious(target) && this.hasEffect(target, RAGING)) this.endEffect(target, RAGING);
+    if (target.hp === 0 && target.wildShape) this.endWildShape(target);
     if (dealt > 0 && target.hp === 0 && target.side !== attacker.side) this.darkOnesBlessing(attacker);
   }
 
@@ -953,6 +954,7 @@ export class Combat {
     const turn = this.turn;
     if (!spell) return `${c.name} doesn't know that spell`;
     if (!turn || turn.creatureId !== c.id) return "Not your turn";
+    if (c.wildShape) return "You can't cast spells in Wild Shape";
     const castingTime = metamagic.includes("quickened") ? "bonus" : spell.castingTime;
     if (castingTime === "action" ? turn.actions < 1 : turn.bonusActions < 1) return `No ${castingTime === "action" ? "action" : "bonus action"} left`;
     const mm = this.metamagicProblem(c, spell, metamagic);
@@ -1239,6 +1241,91 @@ export class Combat {
   /** Armor Class right now, with Shield of Faith. */
   armorClass(c: Creature): number {
     return c.ac + (this.hasEffect(c, SHIELDED) ? 2 : 0);
+  }
+
+  // ---------- Druid ----------
+
+  /**
+   * Druid: Wild Shape. Bonus Action: take a beast's AC, speed, Strength, Dexterity, Constitution and attacks,
+   * keeping your own HP (plus temporary HP equal to your level), mind and features. No spellcasting while shaped.
+   */
+  wildShape(creatureId: string, formId: string): void {
+    const c = this.requireActive(creatureId);
+    this.requireFeature(c, "wild-shape");
+    if (c.wildShape) throw new RulesError(`${c.name} is already in Wild Shape`);
+    const form = c.forms?.find((f) => f.id === formId);
+    if (!form) throw new RulesError(`${c.name} doesn't know that shape`);
+    if (this.map && c.position && !footprintSquares(c.position, form.footprint).every((q) => this.map!.walkable(q) && (!this.occupant(q) || this.occupant(q) === c))) {
+      throw new RulesError("Not enough room for that shape here");
+    }
+    this.spendBonusFor(creatureId, ["wild-shape"]);
+    this.spendResource(c, "wild-shape");
+    c.wildShape = {
+      formId,
+      saved: { ac: c.ac, speedFt: c.speedFt, attacks: c.attacks, features: c.features, footprint: c.footprint, str: c.abilities.str, dex: c.abilities.dex, con: c.abilities.con },
+    };
+    c.ac = form.ac;
+    // A new speed mid-turn changes the movement left by the difference.
+    if (this.turn?.creatureId === c.id) this.turn.movementFt = Math.max(0, this.turn.movementFt + form.speedFt - c.speedFt);
+    c.speedFt = form.speedFt;
+    c.abilities = { ...c.abilities, str: form.str, dex: form.dex, con: form.con };
+    c.attacks = form.attacks;
+    c.features = [...new Set([...c.features, ...form.features])];
+    c.footprint = form.footprint;
+    c.tempHp = Math.max(c.tempHp, c.level);
+    this.log.push({ type: "transform", creatureId: c.id, formId });
+  }
+
+  /** Leave Wild Shape as a Bonus Action (it also ends on its own at 0 HP). */
+  leaveWildShape(creatureId: string): void {
+    const c = this.requireActive(creatureId);
+    if (!c.wildShape) throw new RulesError(`${c.name} isn't in Wild Shape`);
+    this.spendBonusFor(creatureId, ["wild-shape"]);
+    this.endWildShape(c);
+  }
+
+  private endWildShape(c: Creature): void {
+    const w = c.wildShape;
+    if (!w) return;
+    c.ac = w.saved.ac;
+    if (this.turn?.creatureId === c.id) this.turn.movementFt = Math.max(0, this.turn.movementFt + w.saved.speedFt - c.speedFt);
+    c.speedFt = w.saved.speedFt;
+    c.attacks = w.saved.attacks;
+    c.features = w.saved.features;
+    c.footprint = w.saved.footprint;
+    c.abilities = { ...c.abilities, str: w.saved.str, dex: w.saved.dex, con: w.saved.con };
+    delete c.wildShape;
+    this.log.push({ type: "transform", creatureId: c.id });
+  }
+
+  /**
+   * Circle of the Land: Land's Aid. Action, a Wild Shape use, a 10 ft sphere within 60 ft: enemies in it make a
+   * Constitution save (2d6 necrotic, half on a success), and the most hurt ally in it regains 2d6 HP.
+   */
+  landsAid(creatureId: string, point: Point): void {
+    const c = this.requireActive(creatureId);
+    this.requireFeature(c, "lands-aid");
+    const map = this.requireMap();
+    if (footprintDistanceFt(c.position!, footprintOf(c), point, 1) > 60 || !map.lineOfSight(c.position!, point)) throw new RulesError("That square is out of range or sight");
+    if ((c.resources["wild-shape"]?.current ?? 0) < 1) throw new RulesError("No Wild Shape uses left");
+    this.spendAction(creatureId);
+    this.spendResource(c, "wild-shape");
+    const area = areaSquares(map, "sphere", 10, point, c.position!, footprintOf(c));
+    const covered = new Set(area.map(key));
+    const inside = [...this.creatures.values()].filter((t) => !t.dead && t.position && footprintSquares(t.position, footprintOf(t)).some((q) => covered.has(key(q))));
+    this.log.push({ type: "spell_cast", creatureId: c.id, spellId: "lands-aid", slotLevel: 0, targetIds: inside.map((t) => t.id), point, area });
+    const dc = c.spells?.[0]?.saveDc ?? this.classDc(c, "wis");
+    for (const t of inside.filter((t) => t.side !== c.side)) {
+      const r = roll(this.rng, "2d6");
+      const saved = this.save(t, "con", dc).success;
+      this.dealDamage(c, t, saved ? Math.floor(r.total / 2) : r.total, "necrotic", r);
+    }
+    const ally = inside.filter((t) => t.side === c.side && t.hp < t.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+    if (ally) {
+      const r = roll(this.rng, "2d6");
+      heal(this.log, ally, r.total, r);
+    }
+    this.checkVictory();
   }
 
   // ---------- Cleric Channel Divinity, and breaking free ----------

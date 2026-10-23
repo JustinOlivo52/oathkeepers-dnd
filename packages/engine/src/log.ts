@@ -35,6 +35,7 @@ export type GameEvent =
   | { type: "action"; creatureId: string; action: "dash" | "disengage" | "dodge"; bonus?: boolean }
   | { type: "extra_damage"; creatureId: string; targetId: string; source: string }
   | { type: "concentration"; creatureId: string; spell: string; kept: boolean }
+  | { type: "transform"; creatureId: string; formId?: string }
   | { type: "spell_cast"; creatureId: string; spellId: string; slotLevel: number; targetIds: string[]; point?: Point; area?: Point[] }
   | { type: "reaction"; creatureId: string; reaction: "opportunity-attack" | "cutting-words" | "deflect-attacks"; targetId: string }
   | { type: "condition"; creatureId: string; condition: Condition; added: boolean }

@@ -35,7 +35,7 @@ export type Mode =
   /** Casting a spell: pick targets (several for Bless) or a square. */
   | { kind: "spell"; spellId: string; slot?: number; picked: string[] };
 
-export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration" | "divine-spark";
+export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration" | "divine-spark" | "lands-aid";
 export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "lay-on-hands": true,
   "hunters-mark": false,
@@ -44,6 +44,7 @@ export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "spiritual-weapon": false,
   "bardic-inspiration": true,
   "divine-spark": false,
+  "lands-aid": false,
 };
 /** Features that can target anyone: Divine Spark heals allies or hurts enemies. */
 const TARGETS_ANYONE = new Set<TargetedFeature>(["divine-spark"]);
@@ -52,7 +53,7 @@ export type QuickAction =
   | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
   | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind"
   | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points"
-  | "preserve-life" | "turn-undead" | "break-free";
+  | "preserve-life" | "turn-undead" | "break-free" | "leave-wild-shape";
 
 export interface LogLine {
   text: string;
@@ -150,6 +151,12 @@ export class BattleController {
       const picked = mode.picked.includes(target.id) ? mode.picked.filter((x) => x !== target.id) : [...mode.picked, target.id].slice(0, this.maxTargets(spell, mode.slot));
       this.mode = { ...mode, picked };
       this.refresh();
+      return;
+    }
+
+    if (this.mode.kind === "feature" && this.mode.feature === "lands-aid") {
+      this.mode = { kind: "move" };
+      await this.tryRules(() => this.combat.landsAid(me.id, p));
       return;
     }
 
@@ -255,6 +262,13 @@ export class BattleController {
     if (!this.message) this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
   }
 
+  async wildShape(formId: string): Promise<void> {
+    if (!this.canAct) return;
+    this.mode = { kind: "move" };
+    this.message = null;
+    await this.tryRules(() => this.combat.wildShape(this.active!.id, formId));
+  }
+
   toggleMetamagic(option: string): void {
     this.metamagic = this.metamagic.includes(option) ? this.metamagic.filter((m) => m !== option) : [...this.metamagic, option];
     this.emit();
@@ -329,6 +343,7 @@ export class BattleController {
         "preserve-life": () => void c.preserveLife(id),
         "turn-undead": () => c.turnUndead(id),
         "break-free": () => void c.breakFree(id),
+        "leave-wild-shape": () => c.leaveWildShape(id),
       };
       run[action]();
     });
@@ -437,6 +452,8 @@ export class BattleController {
             return { point: c.position!, size: c.footprint ?? 1, ok: inRange, picked: picked.has(c.id) };
           });
       }
+    } else if (this.mode.kind === "feature" && this.mode.feature === "lands-aid") {
+      if (this.hover && this.combat.map) o.area = areaSquares(this.combat.map, "sphere", 10, this.hover, me.position!, me.footprint ?? 1);
     } else if (this.mode.kind === "feature") {
       const ally = TARGETS_ALLY[this.mode.feature];
       const anyone = TARGETS_ANYONE.has(this.mode.feature);

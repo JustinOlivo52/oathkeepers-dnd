@@ -225,8 +225,15 @@ Class features, round 3:
 - Story-only features (Thieves' Cant, Druidic, Ritual Adept...) are labeled "story" on the character sheet
 - Every class's level 1 to 3 features now work except the Druid's Wild Shape and Land's Aid
 
+Druid:
+- Wild Shape: Bonus Action into any bestiary beast up to the level's CR (1/4 at levels 2-3, so the Wolf for now), keeping the druid's HP, mind and features, plus temporary HP equal to the druid level; no spells while shaped; ends with a Bonus Action or at 0 HP; the battle sprite swaps to the beast. Two uses, one back on a short rest
+- Land's Aid: 10 ft burst within 60 ft for a Wild Shape use, necrotic to enemies and a heal for the most hurt ally
+- AI druids Entangle and Land's Aid groups, and Wild Shape when out of slots or in melee
+- More forms arrive with new beast art (batch 2 sections 1 and 6)
+
+All 12 classes now have their level 1 to 3 features in battle.
+
 Not yet:
-- Druid Wild Shape and Land's Aid
 - Spells above level 2, reactions (Shield, Hellish Rebuke), out-of-combat spells (rituals, utility)
 - Command only offers "Grovel"
 - Monsters casting spells

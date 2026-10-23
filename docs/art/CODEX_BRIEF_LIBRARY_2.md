@@ -80,6 +80,18 @@ Catalog entries: kind `hero` with a `sprite` block like the other hero sheets; `
 
 This section can go first if batch 2 is already under way: it's small and it fixes something players see in every fight.
 
+## 6. Wild Shape beasts (3, optional)
+
+Druids can now Wild Shape into any beast in the bestiary that has battle art, up to CR 1/4 at level 3. Today that's only the Wolf. Three more small beasts would give druids real choices. Same format as the section 1 monsters (11-frame battle sheet, Medium size, four-legged gait, bite or claw lunge for attacks), plus a portrait. `mechanicsStatus: "pending"`: Claude adds the stat blocks.
+
+| id | Notes |
+|---|---|
+| boar | Bristly wild boar, tusks |
+| panther | Sleek black panther |
+| giant-badger | Stocky, big claws |
+
+`giant-rat` from section 1 also becomes a form once it's in.
+
 ## Done means
 
 - [ ] All four sections done, or a clearly stated subset, with catalog entries using the listed ids and tags

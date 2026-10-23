@@ -116,10 +116,28 @@ export interface Creature {
   creatureType?: string;
   /** Spells this creature can cast in battle. Slots are resources "spell-slot-1", "spell-slot-2"... */
   spells?: SpellDef[];
+  /** Druid: beasts it can Wild Shape into. */
+  forms?: BeastForm[];
+  /** Set while in Wild Shape: the beast's id and the druid's own stats to return to. */
+  wildShape?: { formId: string; saved: Pick<Creature, "ac" | "speedFt" | "attacks" | "features" | "footprint"> & { str: number; dex: number; con: number } };
   /** Square on the battle map, when fighting on a grid. For larger creatures, the top-left square. */
   position?: Point;
   /** Squares per side on the grid: 1 for Medium and smaller, 2 for Large, 3 Huge, 4 Gargantuan. */
   footprint?: number;
+}
+
+/** A beast's battle stats for Wild Shape: it takes these over, keeping its own HP, mind and class features. */
+export interface BeastForm {
+  id: string;
+  name: string;
+  ac: number;
+  speedFt: number;
+  str: number;
+  dex: number;
+  con: number;
+  attacks: Attack[];
+  features: string[];
+  footprint: number;
 }
 
 export function footprintOf(c: Creature): number {

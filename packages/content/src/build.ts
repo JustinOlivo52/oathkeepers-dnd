@@ -1,4 +1,4 @@
-import { abilityModifier, proficiencyBonus, type Attack, type Creature, type Resource, type Side } from "@oathkeepers/engine";
+import { abilityModifier, proficiencyBonus, type Attack, type BeastForm, type Creature, type Resource, type Side } from "@oathkeepers/engine";
 import { buildSpells, spellSlots } from "./spells.js";
 import type { Content } from "./index.js";
 import type { CharacterData, ClassData, MonsterData, WeaponData } from "./schemas.js";
@@ -69,6 +69,8 @@ export const IMPLEMENTED_FEATURES = new Set([
   "danger-sense",
   "primal-knowledge",
   "tactical-mind",
+  "wild-shape",
+  "lands-aid",
 ]);
 
 /** Features that only matter in the story (the DM handles them); the sheet labels them instead of "coming soon". */
@@ -238,6 +240,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     features,
     resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level, data), ...spellSlots(cls, data.level) },
     ...(cls.spellcasting ? { spells: buildSpells(content, data, cls) } : {}),
+    ...(features.includes("wild-shape") ? { forms: wildShapeForms(content, data.level) } : {}),
     effects: [],
     deathSaves: { successes: 0, failures: 0 },
     stable: false,
@@ -306,6 +309,17 @@ function featureResources(cls: ClassData, features: string[], level: number, dat
   if (features.includes("magical-cunning")) out["magical-cunning"] = long(1);
   if (features.includes("favored-enemy")) out["favored-enemy"] = long(level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2);
   return out;
+}
+
+/** Beasts a druid of this level can Wild Shape into (2024: CR 1/4 at level 2, 1/2 at 4, 1 at 8; no flying forms yet). */
+export function wildShapeForms(content: Content, level: number): BeastForm[] {
+  const maxCr = level >= 8 ? 1 : level >= 4 ? 0.5 : 0.25;
+  return content.monsters
+    .filter((m) => m.type === "beast" && m.cr <= maxCr)
+    .map((m) => {
+      const beast = buildMonster(m, m.id);
+      return { id: m.id, name: m.name, ac: beast.ac, speedFt: beast.speedFt, str: m.abilities.str, dex: m.abilities.dex, con: m.abilities.con, attacks: beast.attacks, features: beast.features, footprint: beast.footprint ?? 1 };
+    });
 }
 
 function classResources(cls: ClassData, level: number): Record<string, Resource> {

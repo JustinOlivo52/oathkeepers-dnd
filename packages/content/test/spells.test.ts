@@ -104,3 +104,12 @@ describe("step 2 class details", () => {
     expect(paladin.leveled.map((s) => s.id)).toEqual(expect.arrayContaining(["command", "heroism", "divine-favor", "thunderous-smite", "searing-smite", "wrathful-smite"]));
   });
 });
+
+describe("druid", () => {
+  it("knows beast forms up to CR 1/4 at level 3", () => {
+    const druid = buildCharacter(content, { ...premade("sister-maren-holt"), class: "druid", subclass: "circle-of-the-land", classChoices: { "primal-order": "warden", land: "temperate" }, spells: undefined });
+    expect(druid.forms!.map((f) => f.id)).toEqual(["wolf"]);
+    expect(druid.resources["wild-shape"]).toMatchObject({ current: 2, recharge: "long" });
+    expect(druid.features).toEqual(expect.arrayContaining(["wild-shape", "lands-aid"]));
+  });
+});

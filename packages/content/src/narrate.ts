@@ -18,6 +18,8 @@ export function describeEvent(e: LoggedEvent, name: (id: string) => string): str
       return `${name(e.targetId)} takes ${e.amount} ${e.damageType} damage (HP ${e.hpAfter})`;
     case "heal":
       return `${name(e.targetId)} heals ${e.amount} (HP ${e.hpAfter})`;
+    case "transform":
+      return e.formId ? `${name(e.creatureId)} takes the shape of a ${e.formId.replace(/-/g, " ")}` : `${name(e.creatureId)} returns to their own form`;
     case "spell_cast": {
       const spell = e.spellId.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
       const on = e.targetIds.length ? ` on ${e.targetIds.map(name).join(", ")}` : "";

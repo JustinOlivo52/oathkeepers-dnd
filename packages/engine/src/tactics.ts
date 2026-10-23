@@ -99,6 +99,30 @@ function openingMoves(combat: Combat, me: Creature): void {
       if (target) combat.huntersMark(me.id, target.id);
     }
   }
+  // Druid: Land's Aid on a cluster of enemies, then Wild Shape once spells run dry or the fight is in its face.
+  if (turn.actions > 0 && me.features.includes("lands-aid") && left("wild-shape") && combat.map) {
+    for (const e of enemies) {
+      if (footprintDistanceFt(me.position!, footprintOf(me), e.position!, 1) > 60 || !combat.map.lineOfSight(me.position!, e.position!)) continue;
+      const covered = new Set(areaSquares(combat.map, "sphere", 10, e.position!, me.position!, footprintOf(me)).map(key));
+      const hit = enemies.filter((x) => footprintSquares(x.position!, footprintOf(x)).some((q) => covered.has(key(q)))).length;
+      if (hit >= 2) {
+        combat.landsAid(me.id, e.position!);
+        break;
+      }
+    }
+  }
+  if (turn.bonusActions > 0 && me.features.includes("wild-shape") && !me.wildShape && left("wild-shape") && me.forms?.length) {
+    const slotsLeft = [1, 2, 3].some((n) => left(slotResource(n)));
+    const pressed = combat.enemiesWithin(me, 5).length > 0 && me.hp > me.maxHp / 2;
+    if (!slotsLeft || pressed) {
+      const best = [...me.forms].sort((a, b) => b.attacks.reduce((n, x) => n + averageRoll(x.damage), 0) - a.attacks.reduce((n, x) => n + averageRoll(x.damage), 0))[0]!;
+      try {
+        combat.wildShape(me.id, best.id);
+      } catch {
+        // No room for that shape here.
+      }
+    }
+  }
   if (turn.actions > 0 && me.features.includes("sacred-weapon") && left("channel-divinity") && !me.effects.some((e) => e.id === "sacred-weapon")) combat.sacredWeapon(me.id);
 }
 
