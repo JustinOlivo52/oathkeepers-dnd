@@ -27,7 +27,7 @@ export function PlayerBar(props: { player: PlayerAccount | null; onSignIn: (name
   if (!open) {
     return (
       <div className="player-bar">
-        <button className="ghost small" onClick={() => setOpen(true)} title="Save your characters and adventures on the game server">
+        <button className="ghost small" onClick={() => setOpen(true)} title="Save characters and adventures to the server">
           Sign in
         </button>
       </div>
@@ -64,7 +64,7 @@ export function PlayerBar(props: { player: PlayerAccount | null; onSignIn: (name
       <button type="button" className="ghost small" onClick={() => setOpen(false)}>
         Cancel
       </button>
-      <span className="muted small sign-in-note">New name? This creates your player. Not real security yet: don't reuse an important PIN.</span>
+      <span className="muted small sign-in-note">New name creates an account. Don't reuse a real PIN.</span>
       {error && <span className="warning small">{error}</span>}
     </form>
   );

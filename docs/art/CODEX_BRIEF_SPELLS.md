@@ -1,6 +1,6 @@
 # Codex Brief: Spell Effects and Icons
 
-The game now has spells in battle (24 so far, listed below). Today their effects are drawn in code: a colored ball for bolts, a colored ring for hits, tinted squares for areas. This brief replaces those with real art. Follow [`LIBRARY.md`](LIBRARY.md) for folders, catalog fields and content rules, and match the existing Codex style: detailed 2D fantasy, dark outlines, warm torchlit palette, readable at game size.
+The game now has spells in battle (24 so far, listed below). Today their effects are drawn in code: a colored ball for bolts, a colored ring for hits, tinted squares for areas. This brief replaces those with real art. Follow the [Art library spec](../OATHKEEPERS.md#art-library-spec) for folders, catalog fields and content rules, and match the existing Codex style: detailed 2D fantasy, dark outlines, warm torchlit palette, readable at game size.
 
 **Branch:** `art/spell-effects`, from the latest `master`. Separate from the batch 2 branch.
 

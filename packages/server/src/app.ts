@@ -131,7 +131,7 @@ export function createApp(options: AppOptions) {
 
   /** One DM request at a time per table; the others get a clear "wait" instead of piling up. */
   async function exclusive<T>(t: Table, fn: () => Promise<T>): Promise<T> {
-    if (t.busy) throw new HttpError(409, "The DM is still answering. Try again in a moment.");
+    if (t.busy) throw new HttpError(409, "DM is busy, try again in a moment");
     t.busy = true;
     broadcast(t, "busy", true);
     try {
@@ -219,14 +219,14 @@ export function createApp(options: AppOptions) {
       if (!me) throw new HttpError(401, "Sign in to join a table");
       const code = typeof body.code === "string" ? body.code.trim().toUpperCase() : "";
       const id = [...tables.entries()].find(([, t]) => t.director.state.invite === code)?.[0] ?? store.findByInvite(code);
-      if (!code || !id) throw new HttpError(404, "No table with that code. Check it with the host.");
+      if (!code || !id) throw new HttpError(404, "No table with that code");
       const t = tableFor(id);
       const s = t.director.state;
       const already = s.members?.find((m) => m.playerId === me.id);
       let character = s.party.find((c) => c.id === already?.characterId);
       if (!character) {
         const parsed = CharacterSchema.safeParse(body.character);
-        if (!parsed.success) throw new HttpError(400, "Choose a character to bring");
+        if (!parsed.success) throw new HttpError(400, "Pick a character");
         character = parsed.data;
       }
       const events = t.director.join(me.id, me.name, character);
@@ -241,7 +241,7 @@ export function createApp(options: AppOptions) {
     const t = tableFor(id);
     const d = t.director;
     const s = d.state;
-    if (!isMember(s, me)) throw new HttpError(403, "This adventure belongs to another player. Ask them for the invite code to join.");
+    if (!isMember(s, me)) throw new HttpError(403, "Not your adventure. Ask the host for an invite code.");
     if (method === "GET" && !action) return view(t, s.events);
     if (method === "GET" && action === "battle") {
       if (!t.battle) throw new HttpError(404, "No battle right now");
@@ -290,10 +290,10 @@ export function createApp(options: AppOptions) {
       events = await exclusive(t, () => d.roll(tell));
     } else if (action === "retry") events = await exclusive(t, () => d.retry(tell));
     else if (action === "begin") {
-      if (!isOwner(s, me)) throw new HttpError(403, "Only the table's host starts sessions");
+      if (!isOwner(s, me)) throw new HttpError(403, "Only the host can start a session");
       events = await exclusive(t, () => d.begin(tell));
     } else if (action === "end-session") {
-      if (!isOwner(s, me)) throw new HttpError(403, "Only the table's host ends sessions");
+      if (!isOwner(s, me)) throw new HttpError(403, "Only the host can end a session");
       if (t.battle && !t.battle.over) throw new HttpError(409, "Finish the battle first");
       events = await exclusive(t, () => d.endSession(options.summarizerFor(s.provider)));
     } else if (action === "level-up") {
@@ -302,7 +302,7 @@ export function createApp(options: AppOptions) {
     } else if (action === "magical-cunning") events = d.magicalCunning(needCharacter());
     else if (action === "potion") events = d.drinkPotion(needCharacter());
     else if (action === "invite") {
-      if (!s.owner || s.owner !== me?.id) throw new HttpError(403, "Sign in as the table's host to invite players");
+      if (!s.owner || s.owner !== me?.id) throw new HttpError(403, "Only the host can invite players");
       s.invite ??= inviteCode();
       events = [];
     } else if (action === "leave") {
@@ -320,7 +320,7 @@ export function createApp(options: AppOptions) {
   /** Live updates for everyone at a table: the DM's words as they come, story changes, battle moves, who's online. */
   function stream(id: string, me: Player | undefined, req: IncomingMessage, res: ServerResponse) {
     const t = tableFor(id);
-    if (!isMember(t.director.state, me)) throw new HttpError(403, "This adventure belongs to another player");
+    if (!isMember(t.director.state, me)) throw new HttpError(403, "Not your adventure");
     // x-accel-buffering: proxies in front of hosted servers deliver each event right away instead of holding them.
     res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive", "x-accel-buffering": "no" });
     const sub: Subscriber = { playerId: me?.id, send: (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`) };

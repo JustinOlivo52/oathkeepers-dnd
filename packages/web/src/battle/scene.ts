@@ -5,7 +5,7 @@ import { key, type Creature, type GridMap, type LoggedEvent, type Point } from "
 export const TILE = 96;
 const BASE = import.meta.env.BASE_URL;
 
-/** The shared 11-frame animation layout every creature sheet follows (docs/art/LIBRARY.md). */
+/** The shared 11-frame animation layout every creature sheet follows (art library spec in docs/OATHKEEPERS.md). */
 const ANIMATIONS: Record<string, { frames: number[]; fps: number; loop: boolean }> = {
   idle: { frames: [0, 1], fps: 2, loop: true },
   walk: { frames: [2, 3, 4, 5], fps: 8, loop: true },

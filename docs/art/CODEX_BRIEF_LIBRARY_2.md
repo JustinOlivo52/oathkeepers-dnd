@@ -1,6 +1,6 @@
 # Codex Brief: Art Library, Batch 2
 
-Batch 1 (the pilot) is merged, hooked into the game and playtested. Batch 2 is the rest of the original list: the expansion backlog in [`CODEX_BRIEF_LIBRARY_1.md`](CODEX_BRIEF_LIBRARY_1.md). Follow [`LIBRARY.md`](LIBRARY.md) for folders, formats, sizes, tags, readiness fields and content rules, and match the style of batch 1.
+Batch 1 (the pilot) is merged, hooked into the game and playtested. Batch 2 is the rest of the original list: the expansion backlog in [batch 1 brief](../OATHKEEPERS.md#art-history-batch-1-brief). Follow the [Art library spec](../OATHKEEPERS.md#art-library-spec) for folders, formats, sizes, tags, readiness fields and content rules, and match the style of batch 1.
 
 **Branch:** `art/library-batch-2`, from the latest `master`. If you're also working on [`CODEX_FIXES_LIBRARY_1.md`](CODEX_FIXES_LIBRARY_1.md), keep that on its own branch.
 

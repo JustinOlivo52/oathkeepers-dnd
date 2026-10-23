@@ -34,7 +34,7 @@ export function VoiceControls() {
           <button className="ghost small" onClick={() => narrator.sample()}>
             Test voice
           </button>
-          <p className="muted small">Voices come from your browser. On Windows, Microsoft Edge has the most natural ones.</p>
+          <p className="muted small">Uses your browser's voices. Edge has the best ones on Windows.</p>
         </details>
       )}
     </div>

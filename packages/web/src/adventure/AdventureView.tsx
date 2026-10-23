@@ -43,7 +43,7 @@ function writeSaved(ref: SavedRef | null): void {
 }
 
 function clientFor(mode: "remote" | "local", provider: string): DmClient {
-  return mode === "local" ? new LocalDemoClient() : new RemoteClient(provider, provider === "claude" ? "Claude" : "Demo DM");
+  return mode === "local" ? new LocalDemoClient() : new RemoteClient(provider, provider === "claude" ? "AI DM" : "Demo DM");
 }
 
 export function AdventureView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void; player: PlayerAccount | null }) {
@@ -126,7 +126,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
   };
 
   const join = () => {
-    const c = new RemoteClient("", "Host's DM");
+    const c = new RemoteClient("", "DM");
     setClient(c);
     void run(async () => {
       const s = await c.join(joinCode, character);
@@ -175,7 +175,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <label>
               Dungeon Master
               <select value={choice} onChange={(e) => setChoice(e.target.value)} disabled={server === undefined}>
-                {server?.providers.includes("claude") && <option value="remote:claude">Claude (AI)</option>}
+                {server?.providers.includes("claude") && <option value="remote:claude">AI DM</option>}
                 {server && <option value="remote:demo">Demo DM (server)</option>}
                 <option value="local:demo">Demo DM (offline)</option>
               </select>
@@ -185,7 +185,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <legend>
               Party: {companions.length ? `${character.name} and ${companions.length} AI companion${companions.length > 1 ? "s" : ""}` : `${character.name}, solo`}
             </legend>
-            <p className="muted small">Bring up to {MAX_COMPANIONS} companions. The DM plays them in the story, and the computer fights for them on the grid.</p>
+            <p className="muted small">Up to {MAX_COMPANIONS} AI companions.</p>
             <div className="companion-list">
               {companionOptions.map((c) => {
                 const on = companionIds.includes(c.id);
@@ -232,7 +232,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
                   </button>
                 </form>
               ) : (
-                <p className="muted small">Sign in with your player name (top right) to join a friend's table.</p>
+                <p className="muted small">Sign in to join a table.</p>
               )}
             </section>
           )}
@@ -255,12 +255,12 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
           )}
           {server === null && (
             <p className="note">
-              The game server isn't running, so only the offline demo DM is available. To play with Claude, run <code>npm run dev</code> with your API key in <code>.env</code>.
+              Server offline. Offline demo DM only. For the AI DM: set <code>ANTHROPIC_API_KEY</code> in <code>.env</code> and run <code>npm run dev</code>.
             </p>
           )}
           {server && !server.providers.includes("claude") && (
             <p className="note">
-              The server is running without an API key, so only the demo DM is available. Run <code>npm run check-setup</code> in a terminal to see what's wrong, then restart <code>npm run dev</code>.
+              No API key on the server. Demo DM only. Run <code>npm run check-setup</code>, then restart <code>npm run dev</code>.
             </p>
           )}
           {busy && live && (
@@ -424,7 +424,7 @@ function Adventure(props: {
                 ))}
               </li>
             ) : (
-              <li className="thinking">The DM is thinking…</li>
+              <li className="thinking">DM is writing…</li>
             ))}
         </ol>
 
@@ -480,7 +480,7 @@ function Adventure(props: {
                 Start session {state.session}
               </button>
             ) : (
-              <p className="muted small">Waiting for the host to start it.</p>
+              <p className="muted small">Waiting on the host.</p>
             )}
           </div>
         ) : (
@@ -495,7 +495,7 @@ function Adventure(props: {
             rows={2}
             value={text}
             maxLength={2000}
-            placeholder={pending ? "Resolve the roll or battle first" : `What does ${hero.name} do?`}
+            placeholder={pending ? "Finish the roll or battle first" : `What does ${hero.name} do?`}
             disabled={busy || !!pending}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {
@@ -532,7 +532,7 @@ function Adventure(props: {
               Level up to {hero.level + 1}
             </button>
           ) : (
-            <p className="note">Level {MAX_LEVEL} is the highest level for now. Your XP keeps counting.</p>
+            <p className="note">Max level is {MAX_LEVEL} for now. XP still counts.</p>
           ))}
         {leveling && (
           <LevelUp
@@ -676,8 +676,8 @@ function Adventure(props: {
           <button
             className="secondary"
             disabled={busy || !!pending}
-            title={pending ? "Finish the roll or battle first" : "The DM writes a recap and remembers it next session"}
-            onClick={() => confirm("End this session? The DM will write a recap for next time.") && void run(() => client.endSession())}
+            title={pending ? "Finish the roll or battle first" : "Writes a recap for next session"}
+            onClick={() => confirm("End session?") && void run(() => client.endSession())}
           >
             End session {state.session}
           </button>
@@ -686,7 +686,7 @@ function Adventure(props: {
           <button className="ghost small" onClick={props.onLeave}>
             Back
           </button>
-          <button className="ghost small" onClick={() => confirm("Start over? This adventure stays saved on the server but won't be resumable from here.") && props.onNew()}>
+          <button className="ghost small" onClick={() => confirm("Start a new adventure? This one stays saved.") && props.onNew()}>
             New adventure
           </button>
         </div>
@@ -726,7 +726,7 @@ function TablePanel(props: {
           <p className="small">
             Invite code: <strong className="invite-code">{state.invite}</strong>
             <br />
-            <span className="muted">Friends sign in, open Adventure and enter it. Up to 6 players.</span>
+            <span className="muted">Max 6 players.</span>
           </p>
         ) : (
           <button className="secondary small" disabled={busy} onClick={() => void run(() => client.invite())}>
@@ -737,8 +737,8 @@ function TablePanel(props: {
         <button
           className="ghost small"
           disabled={busy}
-          title="Your character sits out (half XP) until you come back with the invite code"
-          onClick={() => confirm("Step away from this table? Your character sits out until you rejoin.") && void run(() => client.leave()).then(props.onLeft)}
+          title="Sits your character out (half XP). Rejoin with the invite code."
+          onClick={() => confirm("Step away from the table?") && void run(() => client.leave()).then(props.onLeft)}
         >
           Step away
         </button>

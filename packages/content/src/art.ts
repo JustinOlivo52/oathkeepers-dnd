@@ -4,7 +4,7 @@ import { GridMap, key, type Rng } from "@oathkeepers/engine";
 /**
  * The art library: premade, reviewed images the game and the DM pick from by tags.
  * Files live under packages/web/public/assets/; the catalog (data/art-catalog.json) lists them.
- * Format and rules: docs/art/LIBRARY.md.
+ * Format and rules: docs/OATHKEEPERS.md, "Art library spec".
  */
 
 export const ART_KINDS = ["hero", "monster", "npc", "scene", "board", "tileset", "vfx", "icon"] as const;
@@ -49,7 +49,7 @@ export const ArtEntrySchema = z.object({
   artStatus: z.enum(["draft", "ready"]).default("draft"),
   mechanicsStatus: z.enum(["pending", "ready", "not-required"]).default("pending"),
   integrationStatus: z.enum(["pending", "ready"]).default("pending"),
-  /** Battle sprite sheet (11 frames, see LIBRARY.md). Heroes and monsters. */
+  /** Battle sprite sheet (11 frames, see the art library spec). Heroes and monsters. */
   sprite: z
     .object({
       file: assetPath,

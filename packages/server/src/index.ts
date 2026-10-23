@@ -46,8 +46,8 @@ const webDist = join(PROJECT_ROOT, "packages", "web", "dist");
 const web = existsSync(join(webDist, "index.html")) && process.env.SERVE_WEB !== "0" ? staticFiles(webDist) : undefined;
 
 createServer((req, res) => (web && !req.url?.startsWith("/api/") ? web(req, res) : app(req, res))).listen(port, () => {
-  console.log(`Oathkeepers server on http://localhost:${port}`);
-  if (web) console.log(`Serving the game from ${webDist}`);
-  if (!groupCode) console.log("No GROUP_CODE set: anyone who can reach this server can make an account. Set one before hosting it publicly.");
+  console.log(`Listening on :${port}`);
+  if (web) console.log(`Serving web build: ${webDist}`);
+  if (!groupCode) console.warn("GROUP_CODE not set: account signup is open");
   console.log(`DM: ${providers.map((p) => p.name).join(", ")}${budget !== undefined ? ` · budget $${budget}/month` : " · no budget cap set"}`);
 });

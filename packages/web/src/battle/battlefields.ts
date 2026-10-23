@@ -12,7 +12,7 @@ export const boards = new Map<string, BoardData>(
   }),
 );
 
-/** Every tileset follows the same 5-frame layout (docs/art/LIBRARY.md). */
+/** Every tileset follows the same 5-frame layout (art library spec in docs/OATHKEEPERS.md). */
 const NAMED = { floor: [0, 1, 2], wall: 3, rubble: 4 };
 const ABBEY_TILES: TilesetInfo = { key: "tiles", file: "sprites/tiles.png", frameSize: 128, named: NAMED, abbeyProps: true };
 

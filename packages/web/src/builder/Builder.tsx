@@ -158,7 +158,7 @@ export function Builder(props: {
             </div>
           )}
           {o.cls?.subclasses.length === 1 && (
-            <p className="note">The SRD includes one subclass per class. Original subclasses are planned.</p>
+            <p className="note">SRD has one subclass per class. More planned.</p>
           )}
         </Step>
 
@@ -529,7 +529,7 @@ export function Builder(props: {
                   onChange={(next) => update((d) => (d.weaponIds = next))}
                 />
               </div>
-              <p className="note">Simplified for now: pick any gear you're trained with. Official starting packages and gold come later.</p>
+              <p className="note">Pick any gear you're proficient with. Starting packages and gold: TODO.</p>
             </>
           )}
         </Step>

@@ -586,11 +586,11 @@ export function BattleBoard({ battle, seedNote = "", onRestart, onFinish }: { ba
             </li>
           ))}
         </ol></details>
-        {!isConscious(me) && !combat.isOver && <p className="warning">You're down. Death saves roll at the start of your turns.</p>}
+        {!isConscious(me) && !combat.isOver && <p className="warning">You're down. Death saves roll at the start of your turn.</p>}
         <label className="note auto-end">
           <input type="checkbox" checked={controller.autoEnd} onChange={(e) => controller.setAutoEnd(e.target.checked)} /> End my turn automatically when I have nothing left to do
         </label>
-        <p className="note">Opportunity attacks you can make are taken automatically for now.</p>
+        <p className="note">Your opportunity attacks are automatic for now.</p>
       </aside>
     </div>
   );

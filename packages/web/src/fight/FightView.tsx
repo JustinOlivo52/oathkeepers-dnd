@@ -60,7 +60,7 @@ export function FightView(props: { characters: CharacterData[]; selectedId: stri
 
   return (
     <main className="fight">
-      <p className="hint">Auto-battle test of the rules engine. Characters fight with simple tactics. Grid combat comes in Phase 3.</p>
+      <p className="hint">Rules engine auto-battle. Both sides use simple tactics.</p>
       <section className="controls">
         <label>
           Character

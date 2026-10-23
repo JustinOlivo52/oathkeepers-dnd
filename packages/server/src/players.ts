@@ -53,18 +53,18 @@ export class PlayerStore {
     const id = slug(name);
     if (!id) throw new PlayerError(400, "Use letters or numbers in the name");
     const lock = this.failures.get(id);
-    if (lock && lock.count >= LOCKOUT_TRIES && Date.now() < lock.until) throw new PlayerError(429, "Too many wrong PINs. Try again in a few minutes");
+    if (lock && lock.count >= LOCKOUT_TRIES && Date.now() < lock.until) throw new PlayerError(429, "Too many attempts. Try again in a few minutes");
 
     let player = this.load(id);
     const created = !player;
-    if (!player && !allowNew) throw new PlayerError(403, "New players need the group code from whoever runs this game");
+    if (!player && !allowNew) throw new PlayerError(403, "Group code required for new players");
     if (!player) {
       const salt = randomBytes(16).toString("hex");
       player = { id, name, salt, pinHash: hashPin(pin, salt), tokens: [], characters: [], adventures: [], created: new Date().toISOString() };
     } else if (!safeEqual(hashPin(pin, player.salt), player.pinHash)) {
       const f = this.failures.get(id) ?? { count: 0, until: 0 };
       this.failures.set(id, { count: f.count + 1, until: Date.now() + LOCKOUT_MS });
-      throw new PlayerError(401, "That name is taken, and the PIN doesn't match");
+      throw new PlayerError(401, "Wrong PIN (or that name is taken)");
     }
     this.failures.delete(id);
     const token = randomBytes(24).toString("hex");

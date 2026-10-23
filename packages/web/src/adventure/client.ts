@@ -38,7 +38,7 @@ export interface TableHandlers {
   busy(busy: boolean): void;
 }
 
-/** How the Adventure screen reaches the DM: the game server (Claude), or a demo DM running in the browser. */
+/** DM backend for the Adventure screen: the game server, or the in-browser demo DM. */
 export interface DmClient {
   readonly label: string;
   /** Narration arrives here word by word while a request runs. */
@@ -88,13 +88,16 @@ export class ServerError extends Error {
 
 export class RemoteClient implements DmClient {
   private id = "";
+  label: string;
   onText?: TextSink;
   /** The live connection to the table, when open. Narration then arrives through it, for everyone. */
   private source?: EventSource;
   constructor(
     private readonly provider: string,
-    readonly label: string,
-  ) {}
+    label: string,
+  ) {
+    this.label = label;
+  }
 
   private async call(path: string, body?: unknown): Promise<AdventureSnapshot> {
     const stream = body !== undefined && !!this.onText && !this.source;
@@ -153,6 +156,7 @@ export class RemoteClient implements DmClient {
   async join(code: string, character: CharacterData): Promise<AdventureSnapshot> {
     const snapshot = await this.request<AdventureSnapshot>("/api/tables/join", { code, character });
     this.id = snapshot.state.id;
+    this.label = snapshot.state.provider === "claude" ? "AI DM" : "Demo DM";
     return snapshot;
   }
 
