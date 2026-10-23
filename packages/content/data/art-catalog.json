@@ -541,5 +541,250 @@
     "integrationStatus": "ready",
     "board": "boards/board-forest-road.json",
     "tiles": "tiles-forest"
+  },
+  {
+    "id": "monster-goblin-boss",
+    "kind": "monster",
+    "title": "Goblin Boss",
+    "sprite": {
+      "file": "sprites/monster-goblin-boss.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 111
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "goblinoid",
+      "humanoid",
+      "leader"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "goblin-boss"
+  },
+  {
+    "id": "portrait-goblin-boss",
+    "kind": "npc",
+    "title": "Goblin Boss portrait",
+    "image": "library/portraits/monster-goblin-boss.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "goblinoid",
+      "humanoid",
+      "leader"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "goblin-boss"
+  },
+  {
+    "id": "monster-bandit",
+    "kind": "monster",
+    "title": "Bandit",
+    "sprite": {
+      "file": "sprites/monster-bandit.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 128
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "humanoid",
+      "bandit",
+      "skirmisher"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "bandit"
+  },
+  {
+    "id": "portrait-bandit",
+    "kind": "npc",
+    "title": "Bandit portrait",
+    "image": "library/portraits/monster-bandit.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "humanoid",
+      "bandit",
+      "skirmisher"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "bandit"
+  },
+  {
+    "id": "monster-bandit-captain",
+    "kind": "monster",
+    "title": "Bandit Captain",
+    "sprite": {
+      "file": "sprites/monster-bandit-captain.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 128
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "humanoid",
+      "bandit",
+      "leader"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "bandit-captain"
+  },
+  {
+    "id": "portrait-bandit-captain",
+    "kind": "npc",
+    "title": "Bandit Captain portrait",
+    "image": "library/portraits/monster-bandit-captain.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "humanoid",
+      "bandit",
+      "leader"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "bandit-captain"
+  },
+  {
+    "id": "monster-cultist",
+    "kind": "monster",
+    "title": "Cultist",
+    "sprite": {
+      "file": "sprites/monster-cultist.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 128
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "humanoid",
+      "cultist",
+      "caster"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "cultist"
+  },
+  {
+    "id": "portrait-cultist",
+    "kind": "npc",
+    "title": "Cultist portrait",
+    "image": "library/portraits/monster-cultist.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "humanoid",
+      "cultist",
+      "caster"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "cultist"
+  },
+  {
+    "id": "monster-bugbear-warrior",
+    "kind": "monster",
+    "title": "Bugbear Warrior",
+    "sprite": {
+      "file": "sprites/monster-bugbear-warrior.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 135
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "goblinoid",
+      "humanoid",
+      "brute"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "bugbear-warrior"
+  },
+  {
+    "id": "portrait-bugbear-warrior",
+    "kind": "npc",
+    "title": "Bugbear Warrior portrait",
+    "image": "library/portraits/monster-bugbear-warrior.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "goblinoid",
+      "humanoid",
+      "brute"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "bugbear-warrior"
   }
 ]

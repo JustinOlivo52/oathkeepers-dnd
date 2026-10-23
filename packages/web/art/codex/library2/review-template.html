@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Oathkeepers — Art Library Batch 2</title>
+<style>
+:root{color-scheme:dark;font:15px/1.6 system-ui,sans-serif;background:#10191d;color:#e5dfd0}*{box-sizing:border-box}body{margin:0;padding:28px;max-width:1680px;margin:auto}h1,h2,h3{font-family:Georgia,serif;font-weight:400}h1{font-size:38px;margin:2px 0}h2{font-size:27px;margin:34px 0 14px;border-top:1px solid #39464a;padding-top:24px}h3{font-size:21px;margin:8px 0}p{max-width:85ch}.eyebrow{color:#d8b778;letter-spacing:.14em;font-size:11px}.muted{color:#abb8b6}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:15px 0;position:sticky;top:0;background:#10191df2;z-index:2;border-bottom:1px solid #39464a}button,select,input{font:inherit;color:inherit;background:#1d2b30;border:1px solid #62716e;padding:8px 12px;border-radius:3px}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #dfc88f;outline-offset:3px}a{color:#dfc88f}label{display:flex;gap:8px;align-items:center}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:22px}.monster canvas{width:100%;max-width:384px;background:#26373c;image-rendering:pixelated}.status{font-size:11px;color:#dcc284}.tags{font-size:12px;color:#abb8b6}.portrait img{width:100%;max-width:320px;display:block}.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:22px}.scenes img{width:100%;display:block}.board-wrap{overflow:auto}.board-wrap canvas{width:100%;min-width:660px;max-width:1056px;image-rendering:pixelated}.error{color:#ffb8a4}.monster .frame{font:12px monospace}.sample{font-size:12px}summary{cursor:pointer;color:#dfc88f}footer{margin-top:30px;border-top:1px solid #39464a;padding-top:15px;font-size:12px;color:#abb8b6}@media(max-width:600px){body{padding:14px}h1{font-size:30px}.toolbar{position:static}.grid{gap:28px}}
+</style>
+<header><div class="eyebrow">OATHKEEPERS / ART LIBRARY / BATCH 2 / FIRST FIVE</div><h1>A growing bestiary.</h1><p class="muted">Original detailed 2D art, registered and tagged for future encounters. This is an asset-review tool, not a playable battle. New monster mechanics and gameplay integration are pending.</p></header>
+<div class="toolbar"><label>Animation <select id="animation"><option value="idle">Idle</option><option value="walk">Walk</option><option value="attack">Attack</option><option value="hit">Hit</option><option value="down">Down</option></select></label><button id="pause">Pause</button><button id="step">Next frame</button><label><input type="checkbox" id="mirror"> Face left</label><span id="loaded" class="sample" role="status">Loading artwork…</span></div>
+<p class="sample">All monster canvases use the same source-pixel scale: the Small goblin boss is shorter than the humans, and the Medium bugbear is taller. Each has 11 poses; mirroring is the only alternate facing currently available.</p><p id="errors" class="error" role="alert"></p>
+<h2>Five encounter designs</h2><div id="monsters" class="grid"></div>
+<h2>Monster portraits and frontier faces</h2><div id="portraits" class="grid"></div>
+<details><summary>Review limitations</summary><p>Five of thirteen batch 2 monsters. Mirrored left/right facing only. Compact four-pose walk cycles can show foot sliding; review gait and weapon alignment at game scale. No stat blocks or gameplay mapping are added. Art readiness does not imply encounter readiness.</p></details>
+<footer>Reviewed artwork may be cataloged before its rules exist. These pilot entries remain integration-pending. Asset selection must never make them playable solely because their PNGs load.</footer>
+<script>
+const entries=__PILOT_DATA__;
+const base='../../packages/web/public/assets/';
+const state=window.reviewStatus={loaded:0,errors:[],frames:{},mode:'idle',paused:false};
+const poses={idle:[0,1],walk:[2,3,4,5],attack:[6,7,8,0],hit:[9,0],down:[10]};
+let manual=0,origin=performance.now();const actors=[];
+const el=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e;};
+function status(){document.querySelector('#loaded').textContent=state.loaded+' image assets loaded';document.querySelector('#errors').textContent=state.errors.join(' · ');}
+function load(path){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{state.loaded++;status();resolve(img);};img.onerror=()=>{state.errors.push('Cannot load '+path);status();reject(new Error(path));};img.src=base+path;});}
+for(const e of entries.filter(e=>e.kind==='monster')){
+ const article=el('article',null,'monster');const canvas=el('canvas');canvas.width=canvas.height=384;canvas.setAttribute('aria-label',e.title+' animation preview');article.append(canvas,el('h3',e.title),el('div',e.sprite.rulesSize+' · '+e.sprite.frameWidth+'px frames · mechanics pending','status'),el('div',e.tags.join(' / '),'tags'));const label=el('div','Frame —','frame');article.append(label);document.querySelector('#monsters').append(article);
+ load(e.sprite.file).then(img=>actors.push({e,img,canvas,label})).catch(()=>{});
+}
+for(const e of entries.filter(e=>e.kind==='npc'||e.kind==='scene')){
+ const article=el('article',null,e.kind==='scene'?'scene':'portrait');const img=el('img');img.alt=e.title;article.append(img,el('h3',e.title),el('div',e.tags.join(' / '),'tags'));document.querySelector(e.kind==='scene'?'#scenes':'#portraits').append(article);
+ load(e.image).then(asset=>{img.src=asset.src;}).catch(()=>{});
+}
+function paint(time){const selected=poses[state.mode];const fps=state.mode==='idle'?2:8;const index=state.paused?manual:Math.floor((time-origin)/1000*fps);const frame=selected[((index%selected.length)+selected.length)%selected.length];
+ for(const a of actors){const c=a.canvas.getContext('2d'),size=a.e.sprite.frameWidth;c.clearRect(0,0,384,384);c.imageSmoothingEnabled=false;c.save();if(document.querySelector('#mirror').checked){c.translate(384,0);c.scale(-1,1);}const x=192-a.e.sprite.anchor.x,y=340-a.e.sprite.anchor.y;c.drawImage(a.img,frame*size,0,size,size,x,y,size,size);c.restore();a.label.textContent=state.mode+' / frame '+frame+' / '+(document.querySelector('#mirror').checked?'left':'right');state.frames[a.e.id]=frame;}
+ requestAnimationFrame(paint);
+}
+document.querySelector('#animation').onchange=event=>{state.mode=event.target.value;manual=0;origin=performance.now();};
+document.querySelector('#pause').onclick=event=>{state.paused=!state.paused;manual=0;origin=performance.now();event.target.textContent=state.paused?'Play':'Pause';};
+document.querySelector('#step').onclick=()=>{state.paused=true;document.querySelector('#pause').textContent='Play';manual++;};
+requestAnimationFrame(paint);
+</script></html>
