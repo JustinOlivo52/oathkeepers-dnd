@@ -59,11 +59,13 @@ Done:
 - [x] Player accounts (name + PIN) with saved characters and adventures
 - [x] Multiplayer: invite codes, live tables, shared server-run battles, drop in/out at breaks
 - [x] Deployable: Docker image, Postgres saves, group code for signups, Render config
+- [x] Builder: guided mode, quick build, starting gear and gold, portraits, backstory for the DM
 
 Next:
 
 - [ ] Deploy to Render and playtest with friends
 - [ ] Tune the DM prompt from real playtests
+- [ ] Hero art: a sprite for every class, portraits for every species, builder cards (`docs/art/CODEX_BRIEF_HEROES.md`)
 - [ ] Art batch 2 (more monsters, NPCs, scenes, boards) and spell effects
 - [ ] Stat blocks for the new monsters
 
@@ -72,7 +74,6 @@ Later:
 - [ ] Real sign-in to replace name + PIN
 - [ ] Levels 6+
 - [ ] Original subclasses
-- [ ] Starting equipment packages and gold
 
 ## Legal
 
