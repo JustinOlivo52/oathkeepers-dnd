@@ -33,6 +33,7 @@ import tamsin from "../data/characters/tamsin-reed.json";
 import maren from "../data/characters/sister-maren-holt.json";
 import pip from "../data/characters/pip-thistlewick.json";
 import artCatalog from "../data/art-catalog.json";
+import startingEquipment from "../data/starting-equipment.json";
 import {
   ArmorSchema,
   BackgroundSchema,
@@ -44,6 +45,7 @@ import {
   InvocationSchema,
   MetamagicSchema,
   SpeciesSchema,
+  StartingEquipmentSchema,
   WeaponSchema,
 } from "./schemas.js";
 import { ArtCatalogSchema, artCatalogIssues } from "./art.js";
@@ -74,12 +76,14 @@ export function loadContent() {
   const art = validate(ArtCatalogSchema, artCatalog, "art-catalog.json");
   const issues = artCatalogIssues(art, monsters.map((m) => m.id));
   if (issues.length) throw new Error(`Invalid art catalog links: ${issues.join("; ")}`);
-  return {
+  const content = {
     weapons: validate(z.array(WeaponSchema), weapons, "items/weapons.json"),
     armor: validate(z.array(ArmorSchema), armor, "items/armor.json"),
     classes: Object.entries(classFiles).map(([name, data]) => validate(ClassSchema, data, `classes/${name}.json`)),
     species: validate(z.array(SpeciesSchema), species, "species.json"),
     backgrounds: validate(z.array(BackgroundSchema), backgrounds, "backgrounds.json"),
+    /** Starting kits per class and background, and adventuring packs for sale. */
+    startingEquipment: validate(StartingEquipmentSchema, startingEquipment, "starting-equipment.json"),
     feats: validate(z.array(FeatSchema), feats, "feats.json"),
     languages: validate(z.array(z.string()), languages, "languages.json"),
     monsters,
@@ -90,6 +94,28 @@ export function loadContent() {
     characters: Object.entries(characterFiles).map(([name, data]) => validate(CharacterSchema, data, `characters/${name}.json`)),
     art,
   };
+  const kitIssues = startingEquipmentIssues(content);
+  if (kitIssues.length) throw new Error(`Invalid starting equipment: ${kitIssues.join("; ")}`);
+  return content;
+}
+
+function startingEquipmentIssues(c: {
+  startingEquipment: z.infer<typeof StartingEquipmentSchema>;
+  classes: { id: string }[];
+  backgrounds: { id: string }[];
+  weapons: { id: string }[];
+  armor: { id: string }[];
+}): string[] {
+  const issues: string[] = [];
+  const kits = [...Object.entries(c.startingEquipment.classes), ...Object.entries(c.startingEquipment.backgrounds)];
+  for (const cls of c.classes) if (!c.startingEquipment.classes[cls.id]) issues.push(`no kit for class ${cls.id}`);
+  for (const bg of c.backgrounds) if (!c.startingEquipment.backgrounds[bg.id]) issues.push(`no kit for background ${bg.id}`);
+  for (const [owner, list] of kits)
+    for (const kit of list) {
+      if (kit.armor && !c.armor.some((a) => a.id === kit.armor)) issues.push(`${owner} ${kit.id}: unknown armor ${kit.armor}`);
+      for (const w of kit.weapons) if (!c.weapons.some((x) => x.id === w.id)) issues.push(`${owner} ${kit.id}: unknown weapon ${w.id}`);
+    }
+  return issues;
 }
 
 export type Content = ReturnType<typeof loadContent>;

@@ -11,6 +11,9 @@ import {
   spellCounts,
   spellOptions,
   STANDARD_ARRAY,
+  describeKit,
+  formatGp,
+  startingLoadout,
   STORY_FIELDS,
   suggestStory,
   validateDraft,
@@ -77,6 +80,7 @@ export function Builder(props: {
   const o = useMemo(() => creationOptions(content, draft), [draft]);
   const issues = useMemo(() => validateDraft(content, draft), [draft]);
   const finished = useMemo(() => (issues.length ? undefined : finalizeCharacter(content, draft)), [draft, issues]);
+  const loadout = useMemo(() => startingLoadout(content, draft), [draft]);
   const stepIssues = (step: CreationStep) => issues.filter((i) => i.step === step);
 
   const takenBy = (except: Skill[]): Skill[] =>
@@ -509,40 +513,98 @@ export function Builder(props: {
           {!o.cls && <p className="note">Choose a class first.</p>}
           {o.cls && (
             <>
-              <div className="row">
-                <label>
-                  Armor
-                  <select value={draft.armorId ?? ""} onChange={(e) => update((d) => (d.armorId = e.target.value || undefined))}>
-                    <option value="">None</option>
-                    {o.armor.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name} ({a.category}, AC {a.baseAc}
-                        {a.category === "light" ? " + Dex" : a.category === "medium" ? " + Dex max 2" : ""})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {o.canUseShield && (
-                  <label className="check">
-                    <input type="checkbox" checked={draft.shield} onChange={(e) => update((d) => (d.shield = e.target.checked))} />
-                    Shield (+2 AC)
-                  </label>
-                )}
-              </div>
               <div className="group">
-                <h4>Weapons</h4>
-                <ChipPicker
-                  options={o.weapons.map((w) => w.id)}
-                  selected={draft.weaponIds}
-                  max={4}
-                  label={(id) => {
-                    const w = content.weapons.find((x) => x.id === id)!;
-                    return `${w.name} ${w.damage}`;
-                  }}
-                  onChange={(next) => update((d) => (d.weaponIds = next))}
-                />
+                <h4>From your class</h4>
+                <div className="kit-options">
+                  {o.classKits.map((k) => (
+                    <label key={k.id} className={`kit ${draft.classKitId === k.id ? "on" : ""}`}>
+                      <input type="radio" name="class-kit" checked={draft.classKitId === k.id} onChange={() => update((d) => (d.classKitId = k.id))} />
+                      <span>
+                        <strong>Option {k.id}</strong> {describeKit(content, k)}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-              <p className="note">Pick any gear you're proficient with. Starting packages and gold: TODO.</p>
+              {o.background && (
+                <div className="group">
+                  <h4>From your background</h4>
+                  <div className="kit-options">
+                    {o.backgroundKits.map((k) => (
+                      <label key={k.id} className={`kit ${draft.backgroundKitId === k.id ? "on" : ""}`}>
+                        <input type="radio" name="background-kit" checked={draft.backgroundKitId === k.id} onChange={() => update((d) => (d.backgroundKitId = k.id))} />
+                        <span>
+                          <strong>Option {k.id}</strong> {describeKit(content, k)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {loadout.buying && (
+                <div className="group shop">
+                  <h4>
+                    Buy your gear <span className="gold-left">{formatGp(Math.max(0, loadout.gold))} left</span>
+                  </h4>
+                  <div className="row">
+                    <label>
+                      Armor
+                      <select value={draft.armorId ?? ""} onChange={(e) => update((d) => (d.armorId = e.target.value || undefined))}>
+                        <option value="">None</option>
+                        {o.armor.map((a) => (
+                          <option key={a.id} value={a.id}>
+                            {a.name}: AC {a.baseAc}
+                            {a.category === "light" ? " + Dex" : a.category === "medium" ? " + Dex max 2" : ""} · {formatGp(a.costGp)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {o.canUseShield && (
+                      <label className="check">
+                        <input type="checkbox" checked={draft.shield} onChange={(e) => update((d) => (d.shield = e.target.checked))} />
+                        Shield (+2 AC) · {formatGp(content.armor.find((a) => a.id === "shield")!.costGp)}
+                      </label>
+                    )}
+                    <label>
+                      Adventuring pack
+                      <select value={draft.packId ?? ""} onChange={(e) => update((d) => (d.packId = e.target.value || undefined))}>
+                        <option value="">None</option>
+                        {content.startingEquipment.packs.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} · {formatGp(p.costGp)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                  <div className="group">
+                    <h4>Weapons</h4>
+                    <ChipPicker
+                      options={o.weapons.map((w) => w.id)}
+                      selected={draft.weaponIds}
+                      max={4}
+                      label={(id) => {
+                        const w = content.weapons.find((x) => x.id === id)!;
+                        return `${w.name} ${w.damage} · ${formatGp(w.costGp)}`;
+                      }}
+                      onChange={(next) => update((d) => (d.weaponIds = next))}
+                    />
+                  </div>
+                </div>
+              )}
+              {draft.classKitId && (
+                <p className="note">
+                  You start with{" "}
+                  {[
+                    loadout.armor && content.armor.find((a) => a.id === loadout.armor)?.name,
+                    loadout.shield && "Shield",
+                    ...loadout.weapons.map((id) => content.weapons.find((w) => w.id === id)?.name),
+                  ]
+                    .filter(Boolean)
+                    .join(", ") || "no armor or weapons"}
+                  {loadout.gear.length ? `, plus ${loadout.gear.length} item${loadout.gear.length > 1 ? "s" : ""} in your pack` : ""}, and {formatGp(Math.max(0, loadout.gold))} for the party purse.
+                </p>
+              )}
             </>
           )}
         </Step>

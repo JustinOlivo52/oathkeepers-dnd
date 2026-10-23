@@ -21,6 +21,8 @@ export const WeaponSchema = z.object({
   versatileDamage: dice.optional(),
   rangeFt: range.optional(),
   mastery: z.enum(WEAPON_MASTERIES),
+  /** Price in gold pieces (SRD 5.2). */
+  costGp: z.number().nonnegative(),
 });
 
 export const ArmorSchema = z.object({
@@ -30,6 +32,8 @@ export const ArmorSchema = z.object({
   baseAc: z.number().int(),
   strengthRequirement: z.number().int().optional(),
   stealthDisadvantage: z.boolean().optional(),
+  /** Price in gold pieces (SRD 5.2). */
+  costGp: z.number().nonnegative(),
 });
 
 const skillList = z.union([z.array(skill), z.literal("any")]);
@@ -222,6 +226,25 @@ export const SpellSchema = z.object({
   description: z.string(),
 });
 
+/** An item carried in the pack (not armor or a weapon): "Explorer's Pack", "Arrows" x20. */
+export const GearItemSchema = z.object({ name: z.string().min(1), quantity: z.number().int().min(1).default(1) });
+
+/** One starting equipment option from a class or background (SRD 5.2): a kit, or gold to buy your own. */
+export const StartingKitSchema = z.object({
+  id: z.string(),
+  armor: id.optional(),
+  shield: z.boolean().optional(),
+  weapons: z.array(z.object({ id, count: z.number().int().min(1).default(1) })).default([]),
+  gear: z.array(GearItemSchema).default([]),
+  gold: z.number().nonnegative(),
+});
+
+export const StartingEquipmentSchema = z.object({
+  packs: z.array(z.object({ id, name: z.string(), costGp: z.number().nonnegative() })),
+  classes: z.record(id, z.array(StartingKitSchema).min(2)),
+  backgrounds: z.record(id, z.array(StartingKitSchema).min(2)),
+});
+
 export const CharacterSchema = z.object({
   id,
   name: z.string().min(1),
@@ -241,6 +264,9 @@ export const CharacterSchema = z.object({
   fightingStyle: id.optional(),
   weaponMasteries: z.array(id),
   equipment: z.object({ armor: id.optional(), shield: z.boolean(), weapons: z.array(id) }),
+  /** Starting pack contents and gold, brought into each new adventure. Missing on older characters. */
+  gear: z.array(GearItemSchema).optional(),
+  gold: z.number().nonnegative().optional(),
   languages: z.array(z.string()).default(["Common"]),
   tools: z.array(z.string()).default([]),
   alignment: z.string().optional(),

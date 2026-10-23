@@ -2,7 +2,8 @@ import { bonusSpells, spellIssues } from "./spells.js";
 import { ABILITIES, SKILLS, rollDie, type Ability, type AbilityScores, type Rng, type Skill } from "@oathkeepers/engine";
 import { classProficiencies } from "./build.js";
 import type { Content } from "./index.js";
-import type { CharacterData, ClassData } from "./schemas.js";
+import type { CharacterData, ClassData, StartingKitSchema } from "./schemas.js";
+import type { z } from "zod";
 
 /**
  * Character creation (2024 rules): class, background, species, ability scores, then the details.
@@ -45,9 +46,14 @@ export interface CharacterDraft {
   fightingStyleId?: string;
   weaponMasteries: string[];
 
+  /** Starting equipment option picked for the class and the background ("A", "B"...). */
+  classKitId?: string;
+  backgroundKitId?: string;
+  /** With a gold-only class option: the gear bought with it. */
   armorId?: string;
   shield: boolean;
   weaponIds: string[];
+  packId?: string;
 
   /** Languages chosen in addition to Common. */
   languages: string[];
@@ -85,7 +91,7 @@ export const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
 export const POINT_BUY_BUDGET = 27;
 const POINT_BUY_COST: Record<number, number> = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
 export const STARTING_LEVEL = 3;
-export const MAX_WEAPONS = 4;
+export const MAX_WEAPONS = 6;
 export const EXTRA_LANGUAGES = 2;
 
 export type CharacterStory = NonNullable<CharacterData["story"]>;
@@ -206,6 +212,8 @@ export function creationOptions(content: Content, draft: CharacterDraft) {
         : undefined,
     armor,
     canUseShield: !!profs?.armor.has("shield"),
+    classKits: cls ? (content.startingEquipment.classes[cls.id] ?? []) : [],
+    backgroundKits: background ? (content.startingEquipment.backgrounds[background.id] ?? []) : [],
     weapons,
     languages: content.languages.filter((l) => l !== "Common"),
     spellcasting: cls?.spellcasting,
@@ -314,10 +322,20 @@ export function validateDraft(content: Content, draft: CharacterDraft): Creation
   }
 
   // Equipment
-  if (draft.armorId && !o.armor.some((a) => a.id === draft.armorId)) add("equipment", "You aren't trained with that armor.");
-  if (draft.shield && !o.canUseShield) add("equipment", "You aren't trained with shields.");
-  if (draft.weaponIds.some((w) => !o.weapons.some((x) => x.id === w))) add("equipment", "You aren't trained with one of your weapons.");
-  if (draft.weaponIds.length > MAX_WEAPONS) add("equipment", `Carry at most ${MAX_WEAPONS} weapons for now.`);
+  if (o.cls) {
+    const classKit = o.classKits.find((k) => k.id === draft.classKitId);
+    if (!classKit) add("equipment", "Choose your class starting equipment.");
+    if (o.background && !o.backgroundKits.some((k) => k.id === draft.backgroundKitId)) add("equipment", "Choose your background starting equipment.");
+    if (classKit && isGoldKit(classKit)) {
+      if (draft.armorId && !o.armor.some((a) => a.id === draft.armorId)) add("equipment", "You aren't trained with that armor.");
+      if (draft.shield && !o.canUseShield) add("equipment", "You aren't trained with shields.");
+      if (draft.weaponIds.some((w) => !o.weapons.some((x) => x.id === w))) add("equipment", "You aren't trained with one of your weapons.");
+      if (draft.packId && !content.startingEquipment.packs.some((p) => p.id === draft.packId)) add("equipment", "Unknown pack.");
+    }
+    const loadout = startingLoadout(content, draft);
+    if (loadout.weapons.length > MAX_WEAPONS) add("equipment", `Carry at most ${MAX_WEAPONS} kinds of weapon for now.`);
+    if (loadout.gold < 0) add("equipment", `That costs ${formatGp(loadout.spent)}, more than your ${formatGp(loadout.spent + loadout.gold)}.`);
+  }
 
   // Spells
   if (o.cls?.spellcasting) for (const message of spellIssues(content, o.cls, draft.level, draft.spells ?? [], o.alwaysPrepared, draft.classChoices)) add("spells", message);
@@ -364,7 +382,10 @@ export function finalizeCharacter(content: Content, draft: CharacterDraft, id = 
     ],
     ...(draft.fightingStyleId ? { fightingStyle: draft.fightingStyleId } : {}),
     weaponMasteries: [...draft.weaponMasteries],
-    equipment: { ...(draft.armorId ? { armor: draft.armorId } : {}), shield: draft.shield, weapons: [...draft.weaponIds] },
+    ...(() => {
+      const l = startingLoadout(content, draft);
+      return { equipment: { ...(l.armor ? { armor: l.armor } : {}), shield: l.shield, weapons: l.weapons }, gear: l.gear, gold: l.gold };
+    })(),
     languages: ["Common", ...draft.languages],
     tools: [...new Set([background.tool, ...(o.cls!.tools ? [o.cls!.tools] : [])])],
     ...(o.cls!.spellcasting ? { spells: [...(draft.spells ?? [])] } : {}),
@@ -389,3 +410,76 @@ function slug(name: string): string {
   return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "character";
 }
 
+type StartingKit = z.infer<typeof StartingKitSchema>;
+type GearItem = { name: string; quantity: number };
+
+/** A starting option that's only gold (buy your own gear). */
+export function isGoldKit(kit: StartingKit): boolean {
+  return !kit.armor && !kit.shield && !kit.weapons.length && !kit.gear.length;
+}
+
+export function formatGp(gp: number): string {
+  if (gp >= 1 || gp === 0) return `${Math.round(gp * 100) / 100} gp`;
+  return gp >= 0.1 ? `${Math.round(gp * 10)} sp` : `${Math.round(gp * 100)} cp`;
+}
+
+/** What the character starts with: the picked class and background kits, or the gear bought with gold. */
+export function startingLoadout(content: Content, draft: CharacterDraft) {
+  const classKit = (content.startingEquipment.classes[draft.classId ?? ""] ?? []).find((k) => k.id === draft.classKitId);
+  const backgroundKit = (content.startingEquipment.backgrounds[draft.backgroundId ?? ""] ?? []).find((k) => k.id === draft.backgroundKitId);
+  const buying = !!classKit && isGoldKit(classKit);
+  const weaponName = (id: string) => content.weapons.find((w) => w.id === id)?.name ?? id;
+  const gear: GearItem[] = [];
+  const addGear = (item: { name: string; quantity?: number }) => {
+    const have = gear.find((g) => g.name === item.name);
+    if (have) have.quantity += item.quantity ?? 1;
+    else gear.push({ name: item.name, quantity: item.quantity ?? 1 });
+  };
+  const weapons: string[] = [];
+  const addWeapons = (kit: StartingKit | undefined) => {
+    for (const w of kit?.weapons ?? []) {
+      if (!weapons.includes(w.id)) weapons.push(w.id);
+      // Spares of a thrown weapon (a fighter's 8 javelins) ride in the pack.
+      if (w.count > 1) addGear({ name: weaponName(w.id), quantity: w.count });
+    }
+    for (const g of kit?.gear ?? []) addGear(g);
+  };
+
+  let armor: string | undefined;
+  let shield = false;
+  let spent = 0;
+  if (buying) {
+    armor = draft.armorId;
+    shield = draft.shield;
+    for (const id of draft.weaponIds) if (!weapons.includes(id)) weapons.push(id);
+    const pack = content.startingEquipment.packs.find((p) => p.id === draft.packId);
+    if (pack) addGear({ name: pack.name });
+    spent =
+      (content.armor.find((a) => a.id === armor)?.costGp ?? 0) +
+      (shield ? (content.armor.find((a) => a.id === "shield")?.costGp ?? 0) : 0) +
+      draft.weaponIds.reduce((n, id) => n + (content.weapons.find((w) => w.id === id)?.costGp ?? 0), 0) +
+      (pack?.costGp ?? 0);
+  } else if (classKit) {
+    armor = classKit.armor;
+    shield = !!classKit.shield;
+    addWeapons(classKit);
+  }
+  addWeapons(backgroundKit);
+  const gold = Math.round(((classKit?.gold ?? 0) - spent + (backgroundKit?.gold ?? 0)) * 100) / 100;
+  return { armor, shield, weapons, gear, gold, spent, buying };
+}
+
+/** A starting option in words: "Chain Mail, Greatsword, 8 Javelin, Dungeoneer's Pack, 4 gp". */
+export function describeKit(content: Content, kit: StartingKit): string {
+  if (isGoldKit(kit)) return `${formatGp(kit.gold)} to buy your own gear`;
+  const n = (count: number, name: string) => (count > 1 ? `${count} × ${name}` : name);
+  return [
+    kit.armor && content.armor.find((a) => a.id === kit.armor)?.name,
+    kit.shield && "Shield",
+    ...kit.weapons.map((w) => n(w.count, content.weapons.find((x) => x.id === w.id)?.name ?? w.id)),
+    ...kit.gear.map((g) => n(g.quantity, g.name)),
+    formatGp(kit.gold),
+  ]
+    .filter(Boolean)
+    .join(", ");
+}

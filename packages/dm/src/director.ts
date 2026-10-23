@@ -79,7 +79,7 @@ export class Director {
     const characters: AdventureState["characters"] = {};
     for (const c of party) {
       const built = buildCharacter(content, c);
-      characters[c.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: 900, inventory: [{ name: POTION_ITEM, quantity: STARTING_POTIONS }] };
+      characters[c.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: 900, inventory: startingInventory(c) };
     }
     return {
       id,
@@ -87,7 +87,8 @@ export class Director {
       party,
       companions: companions.filter((c) => party.some((p) => p.id === c)),
       characters,
-      gold: 15,
+      // Characters from the builder bring their starting gold; older ones without it share the old 15 gp.
+      gold: party.some((c) => c.gold !== undefined) ? party.reduce((n, c) => n + (c.gold ?? 0), 0) : 15,
       scene: { name: "The road to the frontier", description: "" },
       npcs: {},
       quests: [],
@@ -645,7 +646,8 @@ export class Director {
     if (s.party.some((c) => c.id === data.id)) throw new AdventureError(`${data.name} is already in this party. Bring a different character`);
     s.party.push(data);
     const built = buildCharacter(this.content, data);
-    s.characters[data.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: Math.max(XP_FOR_LEVEL[data.level] ?? 0, 900), inventory: [{ name: POTION_ITEM, quantity: STARTING_POTIONS }] };
+    s.characters[data.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: Math.max(XP_FOR_LEVEL[data.level] ?? 0, 900), inventory: startingInventory(data) };
+    s.gold += data.gold ?? 0;
     s.members.push({ playerId, name: playerName, characterId: data.id, away: false });
     return this.tableNews(
       `${playerName} joins the table as ${data.name}.`,
@@ -719,4 +721,9 @@ export function encounterMonsters(content: Content): string[] {
   return content.monsters
     .filter((m) => content.art.some((a) => a.kind === "monster" && a.monsterId === m.id && isEncounterReady(a)))
     .map((m) => m.id);
+}
+
+/** Potions for everyone, plus the pack from the character builder. */
+function startingInventory(c: CharacterData): { name: string; quantity: number }[] {
+  return [{ name: POTION_ITEM, quantity: STARTING_POTIONS }, ...(c.gear ?? []).map((g) => ({ name: g.name, quantity: g.quantity }))];
 }

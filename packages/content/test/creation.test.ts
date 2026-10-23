@@ -5,6 +5,7 @@ import {
   creationOptions,
   defaultSpells,
   emptyDraft,
+  startingLoadout,
   finalizeCharacter,
   loadContent,
   pointBuyTotal,
@@ -51,6 +52,9 @@ function completeDraft(classId: string, speciesId = "human", backgroundId = "sol
   }
   d.fightingStyleId = o.fightingStyles[0]?.id;
   d.weaponMasteries = (o.weaponMastery?.weapons ?? []).slice(0, o.weaponMastery?.count ?? 0).map((w) => w.id);
+  // Take gold and buy cheap gear, so tests can pick any armor and weapons.
+  d.classKitId = o.classKits.at(-1)!.id;
+  d.backgroundKitId = "B";
   d.armorId = o.armor[0]?.id;
   d.shield = o.canUseShield;
   d.weaponIds = o.weapons.slice(0, 2).map((w) => w.id);
@@ -198,6 +202,56 @@ describe("character creation", () => {
     });
   });
 
+  describe("starting equipment", () => {
+    it("takes the class and background kits", () => {
+      const d = completeDraft("fighter", "human", "soldier");
+      d.classKitId = "A";
+      d.backgroundKitId = "A";
+      const c = finalizeCharacter(content, d);
+      expect(c.equipment).toEqual({ armor: "chain-mail", shield: false, weapons: ["greatsword", "flail", "javelin", "spear", "shortbow"] });
+      expect(c.gear).toEqual(
+        expect.arrayContaining([
+          { name: "Javelin", quantity: 8 },
+          { name: "Dungeoneer's Pack", quantity: 1 },
+          { name: "Arrows", quantity: 20 },
+          { name: "Healer's Kit", quantity: 1 },
+        ]),
+      );
+      expect(c.gold).toBe(4 + 14);
+    });
+
+    it("buys gear with gold and keeps the change", () => {
+      const d = completeDraft("fighter", "human", "soldier");
+      d.classKitId = "C";
+      d.backgroundKitId = "B";
+      d.armorId = "chain-mail";
+      d.shield = true;
+      d.weaponIds = ["longsword"];
+      d.packId = "explorers-pack";
+      const l = startingLoadout(content, d);
+      expect(l.spent).toBe(75 + 10 + 15 + 10);
+      expect(finalizeCharacter(content, d)).toMatchObject({ gold: 155 + 50 - 110, gear: [{ name: "Explorer's Pack", quantity: 1 }] });
+    });
+
+    it("won't spend more gold than you have", () => {
+      const d = completeDraft("wizard", "human", "sage");
+      d.classKitId = "B";
+      d.backgroundKitId = "A";
+      d.weaponIds = ["light-crossbow", "dagger"];
+      d.packId = "scholars-pack";
+      expect(validateDraft(content, d).some((i) => i.step === "equipment" && /more than your/.test(i.message))).toBe(true);
+    });
+
+    it("asks for both choices", () => {
+      const d = completeDraft("rogue");
+      d.classKitId = undefined;
+      d.backgroundKitId = undefined;
+      expect(validateDraft(content, d).map((i) => i.message)).toEqual(
+        expect.arrayContaining(["Choose your class starting equipment.", "Choose your background starting equipment."]),
+      );
+    });
+  });
+
   describe("character sheet math", () => {
     it("uses Barbarian Unarmored Defense (10 + Dex + Con)", () => {
       const d = completeDraft("barbarian");
@@ -240,7 +294,7 @@ describe("character creation", () => {
 
     it("slows you in heavy armor you're not strong enough for", () => {
       const d = completeDraft("fighter");
-      d.armorId = "plate"; // needs Str 15
+      d.armorId = "chain-mail"; // needs Str 13
       d.baseScores = { str: 8, dex: 15, con: 14, int: 13, wis: 12, cha: 10 };
       d.boosts = { dex: 2, con: 1 };
       expect(buildCharacter(content, finalizeCharacter(content, d)).speedFt).toBe(20);
