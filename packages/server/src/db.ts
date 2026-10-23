@@ -120,10 +120,19 @@ create table if not exists ai_spend (
 export class PostgresBackend implements Backend {
   private constructor(private readonly pool: pg.Pool) {}
 
-  static async connect(url: string): Promise<PostgresBackend> {
+  /** Connects and creates the tables. Retries for about a minute: on a fresh deploy the database may still be starting. */
+  static async connect(url: string, attempts = 20): Promise<PostgresBackend> {
     const pool = new pg.Pool({ connectionString: url, max: 5 });
-    await pool.query(SCHEMA);
-    return new PostgresBackend(pool);
+    for (let i = 1; ; i++) {
+      try {
+        await pool.query(SCHEMA);
+        return new PostgresBackend(pool);
+      } catch (e) {
+        if (i >= attempts) throw e;
+        console.warn(`Database not reachable (${e instanceof Error ? e.message : e}), retry ${i}/${attempts - 1}`);
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }
   }
 
   async getAdventure(id: string) {
