@@ -608,8 +608,9 @@ assets/
     tiles-<id>.png
     props-<id>.png
   library/
-    portraits/<id>.webp         NPC and monster portraits for story scenes
+    portraits/<id>.webp         NPC, monster and player portraits
     scenes/<id>.webp            location backdrops
+    cards/<id>.webp             character builder cards (classes, species)
   boards/<id>.json              hand-made battle boards
 ```
 
@@ -627,6 +628,8 @@ The catalog that lists every asset is `packages/content/data/art-catalog.json`. 
 | `board` | A hand-made battle map | JSON (see below) | 18 to 26 squares wide, 12 to 16 tall |
 | `vfx` | Spell effect animation | PNG, transparent | Projectile 4 x 64x64, impact 8 x 192x192, area 8 x 384x384 (see `CODEX_BRIEF_SPELLS.md`) |
 | `icon` | Spell button icon | PNG | 64x64 |
+| `portrait` | Player character portrait for the builder's picker (species, archetype and presentation tags) | WebP, quality about 85 | 512x512, under 150 KB |
+| `card` | Builder card for one class (`classId`) or species (`speciesId`) | WebP, quality about 80 | 768x512, under 150 KB |
 
 Monsters can also have a portrait (an `npc`-style still image) listed as a separate `npc` entry with the monster's creature tags.
 

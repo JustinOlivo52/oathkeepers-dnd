@@ -7,7 +7,8 @@ import { GridMap, key, type Rng } from "@oathkeepers/engine";
  * Format and rules: docs/OATHKEEPERS.md, "Art library spec".
  */
 
-export const ART_KINDS = ["hero", "monster", "npc", "scene", "board", "tileset", "vfx", "icon"] as const;
+/** "portrait": a player character portrait for the builder's picker. "card": builder art for one class or species. */
+export const ART_KINDS = ["hero", "monster", "npc", "scene", "board", "tileset", "vfx", "icon", "portrait", "card"] as const;
 export type ArtKind = (typeof ART_KINDS)[number];
 
 /** The only tags allowed, grouped so the DM prompt and the docs can list them. */
@@ -82,6 +83,10 @@ export const ArtEntrySchema = z.object({
   /** Tile sheet for kind "tileset", or the tileset id a board uses. */
   tiles: z.string().optional(),
   props: assetPath.optional(),
+  /** Class this art is for: class battle sheets (`hero-class-<id>`) and class cards. */
+  classId: z.string().regex(/^[a-z-]+$/).optional(),
+  /** Species this card is for (species cards only; portraits use the species tag). */
+  speciesId: z.string().regex(/^[a-z-]+$/).optional(),
   /** SRD identity for monster sprites and their portraits; ready monster mechanics must match the bestiary. */
   monsterId: z.string().optional(),
   source: z.enum(["codex-imagegen", "claude-code", "commissioned", "ai-generated-in-game"]),
@@ -90,10 +95,16 @@ export const ArtEntrySchema = z.object({
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
   if ((entry.kind === "hero" || entry.kind === "monster") && !entry.sprite) issue("Battle art requires sprite metadata");
   if (entry.kind === "monster" && !entry.monsterId) issue("Monster art requires monsterId, even before mechanics exist");
-  if (entry.kind !== "vfx" && entry.kind !== "icon" && entry.tags.length < 3) issue("Story and battle art needs at least 3 tags");
+  if (entry.kind !== "vfx" && entry.kind !== "icon" && entry.kind !== "card" && entry.tags.length < 3) issue("Story and battle art needs at least 3 tags");
   if (entry.kind === "vfx" && !entry.vfx) issue("Spell effects require vfx metadata");
   if (entry.kind === "icon" && !entry.image) issue("Icons require an image");
   if (entry.kind === "monster" && entry.mechanicsStatus === "not-required") issue("Monster mechanics cannot be not-required");
+  if (entry.kind === "portrait") {
+    if (!entry.image) issue("Portraits require an image");
+    if (!entry.tags.some((t) => (ART_TAGS.species as readonly string[]).includes(t))) issue("Portraits need a species tag");
+    if (!entry.tags.some((t) => (ART_TAGS.archetype as readonly string[]).includes(t))) issue("Portraits need an archetype tag");
+  }
+  if (entry.kind === "card" && (!entry.image || !!entry.classId === !!entry.speciesId)) issue("Cards need an image and exactly one of classId or speciesId");
   if ((entry.kind === "npc" || entry.kind === "scene") && !entry.image) issue("Story art requires an image");
   if (entry.kind === "tileset" && !entry.tiles) issue("Tileset requires a tiles image");
   if (entry.kind === "tileset" && entry.tiles && !assetPath.safeParse(entry.tiles).success) issue("Tileset path must stay under assets/");
