@@ -245,6 +245,17 @@ export const CharacterSchema = z.object({
   tools: z.array(z.string()).default([]),
   alignment: z.string().optional(),
   notes: z.string().optional(),
+  /** Who the character is, for the DM: woven into the story. */
+  story: z
+    .object({
+      appearance: z.string().max(300).optional(),
+      personality: z.string().max(300).optional(),
+      ideals: z.string().max(300).optional(),
+      bonds: z.string().max(300).optional(),
+      flaws: z.string().max(300).optional(),
+      backstory: z.string().max(1500).optional(),
+    })
+    .optional(),
   /** HP gained from rolling at each level above 1, by level ("4": 7). Missing levels use the average. */
   hpRolls: z.record(z.string().regex(/^\d+$/), z.number().int().min(1)).optional(),
   /** Cantrips and prepared spells. Missing: the class's default picks. */

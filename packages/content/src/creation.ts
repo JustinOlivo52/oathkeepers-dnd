@@ -12,6 +12,7 @@ export interface CharacterDraft {
   name: string;
   alignment?: string;
   notes?: string;
+  story: CharacterStory;
   level: number;
 
   classId?: string;
@@ -87,9 +88,23 @@ export const STARTING_LEVEL = 3;
 export const MAX_WEAPONS = 4;
 export const EXTRA_LANGUAGES = 2;
 
+export type CharacterStory = NonNullable<CharacterData["story"]>;
+export const STORY_FIELDS = ["appearance", "personality", "ideals", "bonds", "flaws", "backstory"] as const;
+
+/** The filled-in story fields, trimmed; undefined when there are none. */
+export function storyOf(story: CharacterStory | undefined): CharacterStory | undefined {
+  const out: CharacterStory = {};
+  for (const f of STORY_FIELDS) {
+    const v = story?.[f]?.trim();
+    if (v) out[f] = v;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 export function emptyDraft(): CharacterDraft {
   return {
     name: "",
+    story: {},
     level: STARTING_LEVEL,
     classChoices: {},
     abilityMethod: "standard-array",
@@ -357,6 +372,7 @@ export function finalizeCharacter(content: Content, draft: CharacterDraft, id = 
     ...(o.metamagic ? { metamagic: [...(draft.metamagic ?? [])] } : {}),
     ...(draft.alignment ? { alignment: draft.alignment } : {}),
     ...(draft.notes ? { notes: draft.notes } : {}),
+    ...(storyOf(draft.story) ? { story: storyOf(draft.story) } : {}),
   };
 }
 

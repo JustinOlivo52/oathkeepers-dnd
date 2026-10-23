@@ -20,7 +20,7 @@ import {
   type LevelUpChoice,
 } from "@oathkeepers/content";
 import type { DmConversation, DmProvider, ProviderTurn, Summarizer, TextSink, ToolCall } from "./provider.js";
-import { memoryBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
+import { memoryBlock, partyBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
 import { levelForXp, MAX_PLAYERS, XP_FOR_LEVEL, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
 import { TOOL_INPUTS, toolSpecs, type ToolName } from "./tools.js";
 
@@ -129,7 +129,7 @@ export class Director {
         ? "Begin the adventure. Set the opening scene for the party on the road to the frontier town, introduce a hook, and ask what they do."
         : `Begin session ${s.session}. Give a short "previously" recap in your own voice, then set the scene where the party left off and ask what they do.`);
     const notes = this.takeNotes();
-    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${notes}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
+    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${partyBlock(s)}${notes}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
     return s.events.slice(start);
   }
 
@@ -649,7 +649,7 @@ export class Director {
     s.members.push({ playerId, name: playerName, characterId: data.id, away: false });
     return this.tableNews(
       `${playerName} joins the table as ${data.name}.`,
-      `A new player joined: ${data.name} (id: ${data.id}), level ${data.level} ${data.species} ${data.class}, played by ${playerName}. Work them into the scene naturally and give them a moment to act.`,
+      `A new player joined: ${data.name} (id: ${data.id}), level ${data.level} ${data.species} ${data.class}, played by ${playerName}. Work them into the scene naturally and give them a moment to act.${partyBlock(s, [data]).replace("[The party]", "")}`.trimEnd(),
     );
   }
 

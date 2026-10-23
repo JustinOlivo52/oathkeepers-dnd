@@ -11,6 +11,8 @@ import {
   spellCounts,
   spellOptions,
   STANDARD_ARRAY,
+  STORY_FIELDS,
+  suggestStory,
   validateDraft,
   type AbilityRoll,
   type CharacterData,
@@ -24,6 +26,15 @@ import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { loadDraft, saveDraft } from "../storage";
 import { ChipPicker } from "./ChipPicker";
 import { Sheet } from "./Sheet";
+
+const STORY_LABELS: Record<(typeof STORY_FIELDS)[number], { label: string; placeholder: string }> = {
+  appearance: { label: "Appearance", placeholder: "What people notice first" },
+  personality: { label: "Personality", placeholder: "How they act, talk, react" },
+  ideals: { label: "Ideals", placeholder: "What they believe in" },
+  bonds: { label: "Bonds", placeholder: "People, places or promises they care about" },
+  flaws: { label: "Flaws", placeholder: "A weakness the DM can tempt" },
+  backstory: { label: "Backstory", placeholder: "Where they come from and why they're on the frontier" },
+};
 
 const STEPS: { id: CreationStep; title: string }[] = [
   { id: "class", title: "1. Class" },
@@ -571,10 +582,30 @@ export function Builder(props: {
             <h4>Languages (Common, plus two)</h4>
             <ChipPicker options={o.languages} selected={draft.languages} max={2} label={(l) => l} onChange={(next) => update((d) => (d.languages = next))} />
           </div>
-          <label>
-            Notes and backstory
-            <textarea rows={3} value={draft.notes ?? ""} onChange={(e) => update((d) => (d.notes = e.target.value || undefined))} />
-          </label>
+          <div className="group story-fields">
+            <h4>Who they are</h4>
+            <p className="muted small">Optional. The DM reads this and weaves it into the story: old friends, enemies, temptations.</p>
+            {STORY_FIELDS.map((field) => (
+              <div key={field} className="story-field">
+                <span className="story-label">
+                  <label htmlFor={`story-${field}`}>{STORY_LABELS[field].label}</label>
+                  {field !== "backstory" && (
+                    <button type="button" className="ghost small" onClick={() => update((d) => (d.story = { ...d.story, [field]: suggestStory(field, mathRng, d.story?.[field]) }))}>
+                      Suggest
+                    </button>
+                  )}
+                </span>
+                <textarea
+                  id={`story-${field}`}
+                  rows={field === "backstory" ? 5 : 2}
+                  maxLength={field === "backstory" ? 1500 : 300}
+                  placeholder={STORY_LABELS[field].placeholder}
+                  value={draft.story?.[field] ?? ""}
+                  onChange={(e) => update((d) => (d.story = { ...d.story, [field]: e.target.value }))}
+                />
+              </div>
+            ))}
+          </div>
         </Step>
       </div>
 

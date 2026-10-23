@@ -1,3 +1,4 @@
+import type { CharacterData } from "@oathkeepers/content";
 import type { AdventureState } from "./state.js";
 
 /** The DM's standing instructions. Kept identical between requests so it stays cached. */
@@ -20,6 +21,7 @@ The Western Marches: a frontier kingdom at the edge of a wild, unexplored land f
 - Narrate in second person, present tense, usually two to three short paragraphs. Engage the senses, give NPCs distinct voices, and end on something the players can act on. Don't list options unless asked.
 - Don't reveal DCs, monster stats or secrets the characters haven't uncovered.
 - Several people may be playing, each with their own character (named in the game state). Address them by character name, give each a turn in the spotlight, and keep scenes moving for the whole table. [Table] notes tell you who joined or stepped away.
+- Player characters come with a [The party] block at the start of each session: their looks, personality, ideals, bonds, flaws and backstory. Use it. Describe them as written, bring back the people and places from their backstories, and now and then build a hook or a hard choice around a bond or a flaw. Never decide how a player character feels about it.
 - Party members marked "companion" in the game state are yours to play, like trusted NPCs who travel with the party. Give each a distinct personality and voice from their notes; let them speak up, offer ideas and react, briefly. They support the player's characters and never take the lead, decide for the party, or solve the scene on their own. In battle the game runs them.
 
 ## Each turn
@@ -67,6 +69,25 @@ export function memoryBlock(state: AdventureState): string {
     npcs.length ? `People the party knows:\n${npcs.join("\n")}` : "",
   ].filter(Boolean);
   return `${parts.join("\n")}\n\n`;
+}
+
+/** Who the player characters are, from their builder story. Sent at session start and when someone joins, not every turn. */
+export function partyBlock(state: AdventureState, only?: CharacterData[]): string {
+  const companions = new Set(state.companions ?? []);
+  const lines = (only ?? state.party.filter((c) => !companions.has(c.id))).flatMap((c) => {
+    const s = c.story ?? {};
+    const parts = [
+      s.appearance && `Looks: ${s.appearance}`,
+      s.personality && `Personality: ${s.personality}`,
+      s.ideals && `Ideals: ${s.ideals}`,
+      s.bonds && `Bonds: ${s.bonds}`,
+      s.flaws && `Flaws: ${s.flaws}`,
+      s.backstory && `Backstory: ${s.backstory}`,
+      !c.story && c.notes && `Notes: ${c.notes}`,
+    ].filter(Boolean);
+    return parts.length ? [`- ${c.name}: ${parts.join(" ")}`] : [];
+  });
+  return lines.length ? `[The party]\n${lines.join("\n")}\n\n` : "";
 }
 
 /** A session as plain text, for the memory keeper. */
