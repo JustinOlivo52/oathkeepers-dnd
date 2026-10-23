@@ -30,7 +30,7 @@ npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (Python 3 + Pillow)
 
 ## Deploy
 
-One Docker container runs everything (web build, API, DM, multiplayer). Railway setup and env vars: [Deployment](docs/OATHKEEPERS.md#deployment).
+One Docker container runs everything (web build, API, DM, multiplayer). Render setup and env vars: [Deployment](docs/OATHKEEPERS.md#deployment).
 
 `netlify.toml` still builds a static copy with the offline demo DM only.
 
@@ -58,11 +58,11 @@ Done:
 - [x] Levels 1-5 for every class, with a level-up walkthrough
 - [x] Player accounts (name + PIN) with saved characters and adventures
 - [x] Multiplayer: invite codes, live tables, shared server-run battles, drop in/out at breaks
-- [x] Deployable: Docker image, group code for signups, Railway config
+- [x] Deployable: Docker image, group code for signups, Render config
 
 Next:
 
-- [ ] Deploy to Railway and playtest with friends
+- [ ] Deploy to Render and playtest with friends
 - [ ] Tune the DM prompt from real playtests
 - [ ] Art batch 2 (more monsters, NPCs, scenes, boards) and spell effects
 - [ ] Stat blocks for the new monsters

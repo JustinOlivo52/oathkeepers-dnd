@@ -504,13 +504,18 @@ One server runs everything: the game pages, the API, the AI DM and the shared ta
 
 Run exactly **one** copy of the server. Live tables are held in memory, so two copies would split the players.
 
-### Railway (recommended)
+### Render (recommended)
 
-1. railway.com: sign in with GitHub, New Project, Deploy from GitHub repo, pick `oathkeepers-dnd`. It finds the `Dockerfile` and `railway.json`.
-2. Service, Variables: add `ANTHROPIC_API_KEY`, `GROUP_CODE`, `DM_MONTHLY_BUDGET_USD`.
-3. Service, right-click, Attach volume: mount path `/data`.
-4. Settings, Networking, Generate Domain. That URL is the game.
-5. Every push to `master` redeploys. The health check is `/api/health`.
+`render.yaml` sets up the service: Docker build, health check, 1 GB disk at `/data`, autodeploy from `master`. The disk needs a paid instance (Starter); the free tier has no disk and sleeps when idle.
+
+1. render.com: sign in with GitHub, New, Blueprint, pick `oathkeepers-dnd`. It reads `render.yaml`.
+2. It asks for `ANTHROPIC_API_KEY` and `GROUP_CODE`. `DM_MONTHLY_BUDGET_USD` defaults to 20; change it under Environment.
+3. Apply. The URL (`https://oathkeepers-xxxx.onrender.com`) is on the service page.
+4. Every push to `master` redeploys.
+
+### Railway
+
+Not taking new users as of 2026-10. `railway.json` is ready if that changes: deploy from the GitHub repo, add the same variables, attach a volume at `/data`, generate a domain.
 
 ### Check it works
 

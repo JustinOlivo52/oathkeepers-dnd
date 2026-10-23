@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: oathkeepers
+    runtime: docker
+    plan: starter
+    branch: master
+    autoDeploy: true
+    healthCheckPath: /api/health
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GROUP_CODE
+        sync: false
+      - key: DM_MONTHLY_BUDGET_USD
+        value: "20"
