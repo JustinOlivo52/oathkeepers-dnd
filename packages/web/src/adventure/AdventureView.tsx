@@ -46,7 +46,16 @@ function clientFor(mode: "remote" | "local", provider: string): DmClient {
   return mode === "local" ? new LocalDemoClient() : new RemoteClient(provider, provider === "claude" ? "AI DM" : "Demo DM");
 }
 
-export function AdventureView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void; player: PlayerAccount | null }) {
+export function AdventureView(props: {
+  characters: CharacterData[];
+  /** Characters the player built (the rest are ready-made). */
+  ownCharacterIds: Set<string>;
+  selectedId: string;
+  onSelect: (id: string) => void;
+  /** Go to the character builder. */
+  onCreate: () => void;
+  player: PlayerAccount | null;
+}) {
   const [server, setServer] = useState<ServerInfo | null | undefined>(undefined);
   const [choice, setChoice] = useState<string>("");
   const [client, setClient] = useState<DmClient | null>(null);
@@ -91,6 +100,10 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
     });
   }, [client, adventureId]);
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
+  const characterGroups = [
+    { label: "Your characters", list: props.characters.filter((c) => props.ownCharacterIds.has(c.id)) },
+    { label: "Ready-made", list: props.characters.filter((c) => !props.ownCharacterIds.has(c.id)) },
+  ].filter((g) => g.list.length);
   /** Ids of characters coming along as AI companions. Empty: solo. */
   const [companionIds, setCompanionIds] = useState<string[]>([]);
   const companionOptions = props.characters.filter((c) => c.id !== character.id);
@@ -165,13 +178,20 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <label>
               Character
               <select value={character.id} onChange={(e) => props.onSelect(e.target.value)}>
-                {props.characters.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
+                {characterGroups.map(({ label, list }) => (
+                  <optgroup key={label} label={label}>
+                    {list.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} · {content.classes.find((x) => x.id === c.class)?.name} {c.level}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </label>
+            <button type="button" className="secondary create-character" onClick={props.onCreate}>
+              Create a character
+            </button>
             <label>
               Dungeon Master
               <select value={choice} onChange={(e) => setChoice(e.target.value)} disabled={server === undefined}>

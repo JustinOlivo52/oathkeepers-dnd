@@ -101,10 +101,22 @@ export function App() {
             setFighterId(c.id);
             setTab("battle");
           }}
+          onAdventure={(c) => {
+            saveCharacter(c);
+            setFighterId(c.id);
+            setTab("adventure");
+          }}
         />
       ) : tab === "adventure" ? (
         <Suspense fallback={<p className="hint">Loading adventure…</p>}>
-          <AdventureView characters={[...content.characters, ...characters]} selectedId={fighterId} onSelect={setFighterId} player={player || null} />
+          <AdventureView
+            characters={[...content.characters, ...characters]}
+            ownCharacterIds={new Set(characters.map((c) => c.id))}
+            selectedId={fighterId}
+            onSelect={setFighterId}
+            onCreate={() => setTab("builder")}
+            player={player || null}
+          />
         </Suspense>
       ) : tab === "battle" ? (
         <Suspense fallback={<p className="hint">Loading battle…</p>}>

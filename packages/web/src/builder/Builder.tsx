@@ -48,6 +48,8 @@ export function Builder(props: {
   onSave: (c: CharacterData) => void;
   onDelete: (id: string) => void;
   onTestFight: (c: CharacterData) => void;
+  /** Save and take the character into an adventure. */
+  onAdventure: (c: CharacterData) => void;
 }) {
   const [draft, setDraft] = useState<CharacterDraft>(loadDraft);
   const [rolls, setRolls] = useState<AbilityRoll[] | null>(null);
@@ -579,7 +581,10 @@ export function Builder(props: {
       <aside className="side">
         <Sheet draft={draft} character={finished} issueCount={issues.length} />
         <div className="actions">
-          <button className="primary" disabled={!finished} onClick={() => save(true)}>
+          <button className="primary" disabled={!finished} onClick={() => finished && props.onAdventure(finished)}>
+            Save and start adventure
+          </button>
+          <button className="secondary" disabled={!finished} onClick={() => save(true)}>
             Save and battle
           </button>
           <button className="secondary" disabled={!finished} onClick={() => save(false)}>
@@ -608,6 +613,9 @@ export function Builder(props: {
                   <span>
                     {c.name} · {content.classes.find((x) => x.id === c.class)?.name} {c.level}
                   </span>
+                  <button className="ghost small" onClick={() => props.onAdventure(c)}>
+                    Adventure
+                  </button>
                   <button className="ghost small" onClick={() => props.onTestFight(c)}>
                     Fight
                   </button>
