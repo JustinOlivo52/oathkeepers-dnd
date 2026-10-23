@@ -61,6 +61,8 @@ export interface ServerInfo {
   providers: string[];
   /** Player name + PIN accounts are available. */
   accounts?: boolean;
+  /** New accounts need the group code. */
+  groupCode?: boolean;
   spentThisMonthUsd: number;
   monthlyBudgetUsd: number | null;
 }

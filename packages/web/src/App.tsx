@@ -19,6 +19,7 @@ export function App() {
   const [fighterId, setFighterId] = useState<string>(content.characters[0]!.id);
   /** undefined: still checking; false: no account system (no server); null: signed out. */
   const [player, setPlayer] = useState<PlayerAccount | null | false | undefined>(undefined);
+  const [needsGroupCode, setNeedsGroupCode] = useState(false);
 
   // Signed in: characters live on the server, with this browser's copy as a cache.
   const applyPlayer = (p: PlayerAccount) => {
@@ -29,6 +30,7 @@ export function App() {
   useEffect(() => {
     void findServer().then(async (info) => {
       if (!info?.accounts) return setPlayer(false);
+      setNeedsGroupCode(!!info.groupCode);
       const p = await currentPlayer();
       if (p) applyPlayer(p);
       else setPlayer(null);
@@ -68,6 +70,7 @@ export function App() {
         {player !== undefined && player !== false && (
           <PlayerBar
             player={player}
+            groupCode={needsGroupCode}
             onSignIn={handleSignIn}
             onSignOut={() => {
               void signOut();
