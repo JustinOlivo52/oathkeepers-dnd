@@ -72,6 +72,11 @@ export class EventLog {
     return logged;
   }
 
+  /** Add events logged elsewhere (the server's copy of a battle), keeping their sequence numbers. */
+  append(events: LoggedEvent[]): void {
+    for (const e of events) if (e.seq === this.events.length) this.events.push(e);
+  }
+
   ofType<T extends GameEvent["type"]>(type: T): Extract<LoggedEvent, { type: T }>[] {
     return this.events.filter((e): e is Extract<LoggedEvent, { type: T }> => e.type === type);
   }

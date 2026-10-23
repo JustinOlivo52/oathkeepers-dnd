@@ -308,6 +308,7 @@ export function buildMonster(data: MonsterData, instanceId: string, name = data.
     stable: false,
     dead: false,
     xp: data.xp,
+    monsterId: data.id,
     creatureType: data.type,
   };
 }

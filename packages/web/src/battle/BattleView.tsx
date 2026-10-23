@@ -1,9 +1,9 @@
 import "./art.css";
-import { battlefieldOptions, loadBattlefield, placeCreatures, spriteFor } from "./battlefields";
+import { battlefieldOptions, boards, spriteFor, tilesetFor } from "./battlefields";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
-import { Combat, EventLog, isConscious, mathRng, POTION, type Creature, type TurnState } from "@oathkeepers/engine";
-import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
+import { Combat, isConscious, mathRng, POTION, type Creature, type TurnState } from "@oathkeepers/engine";
+import { battleOutcome, createEncounter, type BattleOutcome, type CharacterData, type PartyMemberSetup } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController, TARGETS_ALLY, type QuickAction, type TargetedFeature } from "./controller";
 import { BattleScene, type VfxInfo } from "./scene";
@@ -55,68 +55,32 @@ export interface BattleSetup {
   resources?: Record<string, number>;
 }
 
-export interface CompanionSetup {
-  character: CharacterData;
-  startingHp?: number;
-  potions?: number;
-  /** Uses left of limited features from earlier battles. Missing: full. */
-  resources?: Record<string, number>;
+/** A companion going into battle: same shape as any party member. */
+export type CompanionSetup = PartyMemberSetup;
+
+export type { BattleOutcome };
+
+/** Sprites for everyone in a battle: heroes by class family (or their own art), monsters by bestiary id, druids by shape. */
+export function spritesFor(combat: Combat, classOf: Map<string, string>) {
+  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", c.wildShape?.formId ?? c.monsterId);
+  const formSheets = [...combat.creatures.values()].flatMap((c) => (c.forms ?? []).map((f) => spriteFor(c, "martial", f.id)));
+  return { sheetFor, formSheets };
 }
 
-export interface BattleOutcome {
-  winner: "party" | "enemies";
-  rounds: number;
-  hp: Record<string, number>;
-  /** Monster ids of enemies killed, one per enemy. */
-  defeated: string[];
-  /** Potions of Healing each party member has left. */
-  potions: Record<string, number>;
-  /** Uses left of each party member's limited features. */
-  resources: Record<string, Record<string, number>>;
-}
-
-function buildPartyMember({ character, startingHp, potions = 0, resources = {} }: CompanionSetup): Creature {
-  const c = buildCharacter(content, character);
-  for (const [id, left] of Object.entries(resources)) if (c.resources[id]) c.resources[id]!.current = Math.max(0, Math.min(c.resources[id]!.max, left));
-  if (startingHp !== undefined) c.hp = Math.max(1, Math.min(c.maxHp, startingHp));
-  if (potions > 0) c.resources[POTION] = { current: potions, max: potions, recharge: "long" };
-  return c;
-}
-
-function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions, resources, companions = [] }: BattleSetup) {
-  const field = loadBattlefield(battlefield, seed);
-  const hero = buildPartyMember({ character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}), ...(resources ? { resources } : {}) });
-  const allies = companions.map(buildPartyMember);
-  const party = [hero, ...allies];
-  const taken = new Set<string>();
-  placeCreatures(field.map, party, field.partySpawns, [], taken);
-  const monsterOf = new Map<string, string>();
-  const list = groups.flatMap((g) => Array.from({ length: g.count }, () => g.monsterId));
-  const enemies = list.map((monsterId, i) => {
-    const data = content.monsters.find((m) => m.id === monsterId) ?? content.monsters[0]!;
-    const id = `${data.id}-${i + 1}`;
-    monsterOf.set(id, data.id);
-    const label = list.length > 1 ? `${data.name.replace(/ Warrior$/, "")} ${i + 1}` : data.name;
-    return buildMonster(data, id, label);
-  });
-  // Big creatures first, so they get the roomy spawn points.
-  placeCreatures(field.map, [...enemies].sort((a, b) => (b.footprint ?? 1) - (a.footprint ?? 1)), field.enemySpawns, field.largeEnemySpawns, taken);
-  const combat = new Combat([...party, ...enemies], mathRng, new EventLog(), field.map);
+function createBattle({ character, enemies, seed, battlefield, startingHp, potions, resources, companions = [] }: BattleSetup) {
+  const hero = { character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}), ...(resources ? { resources } : {}) };
+  const { combat, field } = createEncounter(content, boards, { party: [hero, ...companions], enemies, battlefield, seed }, mathRng);
   const classOf = new Map([character, ...companions.map((x) => x.character)].map((ch) => [ch.id, ch.class]));
-  // A druid in Wild Shape uses the beast's sprite.
-  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", c.wildShape?.formId ?? monsterOf.get(c.id));
-  const formSheets = party.flatMap((c) => (c.forms ?? []).map((f) => spriteFor(c, "martial", f.id)));
-  const outcome = (): BattleOutcome => ({
-    winner: combat.winner ?? "enemies",
-    rounds: combat.round,
-    hp: Object.fromEntries(party.map((c) => [c.id, c.hp])),
-    defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
-    potions: Object.fromEntries(party.map((c) => [c.id, c.resources[POTION]?.current ?? 0])),
-    resources: Object.fromEntries(
-      party.map((c) => [c.id, Object.fromEntries(Object.entries(c.resources).filter(([id]) => id !== POTION).map(([id, r]) => [id, r.current]))]),
-    ),
-  });
-  return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, formSheets, outcome };
+  const { sheetFor, formSheets } = spritesFor(combat, classOf);
+  return {
+    combat,
+    map: field.map,
+    tileset: tilesetFor(field.tiles),
+    controller: new BattleController(combat, new Set([character.id])),
+    sheetFor,
+    formSheets,
+    outcome: () => battleOutcome(combat),
+  };
 }
 
 interface FeatureButton {

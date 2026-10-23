@@ -14,7 +14,7 @@ import {
   key,
   straightPath,
   samePoint,
-  type GridMap,
+  GridMap,
   type PathNode,
   type Point,
 } from "./grid.js";
@@ -84,6 +84,22 @@ export interface AttackCheck {
 }
 
 export class RulesError extends Error {}
+
+/** Everything needed to rebuild a battle somewhere else: the server sends this so every player's screen matches. */
+export interface CombatSnapshot {
+  creatures: Creature[];
+  order: string[];
+  round: number;
+  turn: TurnState | null;
+  winner: Side | null;
+  turnIndex: number;
+  turnSerial: number;
+  oncePerTurn: [string, number][];
+  reactionsUsed: string[];
+  map?: { width: number; height: number; tiles: GridMap["tiles"] };
+  /** How many log events the battle has had; the log itself travels separately. */
+  logLength: number;
+}
 
 const SAPPED = "sapped";
 const DODGING = "dodging";
@@ -157,6 +173,38 @@ export class Combat {
         }
       }
     }
+  }
+
+  snapshot(): CombatSnapshot {
+    return structuredClone({
+      creatures: [...this.creatures.values()],
+      order: this.order,
+      round: this.round,
+      turn: this.turn,
+      winner: this.winner,
+      turnIndex: this.turnIndex,
+      turnSerial: this.turnSerial,
+      oncePerTurn: [...this.oncePerTurn],
+      reactionsUsed: [...this.reactionsUsed],
+      ...(this.map ? { map: { width: this.map.width, height: this.map.height, tiles: [...this.map.tiles] } } : {}),
+      logLength: this.log.events.length,
+    });
+  }
+
+  /** Rebuild a battle from a snapshot. Placement isn't re-checked: the snapshot came from a valid battle. */
+  static fromSnapshot(s: CombatSnapshot, rng: Rng, log: EventLog): Combat {
+    const map = s.map ? new GridMap(s.map.width, s.map.height, [...s.map.tiles]) : undefined;
+    const combat = new Combat([], rng, log, map);
+    for (const c of structuredClone(s.creatures)) combat.creatures.set(c.id, c);
+    combat.order = [...s.order];
+    combat.round = s.round;
+    combat.turn = s.turn ? structuredClone(s.turn) : null;
+    combat.winner = s.winner;
+    combat.turnIndex = s.turnIndex;
+    combat.turnSerial = s.turnSerial;
+    combat.oncePerTurn = new Map(s.oncePerTurn);
+    combat.reactionsUsed = new Set(s.reactionsUsed);
+    return combat;
   }
 
   get(id: string): Creature {

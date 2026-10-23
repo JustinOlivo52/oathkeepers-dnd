@@ -114,6 +114,8 @@ export interface Creature {
   dead: boolean;
   /** XP awarded for defeating this creature (monsters). */
   xp: number;
+  /** Bestiary id for monsters (several goblins share "goblin-warrior"); picks their art and XP. */
+  monsterId?: string;
   /** Monster type, e.g. "undead" or "fiend" (Divine Smite deals more to these). */
   creatureType?: string;
   /** Spells this creature can cast in battle. Slots are resources "spell-slot-1", "spell-slot-2"... */
