@@ -2,6 +2,7 @@ import { mathRng } from "@oathkeepers/engine";
 import type { CharacterData, LevelUpChoice } from "@oathkeepers/content";
 import { DemoProvider, DemoSummarizer, Director, type AdventureState, type CombatOutcome, type Pending, type StoryEvent, type TextSink } from "@oathkeepers/dm";
 import { content } from "../content";
+import { authHeaders } from "../player";
 
 export interface AdventureSnapshot {
   events: StoryEvent[];
@@ -32,6 +33,8 @@ export interface DmClient {
 
 export interface ServerInfo {
   providers: string[];
+  /** Player name + PIN accounts are available. */
+  accounts?: boolean;
   spentThisMonthUsd: number;
   monthlyBudgetUsd: number | null;
 }
@@ -69,7 +72,7 @@ export class RemoteClient implements DmClient {
     const stream = body !== undefined && !!this.onText;
     const res = await fetch(`/api/adventures${path}`, {
       method: body === undefined ? "GET" : "POST",
-      headers: { "content-type": "application/json", ...(stream ? { accept: "text/event-stream" } : {}) },
+      headers: { "content-type": "application/json", ...authHeaders(), ...(stream ? { accept: "text/event-stream" } : {}) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
     const snapshot = stream && res.ok && res.body ? await this.readStream(res.body) : await this.readJson(res);

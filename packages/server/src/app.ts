@@ -13,6 +13,7 @@ import {
   type Summarizer,
   type TextSink,
 } from "@oathkeepers/dm";
+import { PlayerError, PlayerStore, type Player } from "./players.js";
 import { Store } from "./store.js";
 
 export interface AppOptions {
@@ -25,6 +26,8 @@ export interface AppOptions {
   /** Monthly AI spending cap in US dollars. Undefined means no cap. */
   monthlyBudgetUsd?: number;
   rng?: Rng;
+  /** Player names and PINs; characters and adventures saved per player. */
+  players?: PlayerStore;
 }
 
 interface Live {
@@ -64,7 +67,39 @@ export function createApp(options: AppOptions) {
     return director;
   };
 
-  const persist = (id: string, d: Director) => store.save(id, { state: d.state, conversation: d.save() });
+  const players = options.players;
+  const persist = (id: string, d: Director) => {
+    store.save(id, { state: d.state, conversation: d.save() });
+    const s = d.state;
+    if (s.owner && players) players.noteAdventure(s.owner, { id, title: s.scene.name || s.title, hero: s.party[0]!.name, provider: s.provider }, s.party);
+  };
+
+  /** Player accounts: sign in with a name and PIN, then save characters and list adventures. */
+  function playerRoute(method: string, path: string, body: Record<string, unknown>, me: Player | undefined, token: string | undefined) {
+    if (!players) throw new HttpError(404, "Player accounts are off on this server");
+    if (method === "POST" && path === "/api/players/sign-in") {
+      if (typeof body.name !== "string" || typeof body.pin !== "string") throw new HttpError(400, "Send name and pin");
+      return players.signIn(body.name, body.pin);
+    }
+    if (!me) throw new HttpError(401, "Sign in first");
+    if (method === "GET" && path === "/api/players/me") return { player: players.view(me) };
+    if (method === "POST" && path === "/api/players/me/sign-out") {
+      players.signOut(me, token!);
+      return { ok: true };
+    }
+    const m = /^\/api\/players\/me\/characters\/([a-z0-9-]+)$/.exec(path);
+    if (m && method === "PUT") {
+      const parsed = CharacterSchema.safeParse(body.character);
+      if (!parsed.success || parsed.data.id !== m[1]) throw new HttpError(400, "Invalid character");
+      players.saveCharacter(me, parsed.data);
+      return { player: players.view(me) };
+    }
+    if (m && method === "DELETE") {
+      players.deleteCharacter(me, m[1]!);
+      return { player: players.view(me) };
+    }
+    throw new HttpError(404, "Not found");
+  }
 
   const view = (d: Director, events: StoryEvent[]) => ({
     events,
@@ -74,10 +109,12 @@ export function createApp(options: AppOptions) {
     monthlyBudgetUsd: options.monthlyBudgetUsd ?? null,
   });
 
-  async function route(method: string, path: string, body: Record<string, unknown>, onText?: TextSink) {
+  async function route(method: string, path: string, body: Record<string, unknown>, onText?: TextSink, token?: string) {
     if (method === "GET" && path === "/api/health") {
-      return { ok: true, providers: providers.map((p) => p.name), spentThisMonthUsd: store.spentThisMonth(), monthlyBudgetUsd: options.monthlyBudgetUsd ?? null };
+      return { ok: true, providers: providers.map((p) => p.name), accounts: !!players, spentThisMonthUsd: store.spentThisMonth(), monthlyBudgetUsd: options.monthlyBudgetUsd ?? null };
     }
+    const me = players?.byToken(token);
+    if (path.startsWith("/api/players/")) return playerRoute(method, path, body, me, token);
     if (method === "POST" && path === "/api/adventures") {
       const parsed = CharacterSchema.safeParse(body.character);
       if (!parsed.success) throw new HttpError(400, "Invalid character");
@@ -87,6 +124,7 @@ export function createApp(options: AppOptions) {
       const p = provider(typeof body.provider === "string" ? body.provider : undefined);
       const id = randomUUID();
       const state = Director.newAdventure(content, party, p.name, id, party.slice(1).map((c) => c.id));
+      if (me) state.owner = me.id;
       const director = new Director(content, p, state, rng, { canSpend, onCost: (usd) => store.addSpend(usd) });
       live.set(id, { director, provider: p.name });
       const events = await director.begin(onText);
@@ -97,6 +135,7 @@ export function createApp(options: AppOptions) {
     if (!m) throw new HttpError(404, "Not found");
     const [, id, action] = m as unknown as [string, string, string | undefined];
     const d = directorFor(id);
+    if (d.state.owner && d.state.owner !== me?.id) throw new HttpError(403, "This adventure belongs to another player. Sign in as them to continue it.");
     if (method === "GET" && !action) return view(d, d.state.events);
     if (method !== "POST" || !action) throw new HttpError(405, "Method not allowed");
 
@@ -128,14 +167,16 @@ export function createApp(options: AppOptions) {
     const streaming = req.method === "POST" && (req.headers.accept ?? "").includes("text/event-stream");
     const sse = (event: string, data: unknown) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
     try {
-      const body = req.method === "POST" ? await readJson(req) : {};
+      const body = req.method === "POST" || req.method === "PUT" ? await readJson(req) : {};
+      const auth = req.headers.authorization;
+      const token = auth?.startsWith("Bearer ") ? auth.slice(7).trim() : undefined;
       if (streaming) {
         res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
-        const result = await route(req.method ?? "GET", url.pathname, body, (delta) => sse("text", delta));
+        const result = await route(req.method ?? "GET", url.pathname, body, (delta) => sse("text", delta), token);
         sse("done", result);
         res.end();
       } else {
-        send(res, 200, await route(req.method ?? "GET", url.pathname, body));
+        send(res, 200, await route(req.method ?? "GET", url.pathname, body, undefined, token));
       }
     } catch (e) {
       const [status, error] = describeError(e);
@@ -148,6 +189,7 @@ export function createApp(options: AppOptions) {
 }
 
 function describeError(e: unknown): [number, string] {
+  if (e instanceof PlayerError) return [e.status, e.message];
   if (e instanceof HttpError) return [e.status, e.message];
   if (e instanceof BudgetExceededError) return [402, "This month's AI budget is used up. Raise DM_MONTHLY_BUDGET_USD or wait for next month."];
   if (e instanceof AdventureError) return [409, e.message];

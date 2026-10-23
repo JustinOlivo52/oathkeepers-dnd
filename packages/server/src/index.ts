@@ -6,6 +6,7 @@ import { DemoProvider, DemoSummarizer, type DmProvider } from "@oathkeepers/dm";
 import { createApp } from "./app.js";
 import { ClaudeProvider } from "./claude.js";
 import { ClaudeSummarizer } from "./memory.js";
+import { PlayerStore } from "./players.js";
 import { Store } from "./store.js";
 import { loadSettings } from "./env.js";
 
@@ -23,9 +24,11 @@ const providers: DmProvider[] = [];
 if (apiKey) providers.push(new ClaudeProvider(apiKey));
 providers.push(new DemoProvider());
 
+const dataDir = process.env.DATA_DIR ?? join(here, "..", "data");
 const app = createApp({
   content: loadContent(),
-  store: new Store(process.env.DATA_DIR ?? join(here, "..", "data")),
+  store: new Store(dataDir),
+  players: new PlayerStore(dataDir),
   providers,
   // Claude adventures get Haiku recaps; demo adventures get the offline recap.
   summarizerFor: (name) => (name === "claude" && apiKey ? new ClaudeSummarizer(apiKey) : new DemoSummarizer()),

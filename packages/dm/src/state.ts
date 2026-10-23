@@ -91,6 +91,8 @@ export interface AdventureState {
   party: CharacterData[];
   /** Party members the computer runs: the DM voices them in the story, tactics play them in battle. */
   companions?: string[];
+  /** Player id of whoever started it, when they were signed in. Only they can play it. */
+  owner?: string;
   characters: Record<string, CharacterState>;
   gold: number;
   scene: { name: string; description: string };

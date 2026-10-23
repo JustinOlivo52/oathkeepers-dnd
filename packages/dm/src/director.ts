@@ -498,6 +498,15 @@ export class Director {
         c.hp = Math.min(c.maxHp, c.hp + Math.max(1, roll(this.rng, `1d${cls.hitDie}`).total + con));
       }
       if (c.hp > before) healed[data.id] = c.hp - before;
+      // Sorcerer: Sorcerous Restoration, once per long rest: half the sorcerer level in Sorcery Points back.
+      const points = built.resources["sorcery-points"];
+      if (built.features.includes("sorcerous-restoration") && points && c.resources && c.resources["sorcerous-restoration"] !== 0) {
+        const now = c.resources["sorcery-points"] ?? points.max;
+        if (now < points.max) {
+          c.resources["sorcery-points"] = Math.min(points.max, now + Math.floor(data.level / 2));
+          c.resources["sorcerous-restoration"] = 0;
+        }
+      }
       // Wizard: Arcane Recovery, once per long rest. Recover slots worth up to half the wizard level (no level 6+ slots), highest first.
       if (built.features.includes("arcane-recovery") && c.resources && c.resources["arcane-recovery"] !== 0) {
         let budget = Math.ceil(data.level / 2);

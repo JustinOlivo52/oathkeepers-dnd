@@ -77,3 +77,8 @@
 .level-up-card .radio { display: flex; gap: 8px; align-items: center; margin: 4px 0; }
 .level-up-card .issues { color: #e8a07a; margin: 0; padding-left: 18px; }
 .level-up-button { width: 100%; margin-top: 8px; }
+
+.my-adventures { margin-top: 14px; }
+.my-adventures h3 { margin: 0 0 6px; font: 18px Georgia, serif; }
+.my-adventures ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.my-adventures li { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; }

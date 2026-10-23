@@ -207,3 +207,7 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .battle-log .damage, .battle-log .down, .battle-log .death { color: var(--bad); }
 .battle-log .heal { color: var(--good); }
 .battle-log .combat_end { font-weight: 700; }
+
+.player-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; margin-right: 16px; }
+.player-bar input { width: 140px; }
+.player-bar .sign-in-note { flex-basis: 100%; text-align: right; }

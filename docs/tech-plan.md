@@ -1,6 +1,6 @@
 # Tech Plan (Foundation)
 
-Status: Phases 1 to 3 done, Phase 4 (AI DM) parts 1 and 2 done except prompt tuning, art library batch 1 integrated. Companion to `design.md`.
+Status: Phases 1 to 3 done, Phase 4 (AI DM) done except prompt tuning, Phase 5 (leveling to 5, player saves) done, art library batch 1 integrated. Companion to `design.md`.
 
 ## 1. Guiding principles
 
@@ -246,7 +246,6 @@ Part 2 (next):
 
 Known limits:
 - Combat results are reported by the browser; Phase 6 moves battles to the server for multiplayer
-- Level-up is announced but not applied yet (Phase 5)
 - Only goblins exist as monsters until more content is added
 
 ### Art library integration (batch 1)
@@ -263,3 +262,18 @@ Done:
 Not yet:
 - Giant spider Web, Spider Climb and Web Walker
 - Monster portraits only appear when the DM asks for them by tags
+
+### Phase 5 progress (leveling and saving)
+
+Done:
+- Levels 4 and 5 for every class: Ability Score Improvement (or Alert / Savage Attacker), Extra Attack, Fast Movement, Font of Inspiration, Sear Undead, Wild Resurgence, Tactical Shift, Stunning Strike, Cunning Strike, Uncanny Dodge, Sorcerous Restoration, more weapon masteries, 3rd-level slots
+- New spells: Aid, Lesser Restoration, Fireball, Lightning Bolt, Mass Healing Word, Revivify, Spirit Guardians, Vampiric Touch; level 5 subclass spells
+- Level-up walkthrough (`packages/content/src/levelup.ts`, `LevelUp.tsx`): average or rolled HP (rolled on the server), ASI or feat, spells, invocations, metamagic, masteries; starts from suggested picks; AI companions level themselves with the same picks
+- Player accounts: name + PIN (scrypt-hashed, lockout after 5 wrong tries), device tokens, characters saved per player on the server, adventures owned by the player who started them and listed for continuing on any device; a character that levels up in an adventure is updated in the player's roster. Real sign-in replaces this at deployment, keeping the data
+- Every bonus die and discarded reroll is logged
+
+Not yet:
+- Levels 6+ (the level cap is `MAX_LEVEL` = 5)
+- Monk Slow Fall and Paladin Faithful Steed are story-only
+- Feats that need their own choices (Magic Initiate, Skilled) at level 4
+- Druid 3rd-level spells

@@ -8,6 +8,7 @@ const MAX_COMPANIONS = 3;
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { Battle, type BattleOutcome } from "../battle/BattleView";
 import { LevelUp } from "./LevelUp";
+import type { PlayerAccount } from "../player";
 import { narrator } from "./narrator";
 import { VoiceControls } from "./VoiceControls";
 import { findServer, LocalDemoClient, RemoteClient, ServerError, type AdventureSnapshot, type DmClient, type ServerInfo } from "./client";
@@ -43,7 +44,7 @@ function clientFor(mode: "remote" | "local", provider: string): DmClient {
   return mode === "local" ? new LocalDemoClient() : new RemoteClient(provider, provider === "claude" ? "Claude" : "Demo DM");
 }
 
-export function AdventureView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void }) {
+export function AdventureView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void; player: PlayerAccount | null }) {
   const [server, setServer] = useState<ServerInfo | null | undefined>(undefined);
   const [choice, setChoice] = useState<string>("");
   const [client, setClient] = useState<DmClient | null>(null);
@@ -160,12 +161,29 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <button className="primary" disabled={busy || server === undefined} onClick={() => begin()}>
               {busy ? "Starting…" : "Begin adventure"}
             </button>
-            {saved && (
+            {saved && !props.player?.adventures.some((a) => a.id === saved.id) && (
               <button className="secondary" disabled={busy} onClick={() => begin(saved)}>
                 Continue saved adventure
               </button>
             )}
           </div>
+          {props.player && props.player.adventures.length > 0 && server && (
+            <section className="my-adventures">
+              <h3>Your adventures</h3>
+              <ul>
+                {props.player.adventures.slice(0, 6).map((a) => (
+                  <li key={a.id}>
+                    <span>
+                      <strong>{a.hero}</strong> · {a.title} <span className="muted small">({new Date(a.updated).toLocaleDateString()})</span>
+                    </span>
+                    <button className="secondary small" disabled={busy || !server.providers.includes(a.provider)} onClick={() => begin({ mode: "remote", provider: a.provider, id: a.id })}>
+                      Continue
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           {server === null && (
             <p className="note">
               The game server isn't running, so only the offline demo DM is available. To play with Claude, run <code>npm run dev</code> with your API key in <code>.env</code>.
