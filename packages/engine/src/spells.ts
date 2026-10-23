@@ -33,6 +33,10 @@ export interface SpellDef {
   effect?: "slow" | "no-reactions" | "mockery" | "guided" | "bless" | "shield-of-faith" | "hold" | "teleport" | "spiritual-weapon";
   /** Only works on this creature type, like Hold Person on humanoids. */
   onlyType?: string;
+  /** Push a target this far straight away on a hit or a failed save (Large or smaller). */
+  pushFt?: number;
+  /** Chromatic Orb: the damage type is the one of these the target resists least. */
+  damageTypes?: DamageType[];
   attackBonus: number;
   saveDc: number;
 }

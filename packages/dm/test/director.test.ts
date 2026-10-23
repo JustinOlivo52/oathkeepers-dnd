@@ -399,3 +399,27 @@ describe("Rests and limited features", () => {
     expect(bramState.hitDiceSpent).toBeUndefined();
   });
 });
+
+describe("Out-of-battle class features", () => {
+  const pip = content.characters.find((c) => c.id === "pip-thistlewick")!;
+
+  it("Magical Cunning regains half the pact slots once per long rest", () => {
+    const warlock = { ...pip, id: "w", class: "warlock", subclass: "fiend-patron", spells: undefined };
+    const state = Director.newAdventure(content, [warlock], "x", "id");
+    const director = new Director(content, new ScriptedProvider([]), state, seededRng(1));
+    state.characters.w!.resources = { "spell-slot-2": 0 };
+    director.magicalCunning("w");
+    expect(state.characters.w!.resources).toEqual({ "spell-slot-2": 1, "magical-cunning": 0 });
+    expect(() => director.magicalCunning("w")).toThrow(/long rest/);
+  });
+
+  it("Arcane Recovery gives a wizard slots back on a short rest", async () => {
+    const rest = call("r1", "short_rest", { reason: "Camp" });
+    const provider = new ScriptedProvider([turn([""], [rest]), turn(["Rested."])]);
+    const state = Director.newAdventure(content, [pip], provider.name, "id");
+    state.characters[pip.id]!.resources = { "spell-slot-1": 0, "spell-slot-2": 0 };
+    await new Director(content, provider, state, seededRng(1)).act(pip.id, "We rest");
+    // Level 3: up to 2 levels of slots back, highest first.
+    expect(state.characters[pip.id]!.resources).toEqual({ "spell-slot-1": 0, "spell-slot-2": 1, "arcane-recovery": 0 });
+  });
+});

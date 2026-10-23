@@ -107,6 +107,8 @@ export function Builder(props: {
                       shield: false,
                       weaponIds: [],
                       spells: [],
+                      invocations: [],
+                      metamagic: [],
                     });
                   })
                 }
@@ -446,6 +448,48 @@ export function Builder(props: {
               Spellcasting ({o.spellcasting.ability.toUpperCase()}): choosing spells arrives with the spell system.
             </p>
           )}
+          {o.invocations && (
+            <>
+              <h4>Eldritch Invocations</h4>
+              <ChipPicker
+                options={o.invocations.options.map((i) => i.id)}
+                selected={draft.invocations ?? []}
+                max={o.invocations.count}
+                label={(id) => {
+                  const inv = content.invocations.find((i) => i.id === id)!;
+                  return inv.battle ? inv.name : `${inv.name} (story)`;
+                }}
+                onChange={(next) => update((d) => void (d.invocations = next))}
+              />
+              <ul className="spell-notes">
+                {(draft.invocations ?? []).map((id) => {
+                  const inv = content.invocations.find((i) => i.id === id);
+                  return inv && <li key={id} className="small"><strong>{inv.name}</strong>: {inv.description}</li>;
+                })}
+              </ul>
+            </>
+          )}
+          {o.metamagic && (
+            <>
+              <h4>Metamagic</h4>
+              <ChipPicker
+                options={o.metamagic.options.map((m) => m.id)}
+                selected={draft.metamagic ?? []}
+                max={o.metamagic.count}
+                label={(id) => {
+                  const m = content.metamagic.find((x) => x.id === id)!;
+                  return `${m.name} (${m.cost} SP)`;
+                }}
+                onChange={(next) => update((d) => void (d.metamagic = next))}
+              />
+              <ul className="spell-notes">
+                {(draft.metamagic ?? []).map((id) => {
+                  const m = content.metamagic.find((x) => x.id === id);
+                  return m && <li key={id} className="small"><strong>{m.name}</strong>: {m.description}</li>;
+                })}
+              </ul>
+            </>
+          )}
         </Step>
 
         <Step id="equipment" issues={stepIssues("equipment")}>
@@ -492,7 +536,14 @@ export function Builder(props: {
 
         <Step id="spells" issues={stepIssues("spells")}>
           {o.cls?.spellcasting ? (
-            <SpellPicker cls={o.cls} level={draft.level} selected={draft.spells ?? []} onChange={(spells) => update((d) => void (d.spells = spells))} />
+            <SpellPicker
+              cls={o.cls}
+              level={draft.level}
+              always={o.alwaysPrepared}
+              classChoices={draft.classChoices}
+              selected={draft.spells ?? []}
+              onChange={(spells) => update((d) => void (d.spells = spells))}
+            />
           ) : (
             <p className="muted">{o.cls ? `${o.cls.name}s don't cast spells.` : "Choose a class first."}</p>
           )}
@@ -574,9 +625,9 @@ export function Builder(props: {
 }
 
 /** Cantrips and prepared spells from the class list, with the counts the class allows at this level. */
-function SpellPicker(props: { cls: ClassData; level: number; selected: string[]; onChange: (ids: string[]) => void }) {
-  const { cantrips, leveled } = spellOptions(content, props.cls, props.level);
-  const counts = spellCounts(props.cls, props.level);
+function SpellPicker(props: { cls: ClassData; level: number; always: string[]; classChoices: Record<string, string>; selected: string[]; onChange: (ids: string[]) => void }) {
+  const { cantrips, leveled } = spellOptions(content, props.cls, props.level, props.always);
+  const counts = spellCounts(props.cls, props.level, props.classChoices);
   const name = (id: string) => content.spells.find((s) => s.id === id)?.name ?? id;
   const describe = (list: SpellData[]) => (
     <ul className="spell-notes">
@@ -619,7 +670,12 @@ function SpellPicker(props: { cls: ClassData; level: number; selected: string[];
         onChange={(next) => props.onChange([...pickedCantrips, ...next])}
       />
       {describe(leveled)}
-      <button type="button" className="ghost small" onClick={() => props.onChange(defaultSpells(content, props.cls, props.level))}>
+      {props.always.length > 0 && (
+        <p className="small">
+          <strong>Always prepared</strong> (from your subclass, not counted): {props.always.map(name).join(", ")}
+        </p>
+      )}
+      <button type="button" className="ghost small" onClick={() => props.onChange(defaultSpells(content, props.cls, props.level, props.always, props.classChoices))}>
         Pick for me
       </button>
     </>

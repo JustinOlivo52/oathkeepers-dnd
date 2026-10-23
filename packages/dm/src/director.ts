@@ -449,6 +449,29 @@ export class Director {
     }
   }
 
+  /**
+   * Warlock: Magical Cunning. A one-minute rite outside battle: regain half your Pact Magic slots (rounded up), once per long rest.
+   * No DM call; the DM sees nothing change but the warlock's slots.
+   */
+  magicalCunning(characterId: string): StoryEvent[] {
+    const data = this.state.party.find((c) => c.id === characterId);
+    const c = this.state.characters[characterId];
+    if (!data || !c) throw new AdventureError("Unknown character");
+    if (this.state.pending[0]?.type === "combat") throw new AdventureError("Not during a battle");
+    const built = buildCharacter(this.content, data);
+    if (!built.features.includes("magical-cunning")) throw new AdventureError(`${data.name} doesn't have Magical Cunning`);
+    if (c.resources?.["magical-cunning"] === 0) throw new AdventureError("Magical Cunning is used until your next long rest");
+    const [slotId, slot] = Object.entries(built.resources).find(([id]) => id.startsWith("spell-slot-")) ?? [];
+    if (!slotId || !slot) throw new AdventureError("No pact slots to recover");
+    const now = c.resources?.[slotId] ?? slot.max;
+    const regained = Math.min(slot.max, now + Math.ceil(slot.max / 2)) - now;
+    if (regained < 1) throw new AdventureError("Your pact slots are already full");
+    c.resources = { ...c.resources, [slotId]: now + regained, "magical-cunning": 0 };
+    const event: StoryEvent = { type: "notice", text: `${data.name} performs Magical Cunning and regains ${regained} pact slot${regained > 1 ? "s" : ""}.` };
+    this.state.events.push(event);
+    return [event];
+  }
+
   /** Spend Hit Dice (die + Con each) until healed or out of dice, and refill short-rest features. */
   private shortRest(): Record<string, number> {
     const healed: Record<string, number> = {};
@@ -463,6 +486,21 @@ export class Director {
         c.hp = Math.min(c.maxHp, c.hp + Math.max(1, roll(this.rng, `1d${cls.hitDie}`).total + con));
       }
       if (c.hp > before) healed[data.id] = c.hp - before;
+      // Wizard: Arcane Recovery, once per long rest. Recover slots worth up to half the wizard level (no level 6+ slots), highest first.
+      if (built.features.includes("arcane-recovery") && c.resources && c.resources["arcane-recovery"] !== 0) {
+        let budget = Math.ceil(data.level / 2);
+        let used = false;
+        for (let level = 5; level >= 1; level--) {
+          const id = `spell-slot-${level}`;
+          const max = built.resources[id]?.max ?? 0;
+          while (budget >= level && (c.resources[id] ?? max) < max) {
+            c.resources[id] = (c.resources[id] ?? max) + 1;
+            budget -= level;
+            used = true;
+          }
+        }
+        if (used) c.resources["arcane-recovery"] = 0;
+      }
       for (const [id, r] of Object.entries(built.resources)) {
         if (!c.resources || c.resources[id] === undefined) continue;
         if (r.recharge === "short") delete c.resources[id];

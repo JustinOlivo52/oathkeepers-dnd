@@ -55,7 +55,9 @@ function completeDraft(classId: string, speciesId = "human", backgroundId = "sol
   d.shield = o.canUseShield;
   d.weaponIds = o.weapons.slice(0, 2).map((w) => w.id);
   d.languages = ["Elvish", "Dwarvish"];
-  if (o.cls?.spellcasting) d.spells = defaultSpells(content, o.cls, d.level);
+  if (o.cls?.spellcasting) d.spells = defaultSpells(content, o.cls, d.level, o.alwaysPrepared, d.classChoices);
+  if (o.invocations) d.invocations = o.invocations.options.filter((i) => i.battle).slice(0, o.invocations.count).map((i) => i.id);
+  if (o.metamagic) d.metamagic = o.metamagic.options.slice(0, o.metamagic.count).map((m) => m.id);
   return d;
 }
 

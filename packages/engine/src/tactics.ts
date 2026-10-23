@@ -1,4 +1,4 @@
-import { Combat, POTION, SPELL_SLOT } from "./combat.js";
+import { Combat, incapacitated, POTION, SPELL_SLOT } from "./combat.js";
 import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
 import { averageRoll } from "./dice.js";
 import { explore, footprintDistanceFt, footprintSquares, key, samePoint, straightPath, type Point } from "./grid.js";
@@ -106,14 +106,43 @@ function castSpells(combat: Combat, me: Creature): void {
   const turn = combat.turn!;
   const spells = new Map(me.spells!.map((s) => [s.id, s]));
   const can = (id: string) => spells.has(id) && !combat.spellProblem(me.id, id);
+  const points = () => me.resources["sorcery-points"]?.current ?? 0;
+  /** Metamagic worth paying for on this spell, if this sorcerer knows it and can afford it. */
+  const metamagicFor = (s: SpellDef, wants: string[]) => {
+    const picked: string[] = [];
+    for (const m of wants) {
+      const next = [...picked, m];
+      if (me.features.includes(`metamagic-${m}`) && !combat.spellProblem(me.id, s.id, next)) picked.push(m);
+    }
+    return picked;
+  };
   const tryCast = (id: string, opts: Parameters<Combat["castSpell"]>[2]) => {
+    const s = spells.get(id)!;
+    const wants = [
+      ...(s.save && s.effect === "hold" && points() >= 2 ? ["heightened"] : []),
+      ...(s.level > 0 && s.damage && points() >= 2 ? ["empowered"] : []),
+      ...(s.level > 0 && s.attack && points() >= 2 ? ["seeking"] : []),
+      ...(opts?.metamagic ?? []),
+    ];
+    const metamagic = metamagicFor(s, [...new Set(wants)]);
     try {
-      combat.castSpell(me.id, id, opts);
+      combat.castSpell(me.id, id, { ...opts, ...(metamagic.length ? { metamagic } : {}) });
       return true;
     } catch {
       return false;
     }
   };
+  // Sorcerer: Innate Sorcery early; Font of Magic turns points into a slot when slots run dry.
+  if (turn.bonusActions > 0 && me.features.includes("innate-sorcery") && (me.resources["innate-sorcery"]?.current ?? 0) > 0 && !me.effects.some((e) => e.id === "innate-sorcery")) {
+    combat.innateSorcery(me.id);
+  }
+  if (turn.bonusActions > 0 && me.features.includes("font-of-magic") && ![1, 2, 3].some((n) => (me.resources[slotResource(n)]?.current ?? 0) > 0) && points() >= 2) {
+    try {
+      combat.createSpellSlot(me.id, points() >= 3 && me.level >= 3 ? 2 : 1);
+    } catch {
+      // Not enough points for that level.
+    }
+  }
   const enemies = combat.enemiesOf(me).filter(isConscious);
   if (!enemies.length) return;
   const allies = [...combat.creatures.values()].filter((c) => c.side === me.side && !c.dead);
@@ -125,6 +154,7 @@ function castSpells(combat: Combat, me: Creature): void {
   const hurt = allies.filter((c) => c.hp <= c.maxHp / 3).sort((a, b) => a.hp - b.hp);
   const healTarget = hurt.find((c) => within(c, 60));
   if (healTarget && can("healing-word")) tryCast("healing-word", { targetIds: [healTarget.id] });
+  if (!isConscious(me) || combat.isOver) return;
   // Bonus Action: Spiritual Weapon.
   if (turn.bonusActions > 0 && combat.hasSpiritualWeapon(me.id)) {
     const target = enemies.filter((e) => within(e, 60)).sort((a, b) => a.hp - b.hp)[0];
@@ -139,6 +169,7 @@ function castSpells(combat: Combat, me: Creature): void {
     const target = enemies.filter((e) => within(e, 60)).sort((a, b) => a.hp - b.hp)[0];
     if (target) tryCast("spiritual-weapon", { targetIds: [target.id] });
   }
+  if (!isConscious(me) || combat.isOver) return;
   // Bonus Action: Misty Step out of trouble.
   if (me.hp <= me.maxHp / 2 && combat.enemiesWithin(me, 5).length && can("misty-step") && combat.map) {
     let best: { p: Point; score: number } | undefined;
@@ -151,6 +182,14 @@ function castSpells(combat: Combat, me: Creature): void {
         if (!best || score > best.score) best = { p, score };
       }
     if (best && best.score > 5) tryCast("misty-step", { point: best.p });
+  }
+  if (!isConscious(me) || combat.isOver) return;
+  // Bard: Bardic Inspiration for the hardest-hitting ally, keeping a use back for Cutting Words.
+  if (turn.bonusActions > 0 && me.features.includes("bardic-inspiration") && (me.resources["bardic-inspiration"]?.current ?? 0) >= 2) {
+    const ally = allies
+      .filter((c) => c.id !== me.id && isConscious(c) && within(c, 60) && !c.effects.some((e) => e.id === "inspired"))
+      .sort((a, b) => Math.max(0, ...b.attacks.map((x) => x.attackBonus)) - Math.max(0, ...a.attacks.map((x) => x.attackBonus)))[0];
+    if (ally) combat.bardicInspiration(me.id, ally.id);
   }
   if (turn.actions < 1 || combat.isOver) return;
 
@@ -168,7 +207,7 @@ function castSpells(combat: Combat, me: Creature): void {
   // Action: an area spell that catches two or more enemies and no allies.
   const map = combat.map;
   if (map) {
-    let bestArea: { id: string; point: Point; hit: number } | undefined;
+    let bestArea: { id: string; point: Point; hit: number; careful: boolean } | undefined;
     for (const s of spells.values()) {
       if (!s.area || !s.damage || !can(s.id)) continue;
       if (s.level > 0 && slotsLeft(s.level) < 1) continue;
@@ -177,13 +216,15 @@ function castSpells(combat: Combat, me: Creature): void {
         if (s.area.shape === "sphere" && (footprintDistanceFt(me.position!, footprintOf(me), point, 1) > s.rangeFt || !map.lineOfSight(me.position!, point))) continue;
         const covered = new Set(areaSquares(map, s.area.shape, s.area.sizeFt, point, me.position!, footprintOf(me)).map(key));
         const touches = (c: Creature) => footprintSquares(c.position!, footprintOf(c)).some((q) => covered.has(key(q)));
-        if (allies.some((a) => a.id !== me.id && a.position && touches(a))) continue;
+        const alliesHit = allies.filter((a) => a.id !== me.id && a.position && touches(a)).length;
+        const careful = alliesHit > 0 && alliesHit <= Math.max(1, Math.floor((me.abilities.cha - 10) / 2)) && me.features.includes("metamagic-careful") && points() >= 1;
+        if (alliesHit && !careful) continue;
         const hit = enemies.filter((x) => touches(x)).length;
         const need = s.level > 0 ? 2 : 1;
-        if (hit >= need && (!bestArea || hit > bestArea.hit)) bestArea = { id: s.id, point, hit };
+        if (hit >= need && (!bestArea || hit > bestArea.hit)) bestArea = { id: s.id, point, hit, careful };
       }
     }
-    if (bestArea && bestArea.hit >= 2 && tryCast(bestArea.id, { point: bestArea.point })) return;
+    if (bestArea && bestArea.hit >= 2 && tryCast(bestArea.id, { point: bestArea.point, ...(bestArea.careful ? { metamagic: ["careful"] } : {}) })) return;
   }
   // Action: a single-target spell. Slots go to tough targets; otherwise the best cantrip.
   const adjacent = combat.enemiesWithin(me, 5).length > 0;
@@ -245,7 +286,7 @@ function approach(combat: Combat, me: Creature): boolean {
   // Plan the full route ignoring movement limits, then walk as far as this turn allows.
   const passable = (p: Point) => {
     const o = combat.occupant(p);
-    return !o || o.side === me.side;
+    return !o || o.side === me.side || incapacitated(o);
   };
   const all = explore(map, me.position!, passable, Infinity, size);
   // Cheapest square in reach of an enemy; among equals, the one most directly ahead.

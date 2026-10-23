@@ -101,6 +101,14 @@
           "id": "sacred-weapon",
           "name": "Sacred Weapon"
         }
+      ],
+      "bonusSpells": [
+        {
+          "level": 3,
+          "spells": [
+            "shield-of-faith"
+          ]
+        }
       ]
     }
   ]

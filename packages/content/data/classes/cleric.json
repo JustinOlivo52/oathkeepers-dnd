@@ -112,6 +112,15 @@
           "id": "preserve-life",
           "name": "Preserve Life"
         }
+      ],
+      "bonusSpells": [
+        {
+          "level": 3,
+          "spells": [
+            "bless",
+            "cure-wounds"
+          ]
+        }
       ]
     }
   ]

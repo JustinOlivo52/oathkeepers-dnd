@@ -25,10 +25,14 @@ export function describeEvent(e: LoggedEvent, name: (id: string) => string): str
     }
     case "extra_damage":
       return null;
+    case "reaction":
+      return e.reaction === "cutting-words" ? `${name(e.creatureId)} uses Cutting Words on ${name(e.targetId)}` : `${name(e.creatureId)} makes an opportunity attack on ${name(e.targetId)}`;
     case "concentration":
       return e.kept ? `${name(e.creatureId)} keeps concentrating` : `${name(e.creatureId)} loses concentration`;
     case "feature_used":
-      return e.featureId === "potion-of-healing" ? `${name(e.creatureId)} drinks a Potion of Healing` : `${name(e.creatureId)} uses ${e.featureId}`;
+      if (e.featureId === "potion-of-healing") return `${name(e.creatureId)} drinks a Potion of Healing`;
+      if (e.featureId === "bardic-inspiration-die") return `${name(e.creatureId)} adds a Bardic Inspiration die`;
+      return `${name(e.creatureId)} uses ${e.featureId.replace(/^metamagic-/, "").replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase())}${e.featureId.startsWith("metamagic-") ? " Spell" : ""}`;
     case "effect_applied":
       return `${name(e.targetId)} is ${e.effectId}`;
     case "down":

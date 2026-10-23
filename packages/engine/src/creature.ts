@@ -68,6 +68,8 @@ export interface ActiveEffect {
   spell?: string;
   /** Save DC to shake it off (Hold Person). */
   dc?: number;
+  /** Bardic Inspiration die, like "d6". */
+  die?: string;
 }
 
 export interface Creature {

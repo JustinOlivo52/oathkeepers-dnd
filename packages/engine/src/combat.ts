@@ -1,6 +1,7 @@
 import type { Attack, Creature, Side } from "./creature.js";
 import { addCondition, footprintOf, hasCondition, isConscious, removeCondition } from "./creature.js";
 import { abilityModifier } from "./abilities.js";
+import { rollDie } from "./rng.js";
 import { saveModifier, savingThrow } from "./checks.js";
 import { areaSquares, slotResource, upcast, type SpellDef } from "./spells.js";
 import { applyDamage, deathSave, heal } from "./damage.js";
@@ -40,7 +41,28 @@ export interface TurnState {
 export interface AttackOptions {
   /** Paladin: cast Divine Smite on a hit (Bonus Action and a spell slot). */
   smite?: boolean;
+  /** Sorcerer Empowered Spell: reroll up to this many low damage dice. */
+  empower?: number;
+  /** Sorcerer Seeking Spell: reroll the d20 on a miss. */
+  seeking?: boolean;
 }
+
+/** Sorcery Point cost of each Metamagic option. Empowered and Seeking can be added to another option. */
+export const METAMAGIC_COST: Record<string, number> = { careful: 1, distant: 1, empowered: 1, heightened: 2, quickened: 2, seeking: 1, twinned: 1 };
+const STACKING_METAMAGIC = new Set(["empowered", "seeking"]);
+
+/** Can't take actions or reactions: unconscious (0 HP) or paralyzed. Others can move through its space. */
+export function incapacitated(c: Creature): boolean {
+  return !isConscious(c) || hasCondition(c, "paralyzed");
+}
+
+/** Bardic Inspiration die by bard level. */
+export function bardicDie(level: number): string {
+  return level >= 15 ? "d12" : level >= 10 ? "d10" : level >= 5 ? "d8" : "d6";
+}
+
+/** Sorcery Points to create a spell slot of each level (Font of Magic). */
+export const SLOT_COST: Record<number, number> = { 1: 2, 2: 3, 3: 5, 4: 6, 5: 7 };
 
 export interface AttackCheck {
   ok: boolean;
@@ -69,6 +91,8 @@ const GUIDED = "guided";
 const MOCKED = "mocked";
 const HELD = "held";
 const SPIRITUAL_WEAPON = "spiritual-weapon";
+const INSPIRED = "inspired";
+const INNATE_SORCERY = "innate-sorcery";
 /** Level 1 spell slots for half casters (Paladin, Ranger), by class level. */
 export const SPELL_SLOT = "spell-slot-1";
 export const POTION = "potion-of-healing";
@@ -231,6 +255,10 @@ export class Combat {
       advantage = true;
       notes.push("steady aim");
     }
+    if (attack.spell && this.hasEffect(attacker, INNATE_SORCERY)) {
+      advantage = true;
+      notes.push("innate sorcery");
+    }
     if (this.hasEffect(target, GUIDED)) {
       advantage = true;
       notes.push("guiding bolt");
@@ -280,15 +308,26 @@ export class Combat {
     if (check.notes.includes("vex")) target.effects = target.effects.filter((e) => !(e.id === VEXED && e.sourceId === attacker.id));
     const sacred = this.hasEffect(attacker, SACRED_WEAPON) ? Math.max(1, abilityModifier(attacker.abilities.cha)) : 0;
 
-    const r = rollD20(this.rng, attack.attackBonus + sacred, check.mode);
-    // Bless: add 1d4 to the attack roll.
-    if (this.hasEffect(attacker, BLESSED)) {
-      const d4 = roll(this.rng, "1d4");
-      r.total += d4.total;
-      r.modifier += d4.total;
-    }
     const ac = this.armorClass(target);
-    const hit = r.natural === 20 || (r.natural !== 1 && r.total >= ac);
+    const rollIt = () => {
+      const r = rollD20(this.rng, attack.attackBonus + sacred, check.mode);
+      // Bless: add 1d4 to the attack roll.
+      if (this.hasEffect(attacker, BLESSED)) {
+        const d4 = roll(this.rng, "1d4");
+        r.total += d4.total;
+        r.modifier += d4.total;
+      }
+      return r;
+    };
+    const hits = (x: { natural: number; total: number }) => x.natural === 20 || (x.natural !== 1 && x.total >= ac);
+    let r = rollIt();
+    // Seeking Spell: a missed spell attack rolls again.
+    if (!hits(r) && options.seeking) r = rollIt();
+    // Cutting Words: a nearby bard's reaction takes away from a hit that's close.
+    if (hits(r) && r.natural !== 20) this.cuttingWords(attacker, target, r, ac);
+    // Bardic Inspiration: a miss that the die could fix gets the die.
+    if (!hits(r) && r.natural !== 1) this.useInspiration(attacker, r, ac);
+    const hit = hits(r);
     // Melee hits within 5 ft of an unconscious target are automatic crits.
     const close = (this.distanceBetween(attacker, target) ?? 0) <= 5;
     const autoCrit = (hasCondition(target, "unconscious") || hasCondition(target, "paralyzed")) && !check.ranged && close;
@@ -317,6 +356,7 @@ export class Combat {
       // Rage: +2 damage on Strength attacks (levels 1 to 8).
       const rageBonus = strength && this.hasEffect(attacker, RAGING) ? 2 : 0;
       const dmg = roll(this.rng, rageBonus ? `${attack.damage}+${rageBonus}` : attack.damage, { critical });
+      if (options.empower) this.empower(dmg, options.empower);
       this.dealDamage(attacker, target, dmg.total, attack.damageType, dmg, critical);
       if (attack.extraDamage && !target.dead) {
         const extra = roll(this.rng, attack.extraDamage.dice, { critical });
@@ -330,6 +370,7 @@ export class Combat {
         this.log.push({ type: "effect_applied", targetId: target.id, effectId: VEXED, sourceId: attacker.id });
       }
       if (mastery === "slow" && !target.dead) this.applyEffect(target, SLOWED, attacker.id);
+      if (mastery === "push" && !target.dead) this.push(target, attacker, 10);
       if (mastery === "topple" && isConscious(target) && !hasCondition(target, "prone")) {
         const dc = 8 + abilityMod + attacker.proficiencyBonus;
         if (!savingThrow(this.rng, this.log, target, { ability: "con", dc }).success) {
@@ -352,6 +393,7 @@ export class Combat {
     const dealt = applyDamage(this.log, target, amount, type, { sourceId: attacker.id, ...(dice ? { roll: dice } : {}), critical, rng: this.rng });
     if (dealt > 0) this.checkConcentration(target, dealt);
     if (!isConscious(target) && this.hasEffect(target, RAGING)) this.endEffect(target, RAGING);
+    if (dealt > 0 && target.hp === 0 && target.side !== attacker.side) this.darkOnesBlessing(attacker);
   }
 
   /** Extra damage from class features on a hit: Sneak Attack, Hunter's Mark, Colossus Slayer, Frenzy, Divine Smite. */
@@ -397,6 +439,130 @@ export class Combat {
     }
   }
 
+  /** Fiend Warlock: dropping a foe (yours, or an ally's within 10 ft of you) grants Charisma + level temporary HP. */
+  private darkOnesBlessing(killer: Creature): void {
+    for (const w of this.creatures.values()) {
+      if (!w.features.includes("dark-ones-blessing") || w.side !== killer.side || !isConscious(w)) continue;
+      if (w.id !== killer.id && (this.distanceBetween(w, killer) ?? Infinity) > 10) continue;
+      const temp = Math.max(1, abilityModifier(w.abilities.cha) + w.level);
+      if (temp > w.tempHp) {
+        w.tempHp = temp;
+        this.log.push({ type: "feature_used", creatureId: w.id, featureId: "dark-ones-blessing" });
+      }
+    }
+  }
+
+  /** Shove a creature straight away from `from`, square by square, until a wall or creature stops it. Large or smaller only. */
+  push(target: Creature, from: Creature, ft: number): void {
+    if (!this.map || !target.position || !from.position || target.dead || footprintOf(target) > 2) return;
+    const tc = { x: target.position.x + (footprintOf(target) - 1) / 2, y: target.position.y + (footprintOf(target) - 1) / 2 };
+    const fc = { x: from.position.x + (footprintOf(from) - 1) / 2, y: from.position.y + (footprintOf(from) - 1) / 2 };
+    const dx = Math.sign(Math.round(tc.x - fc.x));
+    const dy = Math.sign(Math.round(tc.y - fc.y));
+    if (!dx && !dy) return;
+    const path: Point[] = [];
+    let at = target.position;
+    for (let i = 0; i < Math.floor(ft / 5); i++) {
+      const next = { x: at.x + dx, y: at.y + dy };
+      if (!footprintSquares(next, footprintOf(target)).every((q) => this.map!.walkable(q)) || !this.canStandAt(target, next)) break;
+      path.push(next);
+      at = next;
+    }
+    if (!path.length) return;
+    target.position = at;
+    this.log.push({ type: "move", creatureId: target.id, path, costFt: 0 });
+  }
+
+  /** Bardic Inspiration: if the die can turn this failure into a success, roll it and add it. */
+  private useInspiration(c: Creature, r: { total: number; modifier: number }, target: number): void {
+    const inspired = c.effects.find((e) => e.id === INSPIRED);
+    if (!inspired?.die || r.total + Number(inspired.die.slice(1)) < target) return;
+    const bonus = roll(this.rng, `1${inspired.die}`).total;
+    r.total += bonus;
+    r.modifier += bonus;
+    this.endEffect(c, INSPIRED);
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: "bardic-inspiration-die" });
+  }
+
+  /** Lore Bard: Cutting Words. A reaction that subtracts the inspiration die from an enemy's hit, if it can make it miss. */
+  private cuttingWords(attacker: Creature, target: Creature, r: { total: number; modifier: number }, ac: number): void {
+    for (const bard of this.creatures.values()) {
+      if (!bard.features.includes("cutting-words") || bard.side === attacker.side || !isConscious(bard) || !this.hasReaction(bard)) continue;
+      if ((bard.resources["bardic-inspiration"]?.current ?? 0) < 1) continue;
+      if ((this.distanceBetween(bard, attacker) ?? Infinity) > 60 || !this.canSee(bard, attacker)) continue;
+      const die = bardicDie(bard.level);
+      if (r.total - Number(die.slice(1)) >= ac) continue;
+      this.spendResource(bard, "bardic-inspiration");
+      this.reactionsUsed.add(bard.id);
+      const cut = roll(this.rng, `1${die}`).total;
+      r.total -= cut;
+      r.modifier -= cut;
+      this.log.push({ type: "reaction", creatureId: bard.id, reaction: "cutting-words", targetId: attacker.id });
+      return;
+    }
+  }
+
+  /** Empowered Spell: reroll the lowest damage dice (below average), up to `count` of them. */
+  private empower(r: ReturnType<typeof roll>, count: number): void {
+    const dice = r.results.flatMap((g, gi) => g.faces.map((face, fi) => ({ gi, fi, face, sides: g.sides })));
+    for (const d of dice.filter((d) => d.face <= d.sides / 2).sort((a, b) => a.face - b.face).slice(0, count)) {
+      const again = rollDie(this.rng, d.sides);
+      r.results[d.gi]!.faces[d.fi] = again;
+      r.total += again - d.face;
+    }
+  }
+
+  // ---------- class features: Bard and Sorcerer ----------
+
+  /** Bard: Bardic Inspiration. Bonus Action: an ally within 60 ft gets a die to add to a failed attack or save. */
+  bardicInspiration(creatureId: string, targetId: string): void {
+    const c = this.requireActive(creatureId);
+    this.requireFeature(c, "bardic-inspiration");
+    const t = this.get(targetId);
+    if (t.id === c.id || t.side !== c.side || t.dead) throw new RulesError("Inspire another living ally");
+    if ((this.distanceBetween(c, t) ?? 0) > 60 || !this.canSee(c, t)) throw new RulesError(`${t.name} is out of range or sight`);
+    if (this.hasEffect(t, INSPIRED)) throw new RulesError(`${t.name} is already inspired`);
+    this.spendBonusFor(creatureId, ["bardic-inspiration"]);
+    this.spendResource(c, "bardic-inspiration");
+    t.effects.push({ id: INSPIRED, sourceId: c.id, die: bardicDie(c.level) });
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: "bardic-inspiration" });
+    this.log.push({ type: "effect_applied", targetId: t.id, effectId: INSPIRED, sourceId: c.id });
+  }
+
+  /** Sorcerer: Innate Sorcery. Bonus Action: +1 spell save DC and advantage on spell attacks for the battle. */
+  innateSorcery(creatureId: string): void {
+    const c = this.spendBonusFor(creatureId, ["innate-sorcery"]);
+    if (this.hasEffect(c, INNATE_SORCERY)) throw new RulesError("Innate Sorcery is already active");
+    this.spendResource(c, "innate-sorcery");
+    c.effects.push({ id: INNATE_SORCERY, sourceId: c.id });
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: "innate-sorcery" });
+  }
+
+  /** Sorcerer: Font of Magic. Bonus Action: Sorcery Points into a spell slot (2 points for level 1, 3 for level 2...). */
+  createSpellSlot(creatureId: string, level: number): void {
+    const c = this.requireActive(creatureId);
+    this.requireFeature(c, "font-of-magic");
+    const cost = SLOT_COST[level];
+    if (!cost || level > c.level / 2 + 0.5) throw new RulesError(`Can't create a level ${level} slot yet`);
+    if ((c.resources["sorcery-points"]?.current ?? 0) < cost) throw new RulesError(`Needs ${cost} Sorcery Points`);
+    this.spendBonusFor(creatureId, ["font-of-magic"]);
+    c.resources["sorcery-points"]!.current -= cost;
+    const slot = (c.resources[slotResource(level)] ??= { current: 0, max: 0, recharge: "long" });
+    slot.current += 1;
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: "font-of-magic" });
+  }
+
+  /** Sorcerer: Font of Magic. No action: a spell slot into Sorcery Points equal to its level (up to your maximum). */
+  convertSpellSlot(creatureId: string, level: number): void {
+    const c = this.requireActive(creatureId);
+    this.requireFeature(c, "font-of-magic");
+    const points = c.resources["sorcery-points"];
+    if (!points || points.current + level > points.max) throw new RulesError("That would go over your Sorcery Point maximum");
+    this.spendResource(c, slotResource(level));
+    points.current += level;
+    this.log.push({ type: "feature_used", creatureId: c.id, featureId: "font-of-magic" });
+  }
+
   private takeOncePerTurn(c: Creature, feature: string): boolean {
     const k = `${c.id}:${feature}`;
     if (this.oncePerTurn.get(k) === this.turnSerial) return false;
@@ -412,7 +578,7 @@ export class Combat {
   private checkConcentration(c: Creature, damage: number): void {
     const holding = c.effects.find((e) => e.id === CONCENTRATING);
     if (!holding) return;
-    const kept = isConscious(c) && savingThrow(this.rng, this.log, c, { ability: "con", dc: Math.max(10, Math.floor(damage / 2)) }).success;
+    const kept = isConscious(c) && this.save(c, "con", Math.max(10, Math.floor(damage / 2)), { advantage: c.features.includes("eldritch-mind") }).success;
     this.log.push({ type: "concentration", creatureId: c.id, spell: holding.spell ?? HUNTERS_MARK, kept });
     if (!kept) this.endConcentration(c);
   }
@@ -681,13 +847,16 @@ export class Combat {
   }
 
   /** Why this spell can't be cast now, or undefined if it can (targets aside). */
-  spellProblem(creatureId: string, spellId: string): string | undefined {
+  spellProblem(creatureId: string, spellId: string, metamagic: string[] = []): string | undefined {
     const c = this.get(creatureId);
     const spell = c.spells?.find((s) => s.id === spellId);
     const turn = this.turn;
     if (!spell) return `${c.name} doesn't know that spell`;
     if (!turn || turn.creatureId !== c.id) return "Not your turn";
-    if (spell.castingTime === "action" ? turn.actions < 1 : turn.bonusActions < 1) return `No ${spell.castingTime === "action" ? "action" : "bonus action"} left`;
+    const castingTime = metamagic.includes("quickened") ? "bonus" : spell.castingTime;
+    if (castingTime === "action" ? turn.actions < 1 : turn.bonusActions < 1) return `No ${castingTime === "action" ? "action" : "bonus action"} left`;
+    const mm = this.metamagicProblem(c, spell, metamagic);
+    if (mm) return mm;
     if (spell.level > 0 && turn.usedThisTurn.includes("slot-spell")) return "Only one spell with a spell slot per turn";
     if (spell.level > 0 && !this.slotsFor(c.id, spell.id).length) return "No spell slots left for it";
     return undefined;
@@ -697,22 +866,26 @@ export class Combat {
    * Cast a spell. Targets: creature ids for enemy and ally spells, a square for areas and teleports.
    * `slotLevel` upcasts; it defaults to the lowest slot available.
    */
-  castSpell(creatureId: string, spellId: string, opts: { targetIds?: string[]; point?: Point; slotLevel?: number } = {}): void {
+  castSpell(creatureId: string, spellId: string, opts: { targetIds?: string[]; point?: Point; slotLevel?: number; metamagic?: string[] } = {}): void {
     const c = this.requireActive(creatureId);
-    const problem = this.spellProblem(creatureId, spellId);
+    const meta = new Set(opts.metamagic ?? []);
+    const problem = this.spellProblem(creatureId, spellId, [...meta]);
     if (problem) throw new RulesError(problem);
     const spell = c.spells!.find((s) => s.id === spellId)!;
     const turn = this.turn!;
     const slot = spell.level === 0 ? 0 : (opts.slotLevel ?? this.slotsFor(c.id, spell.id)[0]!);
     if (spell.level > 0 && !this.slotsFor(c.id, spell.id).includes(slot)) throw new RulesError(`No level ${slot} slot left`);
     const extra = Math.max(0, slot - spell.level);
+    // Distant Spell doubles range (touch becomes 30 ft); Innate Sorcery adds 1 to the save DC.
+    const rangeFt = meta.has("distant") ? (spell.rangeFt <= 5 ? 30 : spell.rangeFt * 2) : spell.rangeFt;
+    const dc = spell.saveDc + (this.hasEffect(c, INNATE_SORCERY) ? 1 : 0);
 
     // Work out who it hits before spending anything, so a bad target costs nothing.
     let targets: Creature[] = [];
     let area: Point[] | undefined;
-    const inRange = (t: Creature) => t.id === c.id || ((this.distanceBetween(c, t) ?? 0) <= Math.max(5, spell.rangeFt) && this.canSee(c, t));
+    const inRange = (t: Creature) => t.id === c.id || ((this.distanceBetween(c, t) ?? 0) <= Math.max(5, rangeFt) && this.canSee(c, t));
     if (spell.target === "enemy" || spell.target === "ally") {
-      const max = (spell.targets ?? 1) + (spell.targetsPerSlot ?? 0) * extra;
+      const max = (spell.targets ?? 1) + (spell.targetsPerSlot ?? 0) * (extra + (meta.has("twinned") ? 1 : 0));
       targets = [...new Set(opts.targetIds ?? [])].map((id) => this.get(id));
       if (!targets.length) throw new RulesError("Choose a target");
       if (targets.length > max) throw new RulesError(`${spell.name} can target ${max} at most`);
@@ -727,7 +900,7 @@ export class Combat {
       const p = opts.point;
       if (!p || !map.inBounds(p)) throw new RulesError("Choose a square");
       const origin = spell.area && spell.area.shape !== "sphere";
-      if (!origin && (footprintDistanceFt(c.position!, footprintOf(c), p, 1) > spell.rangeFt || !map.lineOfSight(c.position!, p))) throw new RulesError("That square is out of range or sight");
+      if (!origin && (footprintDistanceFt(c.position!, footprintOf(c), p, 1) > rangeFt || !map.lineOfSight(c.position!, p))) throw new RulesError("That square is out of range or sight");
       if (spell.effect === "teleport" && (!this.canStandAt(c, p) || !map.walkable(p))) throw new RulesError("You can't land there");
       if (spell.area) {
         area = areaSquares(map, spell.area.shape, spell.area.sizeFt, p, c.position!, footprintOf(c));
@@ -737,8 +910,13 @@ export class Combat {
     } else targets = [c];
 
     // Pay for it.
-    if (spell.castingTime === "action") turn.actions -= 1;
+    if (spell.castingTime === "action" && !meta.has("quickened")) turn.actions -= 1;
     else turn.bonusActions -= 1;
+    if (meta.size) {
+      const cost = [...meta].reduce((n, m) => n + (METAMAGIC_COST[m] ?? 0), 0);
+      c.resources["sorcery-points"]!.current -= cost;
+      for (const m of meta) this.log.push({ type: "feature_used", creatureId: c.id, featureId: `metamagic-${m}` });
+    }
     if (slot > 0) {
       this.spendResource(c, slotResource(slot));
       turn.usedThisTurn.push("slot-spell");
@@ -777,13 +955,15 @@ export class Combat {
         this.log.push({ type: "effect_applied", targetId: t.id, effectId: id, sourceId: c.id });
       }
     } else if (spell.attack) {
-      const attack = this.spellAttack(spell, damage);
+      const empower = meta.has("empowered") ? Math.max(1, abilityModifier(c.abilities.cha)) : undefined;
       for (const t of targets) {
+        const attack = { ...this.spellAttack(spell, damage && { ...damage, type: this.bestDamageType(spell, t) }), ...(rangeFt !== spell.rangeFt ? { rangeFt: [rangeFt, rangeFt] as [number, number] } : {}) };
         for (let i = 0; i < hits && !t.dead && !this.isOver; i++) {
           const check = this.checkWith(c, t, attack);
           if (!check.ok) throw new RulesError(check.reason);
-          const { hit } = this.resolveAttack(c, t, attack, check);
+          const { hit } = this.resolveAttack(c, t, attack, check, { ...(empower ? { empower } : {}), ...(meta.has("seeking") ? { seeking: true } : {}) });
           if (hit) this.spellRider(c, t, spell);
+          if (hit && spell.pushFt) this.push(t, c, spell.pushFt);
           this.checkVictory();
         }
       }
@@ -792,14 +972,24 @@ export class Combat {
       for (const t of targets)
         for (let i = 0; i < hits && !t.dead; i++) {
           const r = roll(this.rng, damage.dice);
+          if (meta.has("empowered")) this.empower(r, Math.max(1, abilityModifier(c.abilities.cha)));
           this.dealDamage(c, t, r.total, damage.type, r);
         }
     } else if (spell.save) {
+      // Careful Spell: up to Charisma-modifier allies are left out of it.
+      const spared = new Set(
+        meta.has("careful") ? targets.filter((t) => t.side === c.side).slice(0, Math.max(1, abilityModifier(c.abilities.cha))).map((t) => t.id) : [],
+      );
+      // Heightened Spell: the first target saves at disadvantage.
+      const heightened = meta.has("heightened") ? targets.find((t) => t.side !== c.side)?.id : undefined;
       for (const t of targets) {
+        if (spared.has(t.id)) continue;
         const r = damage ? roll(this.rng, damage.dice) : undefined;
-        const saved = this.save(t, spell.save, spell.saveDc).success;
+        if (r && meta.has("empowered")) this.empower(r, Math.max(1, abilityModifier(c.abilities.cha)));
+        const saved = this.save(t, spell.save, dc, { disadvantage: t.id === heightened }).success;
         if (r && damage && (!saved || spell.halfOnSave)) this.dealDamage(c, t, saved ? Math.floor(r.total / 2) : r.total, damage.type, r);
-        if (!saved && !t.dead) this.spellRider(c, t, spell);
+        if (!saved && !t.dead) this.spellRider(c, t, spell, dc);
+        if (!saved && spell.pushFt) this.push(t, c, spell.pushFt);
       }
     }
     if (spell.concentration && !targets.some((t) => t.effects.some((e) => e.sourceId === c.id && e.concentration)) && !this.hasEffect(c, SPIRITUAL_WEAPON)) {
@@ -846,7 +1036,7 @@ export class Combat {
   }
 
   /** What a spell does beyond damage when it hits or the target fails its save. */
-  private spellRider(caster: Creature, t: Creature, spell: SpellDef): void {
+  private spellRider(caster: Creature, t: Creature, spell: SpellDef, dc = spell.saveDc): void {
     if (t.dead) return;
     const add = (id: string, extra: Partial<Creature["effects"][number]> = {}) => {
       t.effects = t.effects.filter((e) => !(e.id === id && e.sourceId === (extra.sourceId ?? caster.id)));
@@ -869,26 +1059,51 @@ export class Combat {
         break;
       case "hold":
         if (!isConscious(t)) break;
-        add(HELD, { concentration: true, spell: spell.id, dc: spell.saveDc });
+        add(HELD, { concentration: true, spell: spell.id, dc });
         addCondition(t, "paralyzed");
         this.log.push({ type: "condition", creatureId: t.id, condition: "paralyzed", added: true });
         break;
     }
   }
 
+  /** Chromatic Orb: of its damage types, the one this target resists least. */
+  private bestDamageType(spell: SpellDef, t: Creature): Attack["damageType"] {
+    const base = spell.damage?.type ?? "force";
+    if (!spell.damageTypes?.length) return base;
+    const score = (type: Attack["damageType"]) => (t.immunities.includes(type) ? 3 : t.resistances.includes(type) ? 2 : t.vulnerabilities.includes(type) ? 0 : 1);
+    return [...spell.damageTypes].sort((a, b) => score(a) - score(b) || Number(b === base) - Number(a === base))[0]!;
+  }
+
+  private metamagicProblem(c: Creature, spell: SpellDef, metamagic: string[]): string | undefined {
+    if (!metamagic.length) return undefined;
+    if (metamagic.some((m) => !c.features.includes(`metamagic-${m}`))) return "You don't know that Metamagic";
+    if (metamagic.filter((m) => !STACKING_METAMAGIC.has(m)).length > 1) return "Only one Metamagic per spell (Empowered and Seeking can join another)";
+    const cost = metamagic.reduce((n, m) => n + (METAMAGIC_COST[m] ?? 0), 0);
+    if ((c.resources["sorcery-points"]?.current ?? 0) < cost) return `Needs ${cost} Sorcery Point${cost > 1 ? "s" : ""}`;
+    if (metamagic.includes("quickened") && spell.castingTime !== "action") return "Quickened only changes spells that take an Action";
+    if (metamagic.includes("twinned") && !spell.targetsPerSlot) return "Twinned needs a spell that gains targets at higher levels";
+    if (metamagic.includes("careful") && !spell.area) return "Careful works on area spells";
+    if (metamagic.includes("heightened") && !spell.save) return "Heightened works on spells with a saving throw";
+    if (metamagic.includes("seeking") && !spell.attack) return "Seeking works on spell attacks";
+    if (metamagic.includes("empowered") && !spell.damage) return "Empowered works on damage spells";
+    return undefined;
+  }
+
   /** A saving throw in battle: Bless adds 1d4, and the paralyzed fail Strength and Dexterity saves. */
-  save(c: Creature, ability: "str" | "dex" | "con" | "int" | "wis" | "cha", dc: number): { success: boolean } {
+  save(c: Creature, ability: "str" | "dex" | "con" | "int" | "wis" | "cha", dc: number, opts: { advantage?: boolean; disadvantage?: boolean } = {}): { success: boolean } {
+    const mode = resolveMode(!!opts.advantage, !!opts.disadvantage);
     if (hasCondition(c, "paralyzed") && (ability === "str" || ability === "dex")) {
-      const r = rollD20(this.rng, saveModifier(c, ability));
+      const r = rollD20(this.rng, saveModifier(c, ability), mode);
       this.log.push({ type: "check", creatureId: c.id, kind: "save", ability, dc, roll: r, success: false });
       return { success: false };
     }
-    const r = rollD20(this.rng, saveModifier(c, ability));
+    const r = rollD20(this.rng, saveModifier(c, ability), mode);
     if (this.hasEffect(c, BLESSED)) {
       const d4 = roll(this.rng, "1d4").total;
       r.total += d4;
       r.modifier += d4;
     }
+    if (r.total < dc) this.useInspiration(c, r, dc);
     const success = r.total >= dc;
     this.log.push({ type: "check", creatureId: c.id, kind: "save", ability, dc, roll: r, success });
     return { success };
@@ -1035,8 +1250,8 @@ export class Combat {
   private passableFor(c: Creature, p: Point): boolean {
     if (!this.map!.walkable(p)) return false;
     const other = this.occupant(p);
-    // Allies can be moved through; enemies block.
-    return !other || other.side === c.side;
+    // Allies and incapacitated creatures (down, or paralyzed) can be moved through; other enemies block.
+    return !other || other.side === c.side || incapacitated(other);
   }
 
   private nextTurn(): void {

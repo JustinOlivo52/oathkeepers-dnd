@@ -41,6 +41,21 @@ export const IMPLEMENTED_FEATURES = new Set([
   // Spells (the battle spell list grows over time)
   "spellcasting",
   "pact-magic",
+  "life-domain-spells",
+  "oath-of-devotion-spells",
+  "circle-of-the-land-spells",
+  "fiend-spells",
+  "draconic-spells",
+  // Bard, Warlock, Sorcerer, Wizard
+  "bardic-inspiration",
+  "cutting-words",
+  "eldritch-invocations",
+  "magical-cunning",
+  "dark-ones-blessing",
+  "innate-sorcery",
+  "font-of-magic",
+  "metamagic",
+  "arcane-recovery",
 ]);
 
 export function unimplementedFeatures(creature: Creature): string[] {
@@ -80,9 +95,14 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
 
   const subclass = data.subclass ? cls.subclasses.find((s) => s.id === data.subclass) : undefined;
   if (data.subclass && !subclass) throw new Error(`Unknown subclass "${data.subclass}" for ${cls.id}`);
-  const features = [...cls.features, ...(subclass?.features ?? [])]
-    .filter((f) => f.level <= data.level)
-    .map((f) => f.id);
+  const invocations = cls.id === "warlock" ? (data.invocations ?? []) : [];
+  const metamagic = cls.id === "sorcerer" ? (data.metamagic ?? []) : [];
+  const features = [
+    ...[...cls.features, ...(subclass?.features ?? [])].filter((f) => f.level <= data.level).map((f) => f.id),
+    // Invocations and Metamagic act like features in battle: "agonizing-blast", "metamagic-careful"...
+    ...invocations,
+    ...metamagic.map((m) => `metamagic-${m}`),
+  ];
   const has = (f: string) => features.includes(f);
   const hasFeat = (f: string) => data.feats.some((x) => x.id === f);
 
@@ -107,6 +127,8 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
           ? armor.baseAc + Math.min(dex, 2)
           : armor.baseAc;
   }
+  // Armor of Shadows: Mage Armor at will (13 + Dex) when not wearing armor.
+  if (!armor && invocations.includes("armor-of-shadows")) ac = Math.max(ac, 13 + dex);
   if (data.equipment.shield) ac += 2;
   if (data.fightingStyle === "defense" && armor) ac += 1;
 
@@ -114,12 +136,17 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
   if (armor?.strengthRequirement && data.abilities.str < armor.strengthRequirement) speedFt -= 10;
 
   const { weapon: proficientWith } = classProficiencies(cls, data.classChoices);
+  // Pact of the Blade bonds the first melee weapon: proficient, and Charisma can drive it.
+  const pactWeapon = invocations.includes("pact-of-the-blade")
+    ? data.equipment.weapons.find((id) => content.weapons.find((w) => w.id === id)?.kind === "melee")
+    : undefined;
   const attacks: Attack[] = data.equipment.weapons.map((weaponId) => {
     const w = lookup(content.weapons, weaponId, "weapon");
     const finesse = w.properties.includes("finesse") || (has("martial-arts") && isMonkWeapon(w));
-    const ability = w.kind === "ranged" || (finesse && dex > mod("str")) ? "dex" : "str";
+    let ability: "str" | "dex" | "cha" = w.kind === "ranged" || (finesse && dex > mod("str")) ? "dex" : "str";
+    if (w.id === pactWeapon && mod("cha") > mod(ability)) ability = "cha";
     const abilityMod = mod(ability);
-    let attackBonus = abilityMod + (proficientWith(w) ? pb : 0);
+    let attackBonus = abilityMod + (proficientWith(w) || w.id === pactWeapon ? pb : 0);
     if (data.fightingStyle === "archery" && w.kind === "ranged") attackBonus += 2;
     const hasMastery = has("weapon-mastery") && data.weaponMasteries.includes(w.id);
     return {
@@ -178,7 +205,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     immunities: [],
     conditions: [],
     features,
-    resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level), ...spellSlots(cls, data.level) },
+    resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level, data), ...spellSlots(cls, data.level) },
     ...(cls.spellcasting ? { spells: buildSpells(content, data, cls) } : {}),
     effects: [],
     deathSaves: { successes: 0, failures: 0 },
@@ -233,11 +260,18 @@ export function buildMonster(data: MonsterData, instanceId: string, name = data.
 }
 
 /** Uses that come from features rather than the class resource table. */
-function featureResources(cls: ClassData, features: string[], level: number): Record<string, Resource> {
+function featureResources(cls: ClassData, features: string[], level: number, data: CharacterData): Record<string, Resource> {
   const out: Record<string, Resource> = {};
   const long = (n: number): Resource => ({ current: n, max: n, recharge: "long" });
   if (features.includes("lay-on-hands")) out["lay-on-hands"] = long(5 * level);
   if (features.includes("paladins-smite")) out["paladins-smite"] = long(1);
+  if (features.includes("bardic-inspiration")) {
+    const uses = Math.max(1, Math.floor((data.abilities.cha - 10) / 2));
+    // Font of Inspiration (level 5): back on a short rest.
+    out["bardic-inspiration"] = { current: uses, max: uses, recharge: level >= 5 ? "short" : "long" };
+  }
+  if (features.includes("innate-sorcery")) out["innate-sorcery"] = long(2);
+  if (features.includes("magical-cunning")) out["magical-cunning"] = long(1);
   if (features.includes("favored-enemy")) out["favored-enemy"] = long(level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2);
   return out;
 }

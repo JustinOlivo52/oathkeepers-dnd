@@ -49,32 +49,44 @@ export function maxSpellLevel(cls: ClassData, level: number): number {
   return slotTable(cls, level).length;
 }
 
-export function spellCounts(cls: ClassData, level: number): { cantrips: number; prepared: number } {
+export function spellCounts(cls: ClassData, level: number, classChoices: Record<string, string> = {}): { cantrips: number; prepared: number } {
   const c = SPELL_COUNTS[cls.id];
   if (!c || !cls.spellcasting) return { cantrips: 0, prepared: 0 };
   const i = Math.min(level, 5) - 1;
-  return { cantrips: c.cantrips[i]!, prepared: c.prepared[i]! };
+  // Cleric Thaumaturge and Druid Magician learn one extra cantrip.
+  const extra = classChoices["divine-order"] === "thaumaturge" || classChoices["primal-order"] === "magician" ? 1 : 0;
+  return { cantrips: c.cantrips[i]! + extra, prepared: c.prepared[i]! };
 }
 
-/** The class's spells this character could have: cantrips, and leveled spells up to the highest slot. */
-export function spellOptions(content: Content, cls: ClassData, level: number): { cantrips: SpellData[]; leveled: SpellData[] } {
-  const mine = content.spells.filter((s) => s.classes.includes(cls.id));
+/** Spells always prepared from the subclass and class choices (Life Domain, Circle of the Land...). They don't count against picks. */
+export function bonusSpells(cls: ClassData, level: number, subclassId: string | undefined, classChoices: Record<string, string> = {}): string[] {
+  const sub = cls.subclasses.find((s) => s.id === subclassId);
+  const fromSub = (sub?.bonusSpells ?? []).filter((b) => b.level <= level).flatMap((b) => b.spells);
+  const fromChoices = (cls.choices ?? [])
+    .filter((c) => c.level <= level)
+    .flatMap((c) => c.options.find((o) => o.id === classChoices[c.id])?.bonusSpells ?? []);
+  return [...new Set([...fromSub, ...fromChoices])];
+}
+
+/** The class's spells this character could pick: cantrips, and leveled spells up to the highest slot. Always-prepared ones are left out. */
+export function spellOptions(content: Content, cls: ClassData, level: number, always: string[] = []): { cantrips: SpellData[]; leveled: SpellData[] } {
+  const mine = content.spells.filter((s) => s.classes.includes(cls.id) && !always.includes(s.id));
   const max = maxSpellLevel(cls, level);
   return { cantrips: mine.filter((s) => s.level === 0), leveled: mine.filter((s) => s.level > 0 && s.level <= max) };
 }
 
 /** Sensible picks for characters who haven't chosen: the class's signature spells first (on the fewest class lists), as many as allowed. */
-export function defaultSpells(content: Content, cls: ClassData, level: number): string[] {
-  const { cantrips, leveled } = spellOptions(content, cls, level);
-  const n = spellCounts(cls, level);
+export function defaultSpells(content: Content, cls: ClassData, level: number, always: string[] = [], classChoices: Record<string, string> = {}): string[] {
+  const { cantrips, leveled } = spellOptions(content, cls, level, always);
+  const n = spellCounts(cls, level, classChoices);
   const signature = (list: SpellData[]) => list.map((s, i) => ({ s, i })).sort((a, b) => a.s.classes.length - b.s.classes.length || a.i - b.i).map((x) => x.s);
   return [...signature(cantrips).slice(0, n.cantrips), ...signature(leveled).slice(0, n.prepared)].map((s) => s.id);
 }
 
 /** Problems with a character's spell choices, for the builder. */
-export function spellIssues(content: Content, cls: ClassData, level: number, chosen: string[]): string[] {
-  const { cantrips, leveled } = spellOptions(content, cls, level);
-  const n = spellCounts(cls, level);
+export function spellIssues(content: Content, cls: ClassData, level: number, chosen: string[], always: string[] = [], classChoices: Record<string, string> = {}): string[] {
+  const { cantrips, leveled } = spellOptions(content, cls, level, always);
+  const n = spellCounts(cls, level, classChoices);
   const pickedCantrips = chosen.filter((id) => cantrips.some((s) => s.id === id));
   const pickedLeveled = chosen.filter((id) => leveled.some((s) => s.id === id));
   const issues: string[] = [];
@@ -94,18 +106,28 @@ export function buildSpells(content: Content, data: CharacterData, cls: ClassDat
   const pb = proficiencyBonus(data.level);
   const tier = 1 + Number(data.level >= 5) + Number(data.level >= 11) + Number(data.level >= 17);
   const withMod = (dice: string) => (mod === 0 ? dice : `${dice}${mod > 0 ? "+" : ""}${mod}`);
-  const ids = data.spells ?? defaultSpells(content, cls, data.level);
+  const always = bonusSpells(cls, data.level, data.subclass, data.classChoices);
+  const picked = data.spells ?? defaultSpells(content, cls, data.level, always, data.classChoices);
+  const ids = [...new Set([...picked, ...always])];
+  const invocations = new Set(data.invocations ?? []);
+  // Agonizing Blast and friends improve one Warlock damage cantrip: Eldritch Blast if known.
+  const warlockCantrip =
+    cls.id === "warlock"
+      ? (ids.find((id) => id === "eldritch-blast") ?? ids.find((id) => content.spells.some((s) => s.id === id && s.level === 0 && s.damage && s.classes.includes("warlock"))))
+      : undefined;
   return ids
     .map((id) => content.spells.find((s) => s.id === id))
-    .filter((s): s is SpellData => !!s && s.classes.includes(cls.id) && s.level <= maxSpellLevel(cls, data.level))
+    .filter((s): s is SpellData => !!s && (s.classes.includes(cls.id) || always.includes(s.id)) && s.level <= maxSpellLevel(cls, data.level))
     .map((s): SpellDef => {
+      const pact = s.id === warlockCantrip;
+      const agonizing = pact && invocations.has("agonizing-blast");
       const scale = (dice: string) => (s.cantripScaling ? dice.replace(/^(\d+)d/, (_, n: string) => `${Number(n) * tier}d`) : dice);
       return {
         id: s.id,
         name: s.name,
         level: s.level,
         castingTime: s.castingTime,
-        rangeFt: s.rangeFt,
+        rangeFt: s.rangeFt + (pact && invocations.has("eldritch-spear") ? 30 * data.level : 0),
         target: s.target,
         ...(s.targets ? { targets: s.targets } : {}),
         ...(s.targetsPerSlot ? { targetsPerSlot: s.targetsPerSlot } : {}),
@@ -117,12 +139,14 @@ export function buildSpells(content: Content, data: CharacterData, cls: ClassDat
         ...(s.hitsPerSlot ? { hitsPerSlot: s.hitsPerSlot } : {}),
         ...(s.autoHit ? { autoHit: true } : {}),
         ...(s.damage
-          ? { damage: { dice: s.damage.addModifier ? withMod(scale(s.damage.dice)) : scale(s.damage.dice), type: s.damage.type, ...(s.damage.perSlot ? { perSlot: s.damage.perSlot } : {}) } }
+          ? { damage: { dice: s.damage.addModifier || agonizing ? withMod(scale(s.damage.dice)) : scale(s.damage.dice), type: s.damage.type, ...(s.damage.perSlot ? { perSlot: s.damage.perSlot } : {}) } }
           : {}),
         ...(s.heal ? { heal: { dice: s.heal.addModifier ? withMod(s.heal.dice) : s.heal.dice, ...(s.heal.perSlot ? { perSlot: s.heal.perSlot } : {}) } } : {}),
         ...(s.concentration ? { concentration: true } : {}),
         ...(s.effect ? { effect: s.effect } : {}),
         ...(s.onlyType ? { onlyType: s.onlyType } : {}),
+        ...(s.pushFt ? { pushFt: s.pushFt } : pact && invocations.has("repelling-blast") ? { pushFt: 10 } : {}),
+        ...(s.damageTypes ? { damageTypes: s.damageTypes } : {}),
         attackBonus: pb + mod,
         saveDc: 8 + pb + mod,
       };

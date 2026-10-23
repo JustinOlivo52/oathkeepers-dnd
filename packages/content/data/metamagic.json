@@ -1,0 +1,9 @@
+[
+  { "id": "careful", "name": "Careful Spell", "cost": 1, "description": "Allies you choose (up to your Charisma modifier) automatically succeed on saves against your area spell and take no damage from it." },
+  { "id": "distant", "name": "Distant Spell", "cost": 1, "description": "Double a spell's range, or give a touch spell a 30 ft range." },
+  { "id": "empowered", "name": "Empowered Spell", "cost": 1, "stacks": true, "description": "Reroll up to your Charisma modifier in low damage dice. Combines with other Metamagic." },
+  { "id": "heightened", "name": "Heightened Spell", "cost": 2, "description": "One target of the spell has disadvantage on its saves against it." },
+  { "id": "quickened", "name": "Quickened Spell", "cost": 2, "description": "Cast a spell that takes an Action as a Bonus Action instead." },
+  { "id": "seeking", "name": "Seeking Spell", "cost": 1, "stacks": true, "description": "If you miss with a spell attack, reroll the d20. Combines with other Metamagic." },
+  { "id": "twinned", "name": "Twinned Spell", "cost": 1, "description": "A spell that gains targets from higher slots (like Hold Person) gets one more target." }
+]

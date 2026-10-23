@@ -397,6 +397,16 @@ function Adventure(props: {
           </div>
         </div>
         {level > hero.level && <p className="note">Level {level} reached! Leveling up arrives in Phase 5.</p>}
+        {hero.class === "warlock" && hero.level >= 2 && (
+          <button
+            className="ghost small"
+            disabled={busy || pending?.type === "combat" || me.resources?.["magical-cunning"] === 0}
+            title="A one-minute rite: regain half your pact slots, once per long rest"
+            onClick={() => void run(() => client.magicalCunning(hero.id))}
+          >
+            Magical Cunning
+          </button>
+        )}
 
         {allies.length > 0 && (
           <Section title="Companions">

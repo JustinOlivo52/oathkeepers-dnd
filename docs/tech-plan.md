@@ -206,8 +206,20 @@ Spells in battle:
 - AI casters heal the badly hurt, keep Spiritual Weapon swinging, Misty Step away, hold humanoids, Bless the party, use areas only when no ally is caught, save slots for tough targets
 - Battle screen: spell bar with slots, upcast picker, multi-target picking, area preview on hover; code-drawn effects until library art exists (`docs/art/CODEX_BRIEF_SPELLS.md`)
 
+Class features, round 2:
+- Bard: Bardic Inspiration (the die is added automatically when it turns a failed attack or save into a success), Cutting Words (automatic reaction when it can turn an enemy's hit into a miss)
+- Warlock: Eldritch Invocations picked in the builder (Agonizing Blast, Armor of Shadows, Eldritch Mind, Eldritch Spear, Pact of the Blade, Repelling Blast, plus story-only Devil's Sight, Mask of Many Faces, Misty Visions), Dark One's Blessing, Magical Cunning (button on the story screen)
+- Sorcerer: Innate Sorcery, Font of Magic (points into slots and back), Metamagic picked in the builder (Careful, Distant, Empowered, Heightened, Quickened, Seeking, Twinned) with toggles on the spell bar
+- Wizard: Arcane Recovery on short rests
+- Subclass always-prepared spells (Life Domain, Oath of Devotion, Fiend, Draconic) and the Druid's Circle of the Land choice; Thaumaturge and Magician get their extra cantrip
+- Pushes: Thunderwave, Repelling Blast and the Push mastery
+- Chromatic Orb picks the damage type the target resists least
+- Rules fix: creatures can move through the space of an incapacitated creature (a downed character in a corridor no longer blocks a fight forever)
+
 Not yet:
-- Spells above level 2, reactions (Shield, Hellish Rebuke), Thunderwave's push, out-of-combat spells (rituals, utility)
+- Spells above level 2, reactions (Shield, Hellish Rebuke), out-of-combat spells (rituals, utility)
+- Cleric Disciple of Life and Preserve Life; Monk Unarmored Movement, Deflect Attacks, Open Hand Technique; Wizard Potent Cantrip and Evocation Savant; Barbarian Danger Sense; Druid Wild Shape and Land's Aid
+- More Ranger and Paladin spells
 - Monsters casting spells
 - Barbarian Danger Sense, Rogue Fast Hands, Monk Deflect Attacks (these need saves, objects or reactions in battle)
 - Companion battle sprites: requested from Codex in batch 2, section 5; the game uses `hero-<character id>` art automatically once it exists

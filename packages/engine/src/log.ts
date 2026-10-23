@@ -36,7 +36,7 @@ export type GameEvent =
   | { type: "extra_damage"; creatureId: string; targetId: string; source: string }
   | { type: "concentration"; creatureId: string; spell: string; kept: boolean }
   | { type: "spell_cast"; creatureId: string; spellId: string; slotLevel: number; targetIds: string[]; point?: Point; area?: Point[] }
-  | { type: "reaction"; creatureId: string; reaction: "opportunity-attack"; targetId: string }
+  | { type: "reaction"; creatureId: string; reaction: "opportunity-attack" | "cutting-words"; targetId: string }
   | { type: "condition"; creatureId: string; condition: Condition; added: boolean }
   | { type: "effect_applied"; targetId: string; effectId: string; sourceId: string }
   | { type: "effect_ended"; targetId: string; effectId: string }

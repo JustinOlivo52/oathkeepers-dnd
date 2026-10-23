@@ -69,6 +69,8 @@ export const ClassSchema = z.object({
             name: z.string(),
             summary: z.string(),
             grants: z.object({ armor: z.array(armorCategory).optional(), weapons: z.array(weaponCategory).optional() }),
+            /** Spells always prepared with this option (Circle of the Land). */
+            bonusSpells: z.array(id).optional(),
           }),
         ),
       }),
@@ -88,6 +90,8 @@ export const ClassSchema = z.object({
       id,
       name: z.string(),
       features: z.array(feature),
+      /** Spells always prepared, by class level; they don't count against prepared spells. */
+      bonusSpells: z.array(z.object({ level: z.number().int(), spells: z.array(id) })).optional(),
       skillChoice: skillChoice.optional(),
       unarmoredDefense: ability.optional(),
       hpPerLevel: z.number().int().optional(),
@@ -200,6 +204,10 @@ export const SpellSchema = z.object({
   cantripScaling: z.boolean().optional(),
   /** Eldritch Blast: more beams instead of bigger dice. */
   beamScaling: z.boolean().optional(),
+  /** Pushes a target that fails (or is hit) this far straight away, like Thunderwave. */
+  pushFt: z.number().int().optional(),
+  /** Damage types to choose from (Chromatic Orb); the caster picks the one the target resists least. */
+  damageTypes: z.array(damageType).optional(),
   concentration: z.boolean().optional(),
   effect: z.enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon"]).optional(),
   onlyType: z.string().optional(),
@@ -231,13 +239,22 @@ export const CharacterSchema = z.object({
   notes: z.string().optional(),
   /** Cantrips and prepared spells. Missing: the class's default picks. */
   spells: z.array(id).optional(),
+  /** Warlock Eldritch Invocations. */
+  invocations: z.array(id).optional(),
+  /** Sorcerer Metamagic options. */
+  metamagic: z.array(id).optional(),
 });
+
+export const InvocationSchema = z.object({ id, name: z.string(), minLevel: z.number().int().min(1), battle: z.boolean(), description: z.string() });
+export const MetamagicSchema = z.object({ id, name: z.string(), cost: z.number().int().min(1), stacks: z.boolean().optional(), description: z.string() });
 
 export type WeaponData = z.infer<typeof WeaponSchema>;
 export type ArmorData = z.infer<typeof ArmorSchema>;
 export type ClassData = z.infer<typeof ClassSchema>;
 export type MonsterData = z.infer<typeof MonsterSchema>;
 export type SpellData = z.infer<typeof SpellSchema>;
+export type InvocationData = z.infer<typeof InvocationSchema>;
+export type MetamagicData = z.infer<typeof MetamagicSchema>;
 export type CharacterData = z.infer<typeof CharacterSchema>;
 export type SpeciesData = z.infer<typeof SpeciesSchema>;
 export type BackgroundData = z.infer<typeof BackgroundSchema>;

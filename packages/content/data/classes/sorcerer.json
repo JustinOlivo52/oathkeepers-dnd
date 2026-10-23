@@ -84,6 +84,14 @@
           "id": "draconic-spells",
           "name": "Draconic Spells"
         }
+      ],
+      "bonusSpells": [
+        {
+          "level": 3,
+          "spells": [
+            "chromatic-orb"
+          ]
+        }
       ]
     }
   ]

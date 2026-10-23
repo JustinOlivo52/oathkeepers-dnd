@@ -23,6 +23,7 @@ export interface DmClient {
   finishCombat(outcome: CombatOutcome): Promise<AdventureSnapshot>;
   retry(): Promise<AdventureSnapshot>;
   drinkPotion(characterId: string): Promise<AdventureSnapshot>;
+  magicalCunning(characterId: string): Promise<AdventureSnapshot>;
   /** Start the next session (after ending one). */
   begin(): Promise<AdventureSnapshot>;
   endSession(): Promise<AdventureSnapshot>;
@@ -125,6 +126,9 @@ export class RemoteClient implements DmClient {
   drinkPotion(characterId: string) {
     return this.call(`/${this.id}/potion`, { characterId });
   }
+  magicalCunning(characterId: string) {
+    return this.call(`/${this.id}/magical-cunning`, { characterId });
+  }
   begin() {
     return this.call(`/${this.id}/begin`, {});
   }
@@ -183,6 +187,9 @@ export class LocalDemoClient implements DmClient {
   }
   async drinkPotion(characterId: string) {
     return this.snapshot(this.director!.drinkPotion(characterId));
+  }
+  async magicalCunning(characterId: string) {
+    return this.snapshot(this.director!.magicalCunning(characterId));
   }
   async begin() {
     return this.snapshot(await this.director!.begin(this.onText));

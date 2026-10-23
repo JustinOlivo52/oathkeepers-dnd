@@ -92,7 +92,7 @@ export function createApp(options: AppOptions) {
       persist(id, director);
       return view(director, events);
     }
-    const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/(act|roll|combat|retry|begin|end-session|potion))?$/.exec(path);
+    const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/(act|roll|combat|retry|begin|end-session|potion|magical-cunning))?$/.exec(path);
     if (!m) throw new HttpError(404, "Not found");
     const [, id, action] = m as unknown as [string, string, string | undefined];
     const d = directorFor(id);
@@ -106,7 +106,10 @@ export function createApp(options: AppOptions) {
     } else if (action === "roll") events = await d.roll(onText);
     else if (action === "retry") events = await d.retry(onText);
     else if (action === "begin") events = await d.begin(onText);
-    else if (action === "potion") {
+    else if (action === "magical-cunning") {
+      if (typeof body.characterId !== "string") throw new HttpError(400, "Send characterId");
+      events = d.magicalCunning(body.characterId);
+    } else if (action === "potion") {
       if (typeof body.characterId !== "string") throw new HttpError(400, "Send characterId");
       events = d.drinkPotion(body.characterId);
     } else if (action === "end-session") events = await d.endSession(options.summarizerFor(d.state.provider));

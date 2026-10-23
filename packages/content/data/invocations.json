@@ -1,0 +1,11 @@
+[
+  { "id": "agonizing-blast", "name": "Agonizing Blast", "minLevel": 2, "battle": true, "description": "Add your Charisma modifier to the damage of your Warlock damage cantrip (Eldritch Blast if you know it)." },
+  { "id": "armor-of-shadows", "name": "Armor of Shadows", "minLevel": 1, "battle": true, "description": "Mage Armor at will: without armor, your AC is 13 + your Dexterity modifier." },
+  { "id": "eldritch-mind", "name": "Eldritch Mind", "minLevel": 1, "battle": true, "description": "Advantage on Constitution saves to keep concentrating on a spell." },
+  { "id": "eldritch-spear", "name": "Eldritch Spear", "minLevel": 2, "battle": true, "description": "Your Warlock damage cantrip's range grows by 30 ft per Warlock level." },
+  { "id": "pact-of-the-blade", "name": "Pact of the Blade", "minLevel": 1, "battle": true, "description": "Bond with your first melee weapon: you're proficient with it and can use Charisma for its attack and damage rolls." },
+  { "id": "repelling-blast", "name": "Repelling Blast", "minLevel": 2, "battle": true, "description": "When your Warlock damage cantrip hits a Large or smaller creature, push it 10 ft straight away from you." },
+  { "id": "devils-sight", "name": "Devil's Sight", "minLevel": 2, "battle": false, "description": "See normally in darkness, magical or not, within 120 ft. (Story and exploration; battles don't model darkness yet.)" },
+  { "id": "mask-of-many-faces", "name": "Mask of Many Faces", "minLevel": 2, "battle": false, "description": "Disguise Self at will. (Story.)" },
+  { "id": "misty-visions", "name": "Misty Visions", "minLevel": 2, "battle": false, "description": "Silent Image at will. (Story.)" }
+]

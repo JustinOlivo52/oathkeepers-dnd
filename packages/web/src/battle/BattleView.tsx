@@ -161,6 +161,18 @@ function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext
     const marked = combat.markedBy(me.id);
     add({ id: "hm", label: `Hunter's Mark (${uses("favored-enemy")}${uses("spell-slot-1") ? ` +${uses("spell-slot-1")} slots` : ""})`, title: `Bonus Action: your hits on the target deal 1d6 force${marked ? `. Now marked: ${marked.name}` : ""}`, disabled: !bonus || (!uses("favored-enemy") && !uses("spell-slot-1") && !(marked && marked.dead)), target: "hunters-mark" });
   }
+  if (has("bardic-inspiration")) add({ id: "bi", label: `Bardic Inspiration (${uses("bardic-inspiration")})`, title: "Bonus Action: an ally within 60 ft gets a die to add when an attack or save fails. Cutting Words uses the same dice, automatically, as a reaction.", disabled: !bonus || !uses("bardic-inspiration"), target: "bardic-inspiration" });
+  if (has("innate-sorcery")) {
+    const active = me.effects.some((e) => e.id === "innate-sorcery");
+    add({ id: "innate", label: active ? "Innate Sorcery on" : `Innate Sorcery (${uses("innate-sorcery")})`, title: "Bonus Action: +1 spell save DC and advantage on spell attacks for the battle", disabled: active || !bonus || !uses("innate-sorcery"), action: "innate-sorcery", on: active });
+  }
+  if (has("font-of-magic")) {
+    const sp = uses("sorcery-points");
+    add({ id: "fm1", label: `Make Lv 1 slot (2 of ${sp} SP)`, title: "Font of Magic, Bonus Action: 2 Sorcery Points into a level 1 spell slot", disabled: !bonus || sp < 2, action: "make-slot-1" });
+    if (me.level >= 3) add({ id: "fm2", label: `Make Lv 2 slot (3 SP)`, title: "Font of Magic, Bonus Action: 3 Sorcery Points into a level 2 spell slot", disabled: !bonus || sp < 3, action: "make-slot-2" });
+    const full = sp >= (me.resources["sorcery-points"]?.max ?? 0);
+    add({ id: "fc1", label: "Lv 1 slot → 1 SP", title: "Font of Magic, no action: a level 1 slot into 1 Sorcery Point", disabled: full || !uses("spell-slot-1"), action: "slot-1-to-points" });
+  }
   if (has("martial-arts")) add({ id: "ma", label: "Bonus Strike", title: "Martial Arts: an Unarmed Strike as a Bonus Action after you attack", disabled: !bonus || !turn.attacked, target: "martial-arts" });
   if (has("monks-focus")) {
     add({ id: "fob", label: `Flurry of Blows (${uses("focus-points")})`, title: "1 Focus Point: two Unarmed Strikes as a Bonus Action after you attack", disabled: !bonus || !turn.attacked || !uses("focus-points"), target: "flurry-of-blows" });
@@ -187,13 +199,30 @@ function SpellBar({ me, combat, controller }: { me: Creature; combat: Combat; co
           </span>
         ))}
       </p>
+      {me.features.some((f) => f.startsWith("metamagic-")) && (
+        <div className="spell-row">
+          <span className="spell-level" title="Sorcery Points">Metamagic ({me.resources["sorcery-points"]?.current ?? 0} SP)</span>
+          {me.features
+            .filter((f) => f.startsWith("metamagic-"))
+            .map((f) => {
+              const m = content.metamagic.find((x) => `metamagic-${x.id}` === f);
+              if (!m) return null;
+              const on = controller.metamagic.includes(m.id);
+              return (
+                <button key={m.id} className={`spell ${on ? "on" : ""}`} title={m.description} onClick={() => controller.toggleMetamagic(m.id)}>
+                  {m.name.replace(" Spell", "")} ({m.cost})
+                </button>
+              );
+            })}
+        </div>
+      )}
       {byLevel.map((level) => (
         <div key={level} className="spell-row">
           <span className="spell-level">{level === 0 ? "Cantrips" : `Level ${level}`}</span>
           {me.spells!
             .filter((s) => s.level === level)
             .map((s) => {
-              const problem = combat.spellProblem(me.id, s.id);
+              const problem = combat.spellProblem(me.id, s.id, controller.metamagic);
               const on = mode.kind === "spell" && mode.spellId === s.id;
               const info = [s.castingTime === "bonus" ? "Bonus Action" : "Action", s.rangeFt ? (s.rangeFt === 5 ? "touch" : `${s.rangeFt} ft`) : "self", s.concentration ? "concentration" : ""].filter(Boolean).join(", ");
               return (

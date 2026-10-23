@@ -34,11 +34,56 @@ describe("spellcasting", () => {
   it("gives warlocks short-rest pact slots and characters without picks sensible defaults", () => {
     const warlock = buildCharacter(content, { ...premade("pip-thistlewick"), class: "warlock", subclass: "fiend-patron", spells: undefined });
     expect(warlock.resources["spell-slot-2"]).toMatchObject({ current: 2, recharge: "short" });
-    expect(warlock.spells!.map((s) => s.id)).toEqual(defaultSpells(content, cls("warlock"), 3));
+    // Default picks, plus the Fiend's always-prepared spells.
+    expect(warlock.spells!.map((s) => s.id)).toEqual([...defaultSpells(content, cls("warlock"), 3, ["burning-hands", "scorching-ray"]), "burning-hands", "scorching-ray"]);
     expect(warlock.spells!.some((s) => s.id === "eldritch-blast")).toBe(true);
   });
 
   it("flags bad spell choices", () => {
     expect(spellIssues(content, cls("cleric"), 3, ["fire-bolt"])).toEqual(expect.arrayContaining([expect.stringMatching(/Not on your spell list/)]));
+  });
+});
+
+describe("class options", () => {
+  const warlockData = (invocations: string[]) => ({
+    ...premade("pip-thistlewick"),
+    class: "warlock",
+    subclass: "fiend-patron",
+    spells: ["eldritch-blast", "chill-touch", "misty-step"],
+    invocations,
+    equipment: { shield: false, weapons: ["dagger", "quarterstaff"] },
+  });
+
+  it("Agonizing Blast, Eldritch Spear and Repelling Blast change Eldritch Blast", () => {
+    const w = buildCharacter(content, warlockData(["agonizing-blast", "eldritch-spear", "repelling-blast"]));
+    const blast = w.spells!.find((s) => s.id === "eldritch-blast")!;
+    // Pip's Cha is 10: +0, so Agonizing adds nothing visible; check range and push instead.
+    expect(blast.rangeFt).toBe(120 + 90);
+    expect(blast.pushFt).toBe(10);
+    expect(w.spells!.find((s) => s.id === "chill-touch")!.rangeFt).toBe(5);
+    const charismatic = buildCharacter(content, { ...warlockData(["agonizing-blast"]), abilities: { ...premade("pip-thistlewick").abilities, cha: 16 } });
+    expect(charismatic.spells!.find((s) => s.id === "eldritch-blast")!.damage!.dice).toBe("1d10+3");
+  });
+
+  it("Armor of Shadows and Pact of the Blade", () => {
+    const plain = buildCharacter(content, warlockData([]));
+    const shadows = buildCharacter(content, warlockData(["armor-of-shadows"]));
+    expect(shadows.ac).toBe(13 + 2); // Dex 14
+    expect(plain.ac).toBe(12);
+    const blade = buildCharacter(content, { ...warlockData(["pact-of-the-blade"]), abilities: { ...premade("pip-thistlewick").abilities, cha: 18 } });
+    expect(blade.attacks.find((a) => a.id === "dagger")).toMatchObject({ ability: "cha", attackBonus: 4 + 2 });
+  });
+
+  it("subclass and land spells are always prepared", () => {
+    const druid = buildCharacter(content, { ...premade("sister-maren-holt"), class: "druid", subclass: "circle-of-the-land", classChoices: { "primal-order": "magician", land: "polar" }, spells: undefined });
+    expect(druid.spells!.map((s) => s.id)).toEqual(expect.arrayContaining(["hold-person", "ray-of-frost"]));
+    const maren = buildCharacter(content, premade("sister-maren-holt"));
+    expect(maren.spells!.filter((s) => s.id === "bless")).toHaveLength(1);
+  });
+
+  it("bards get Bardic Inspiration uses from Charisma", () => {
+    const bard = buildCharacter(content, { ...premade("pip-thistlewick"), class: "bard", subclass: "college-of-lore", spells: undefined, abilities: { ...premade("pip-thistlewick").abilities, cha: 16 } });
+    expect(bard.resources["bardic-inspiration"]).toMatchObject({ current: 3, recharge: "long" });
+    expect(bard.features).toContain("cutting-words");
   });
 });

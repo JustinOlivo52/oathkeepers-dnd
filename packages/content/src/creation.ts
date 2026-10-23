@@ -1,4 +1,4 @@
-import { spellIssues } from "./spells.js";
+import { bonusSpells, spellIssues } from "./spells.js";
 import { ABILITIES, SKILLS, rollDie, type Ability, type AbilityScores, type Rng, type Skill } from "@oathkeepers/engine";
 import { classProficiencies } from "./build.js";
 import type { Content } from "./index.js";
@@ -52,6 +52,18 @@ export interface CharacterDraft {
   languages: string[];
   /** Cantrips and prepared spells (casters only). */
   spells?: string[];
+  invocations?: string[];
+  metamagic?: string[];
+}
+
+/** Eldritch Invocations known by Warlock level (2024). */
+export function invocationCount(level: number): number {
+  return level >= 18 ? 10 : level >= 15 ? 9 : level >= 12 ? 8 : level >= 9 ? 7 : level >= 7 ? 6 : level >= 5 ? 5 : level >= 2 ? 3 : 1;
+}
+
+/** Metamagic options known by Sorcerer level (2024). */
+export function metamagicCount(level: number): number {
+  return level >= 17 ? 6 : level >= 10 ? 4 : level >= 2 ? 2 : 0;
 }
 
 export type AbilityMethod = "standard-array" | "point-buy" | "rolled";
@@ -173,6 +185,9 @@ export function creationOptions(content: Content, draft: CharacterDraft) {
     weapons,
     languages: content.languages.filter((l) => l !== "Common"),
     spellcasting: cls?.spellcasting,
+    alwaysPrepared: cls ? bonusSpells(cls, draft.level, draft.subclassId, draft.classChoices) : [],
+    invocations: cls?.id === "warlock" ? { count: invocationCount(draft.level), options: content.invocations.filter((i) => i.minLevel <= draft.level) } : undefined,
+    metamagic: cls?.id === "sorcerer" && metamagicCount(draft.level) ? { count: metamagicCount(draft.level), options: content.metamagic } : undefined,
     feats,
   };
 }
@@ -281,7 +296,13 @@ export function validateDraft(content: Content, draft: CharacterDraft): Creation
   if (draft.weaponIds.length > MAX_WEAPONS) add("equipment", `Carry at most ${MAX_WEAPONS} weapons for now.`);
 
   // Spells
-  if (o.cls?.spellcasting) for (const message of spellIssues(content, o.cls, draft.level, draft.spells ?? [])) add("spells", message);
+  if (o.cls?.spellcasting) for (const message of spellIssues(content, o.cls, draft.level, draft.spells ?? [], o.alwaysPrepared, draft.classChoices)) add("spells", message);
+  if (o.invocations) {
+    const picked = draft.invocations ?? [];
+    if (picked.length !== o.invocations.count) add("features", `Choose ${o.invocations.count} Eldritch Invocation${o.invocations.count > 1 ? "s" : ""}.`);
+    if (picked.some((id) => !o.invocations!.options.some((i) => i.id === id))) add("features", "One of your invocations needs a higher Warlock level.");
+  }
+  if (o.metamagic && (draft.metamagic ?? []).length !== o.metamagic.count) add("features", `Choose ${o.metamagic.count} Metamagic options.`);
 
   // Details
   if (!draft.name.trim()) add("details", "Give your character a name.");
@@ -323,6 +344,8 @@ export function finalizeCharacter(content: Content, draft: CharacterDraft, id = 
     languages: ["Common", ...draft.languages],
     tools: [...new Set([background.tool, ...(o.cls!.tools ? [o.cls!.tools] : [])])],
     ...(o.cls!.spellcasting ? { spells: [...(draft.spells ?? [])] } : {}),
+    ...(o.invocations ? { invocations: [...(draft.invocations ?? [])] } : {}),
+    ...(o.metamagic ? { metamagic: [...(draft.metamagic ?? [])] } : {}),
     ...(draft.alignment ? { alignment: draft.alignment } : {}),
     ...(draft.notes ? { notes: draft.notes } : {}),
   };

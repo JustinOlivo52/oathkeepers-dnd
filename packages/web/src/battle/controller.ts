@@ -35,18 +35,20 @@ export type Mode =
   /** Casting a spell: pick targets (several for Bless) or a square. */
   | { kind: "spell"; spellId: string; slot?: number; picked: string[] };
 
-export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon";
+export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration";
 export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "lay-on-hands": true,
   "hunters-mark": false,
   "martial-arts": false,
   "flurry-of-blows": false,
   "spiritual-weapon": false,
+  "bardic-inspiration": true,
 };
 
 export type QuickAction =
   | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
-  | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind";
+  | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind"
+  | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points";
 
 export interface LogLine {
   text: string;
@@ -66,6 +68,8 @@ export class BattleController {
   message: string | null = null;
   /** Paladin: cast Divine Smite on the next melee hit. */
   smiteNext = false;
+  /** Sorcerer: Metamagic to add to the next spell. */
+  metamagic: string[] = [];
   lines: LogLine[] = [];
   /** End the player's turn on its own once they have nothing left to do. Remembered per browser. */
   autoEnd = readAutoEnd();
@@ -158,6 +162,7 @@ export class BattleController {
         else if (feature === "hunters-mark") this.combat.huntersMark(me.id, target.id);
         else if (feature === "martial-arts") this.combat.martialArts(me.id, target.id);
         else if (feature === "spiritual-weapon") this.combat.spiritualWeaponAttack(me.id, target.id);
+        else if (feature === "bardic-inspiration") this.combat.bardicInspiration(me.id, target.id);
         else this.combat.flurryOfBlows(me.id, target.id);
       });
       return;
@@ -239,8 +244,15 @@ export class BattleController {
     const { spellId, slot } = this.mode;
     this.mode = { kind: "move" };
     const before = this.combat.log.events.length;
-    await this.tryRules(() => this.combat.castSpell(this.active!.id, spellId, { ...opts, ...(slot ? { slotLevel: slot } : {}) }));
+    const metamagic = this.metamagic;
+    await this.tryRules(() => this.combat.castSpell(this.active!.id, spellId, { ...opts, ...(slot ? { slotLevel: slot } : {}), ...(metamagic.length ? { metamagic } : {}) }));
+    if (!this.message) this.metamagic = [];
     if (!this.message) this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
+  }
+
+  toggleMetamagic(option: string): void {
+    this.metamagic = this.metamagic.includes(option) ? this.metamagic.filter((m) => m !== option) : [...this.metamagic, option];
+    this.emit();
   }
 
   toggleSmite(): void {
@@ -304,6 +316,11 @@ export class BattleController {
         "sacred-weapon": () => c.sacredWeapon(id),
         "patient-defense": () => c.patientDefense(id),
         "step-of-the-wind": () => c.stepOfTheWind(id),
+        "innate-sorcery": () => c.innateSorcery(id),
+        "make-slot-1": () => c.createSpellSlot(id, 1),
+        "make-slot-2": () => c.createSpellSlot(id, 2),
+        "slot-1-to-points": () => c.convertSpellSlot(id, 1),
+        "slot-2-to-points": () => c.convertSpellSlot(id, 2),
       };
       run[action]();
     });
@@ -316,6 +333,7 @@ export class BattleController {
     this.lastRoll = null;
     this.message = null;
     this.smiteNext = false;
+    this.metamagic = [];
     this.combat.endTurn();
     await this.flush();
     await this.runOthers();

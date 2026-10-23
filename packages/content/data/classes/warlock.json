@@ -71,6 +71,15 @@
           "id": "fiend-spells",
           "name": "Fiend Spells"
         }
+      ],
+      "bonusSpells": [
+        {
+          "level": 3,
+          "spells": [
+            "burning-hands",
+            "scorching-ray"
+          ]
+        }
       ]
     }
   ]

@@ -62,6 +62,52 @@
           }
         }
       ]
+    },
+    {
+      "id": "land",
+      "name": "Circle of the Land: Land",
+      "level": 3,
+      "options": [
+        {
+          "id": "arid",
+          "name": "Arid",
+          "summary": "Desert magic: Burning Hands and Fire Bolt always prepared.",
+          "grants": {},
+          "bonusSpells": [
+            "burning-hands",
+            "fire-bolt"
+          ]
+        },
+        {
+          "id": "polar",
+          "name": "Polar",
+          "summary": "Frost magic: Hold Person and Ray of Frost always prepared.",
+          "grants": {},
+          "bonusSpells": [
+            "hold-person",
+            "ray-of-frost"
+          ]
+        },
+        {
+          "id": "temperate",
+          "name": "Temperate",
+          "summary": "Forest magic: Misty Step and Shocking Grasp always prepared.",
+          "grants": {},
+          "bonusSpells": [
+            "misty-step",
+            "shocking-grasp"
+          ]
+        },
+        {
+          "id": "tropical",
+          "name": "Tropical",
+          "summary": "Jungle magic: Acid Splash always prepared.",
+          "grants": {},
+          "bonusSpells": [
+            "acid-splash"
+          ]
+        }
+      ]
     }
   ],
   "features": [
