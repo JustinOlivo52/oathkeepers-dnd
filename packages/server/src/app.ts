@@ -69,6 +69,8 @@ export function createApp(options: AppOptions) {
   const boards = options.boards ?? new Map<string, BoardData>();
   const players = options.players;
   const tables = new Map<string, Table>();
+  /** Open live streams, ended on shutdown (browsers reconnect to the new server on their own). */
+  const streams = new Set<ServerResponse>();
   const canSpend = () => options.monthlyBudgetUsd === undefined || store.spentThisMonth() < options.monthlyBudgetUsd;
   const provider = (name?: string) => {
     const p = name ? providers.find((x) => x.name === name) : providers[0];
@@ -76,25 +78,39 @@ export function createApp(options: AppOptions) {
     return p;
   };
 
-  const tableFor = (id: string): Table => {
-    const existing = tables.get(id);
+  const onCost = (usd: number) => void store.addSpend(usd).catch((e: unknown) => console.error("saving AI spend failed:", e));
+
+  /** Tables being loaded, so two requests at once don't each load their own copy. */
+  const loading = new Map<string, Promise<Table>>();
+  const tableFor = async (id: string): Promise<Table> => {
+    const existing = tables.get(id) ?? loading.get(id);
     if (existing) return existing;
-    const saved = store.load(id);
-    if (!saved) throw new HttpError(404, "Adventure not found");
-    const p = provider(saved.state.provider);
-    const director = new Director(content, p, saved.state, rng, { canSpend, onCost: (usd) => store.addSpend(usd) }, saved.conversation);
-    const table: Table = { director, provider: p.name, subscribers: new Set(), busy: false };
-    if (saved.battle) table.battle = ServerBattle.restore(saved.battle, rng);
-    tables.set(id, table);
-    return table;
+    const load = (async () => {
+      const saved = await store.load(id);
+      if (!saved) throw new HttpError(404, "Adventure not found");
+      const p = provider(saved.state.provider);
+      const director = new Director(content, p, saved.state, rng, { canSpend, onCost }, saved.conversation);
+      const table: Table = { director, provider: p.name, subscribers: new Set(), busy: false };
+      if (saved.battle) table.battle = ServerBattle.restore(saved.battle, rng);
+      tables.set(id, table);
+      return table;
+    })();
+    loading.set(id, load);
+    try {
+      return await load;
+    } finally {
+      loading.delete(id);
+    }
   };
 
-  const persist = (id: string, t: Table) => {
+  const persist = async (id: string, t: Table) => {
     const d = t.director;
-    store.save(id, { state: d.state, conversation: d.save(), ...(t.battle && !t.battle.over ? { battle: t.battle.saved() } : {}) });
     const s = d.state;
     const owners = new Set([s.owner, ...(s.members ?? []).map((m) => m.playerId)].filter((x): x is string => !!x));
-    if (players) for (const pid of owners) players.noteAdventure(pid, { id, title: s.scene.name || s.title, hero: heroOf(s, pid), provider: s.provider }, s.party);
+    await Promise.all([
+      store.save(id, { state: s, conversation: d.save(), ...(t.battle && !t.battle.over ? { battle: t.battle.saved() } : {}) }),
+      ...(players ? [...owners].map((pid) => players.noteAdventure(pid, { id, title: s.scene.name || s.title, hero: heroOf(s, pid), provider: s.provider }, s.party)) : []),
+    ]);
   };
 
   const heroOf = (s: Director["state"], playerId: string) =>
@@ -157,7 +173,7 @@ export function createApp(options: AppOptions) {
   };
 
   // ---------- player accounts ----------
-  function playerRoute(method: string, path: string, body: Record<string, unknown>, me: Player | undefined, token: string | undefined) {
+  async function playerRoute(method: string, path: string, body: Record<string, unknown>, me: Player | undefined, token: string | undefined) {
     if (!players) throw new HttpError(404, "Player accounts are off on this server");
     if (method === "POST" && path === "/api/players/sign-in") {
       if (typeof body.name !== "string" || typeof body.pin !== "string") throw new HttpError(400, "Send name and pin");
@@ -168,19 +184,17 @@ export function createApp(options: AppOptions) {
     if (!me) throw new HttpError(401, "Sign in first");
     if (method === "GET" && path === "/api/players/me") return { player: players.view(me) };
     if (method === "POST" && path === "/api/players/me/sign-out") {
-      players.signOut(me, token!);
+      await players.signOut(me, token!);
       return { ok: true };
     }
     const m = /^\/api\/players\/me\/characters\/([a-z0-9-]+)$/.exec(path);
     if (m && method === "PUT") {
       const parsed = CharacterSchema.safeParse(body.character);
       if (!parsed.success || parsed.data.id !== m[1]) throw new HttpError(400, "Invalid character");
-      players.saveCharacter(me, parsed.data);
-      return { player: players.view(me) };
+      return { player: await players.saveCharacter(me, parsed.data) };
     }
     if (m && method === "DELETE") {
-      players.deleteCharacter(me, m[1]!);
-      return { player: players.view(me) };
+      return { player: await players.deleteCharacter(me, m[1]!) };
     }
     throw new HttpError(404, "Not found");
   }
@@ -205,12 +219,12 @@ export function createApp(options: AppOptions) {
         state.owner = me.id;
         state.members = [{ playerId: me.id, name: me.name, characterId: parsed.data.id, away: false }];
       }
-      const director = new Director(content, p, state, rng, { canSpend, onCost: (usd) => store.addSpend(usd) });
+      const director = new Director(content, p, state, rng, { canSpend, onCost });
       const t: Table = { director, provider: p.name, subscribers: new Set(), busy: false };
       tables.set(id, t);
       const events = await exclusive(t, () => director.begin(onText));
       startBattleIfNeeded(t);
-      persist(id, t);
+      await persist(id, t);
       return view(t, events);
     }
 
@@ -218,9 +232,9 @@ export function createApp(options: AppOptions) {
     if (method === "POST" && path === "/api/tables/join") {
       if (!me) throw new HttpError(401, "Sign in to join a table");
       const code = typeof body.code === "string" ? body.code.trim().toUpperCase() : "";
-      const id = [...tables.entries()].find(([, t]) => t.director.state.invite === code)?.[0] ?? store.findByInvite(code);
+      const id = [...tables.entries()].find(([, t]) => t.director.state.invite === code)?.[0] ?? (await store.findByInvite(code));
       if (!code || !id) throw new HttpError(404, "No table with that code");
-      const t = tableFor(id);
+      const t = await tableFor(id);
       const s = t.director.state;
       const already = s.members?.find((m) => m.playerId === me.id);
       let character = s.party.find((c) => c.id === already?.characterId);
@@ -230,7 +244,7 @@ export function createApp(options: AppOptions) {
         character = parsed.data;
       }
       const events = t.director.join(me.id, me.name, character);
-      persist(id, t);
+      await persist(id, t);
       broadcast(t, "story", view(t, events));
       return view(t, events);
     }
@@ -238,7 +252,7 @@ export function createApp(options: AppOptions) {
     const m = /^\/api\/adventures\/([a-z0-9-]+)(?:\/([a-z-]+(?:\/[a-z]+)?))?$/.exec(path);
     if (!m) throw new HttpError(404, "Not found");
     const [, id, action] = m as unknown as [string, string, string | undefined];
-    const t = tableFor(id);
+    const t = await tableFor(id);
     const d = t.director;
     const s = d.state;
     if (!isMember(s, me)) throw new HttpError(403, "Not your adventure. Ask the host for an invite code.");
@@ -276,7 +290,7 @@ export function createApp(options: AppOptions) {
       broadcast(t, "battle", update);
       events = t.battle.over ? await exclusive(t, () => finishBattleIfOver(t, tell)) : [];
       startBattleIfNeeded(t);
-      persist(id, t);
+      await persist(id, t);
       if (events.length) broadcast(t, "story", view(t, events));
       return { ...update, story: view(t, events) };
     }
@@ -311,15 +325,15 @@ export function createApp(options: AppOptions) {
       t.battle?.handOver(me.id);
     } else throw new HttpError(404, "Not found");
     startBattleIfNeeded(t);
-    persist(id, t);
+    await persist(id, t);
     const result = view(t, events);
     broadcast(t, "story", result);
     return result;
   }
 
   /** Live updates for everyone at a table: the DM's words as they come, story changes, battle moves, who's online. */
-  function stream(id: string, me: Player | undefined, req: IncomingMessage, res: ServerResponse) {
-    const t = tableFor(id);
+  async function stream(id: string, me: Player | undefined, req: IncomingMessage, res: ServerResponse) {
+    const t = await tableFor(id);
     if (!isMember(t.director.state, me)) throw new HttpError(403, "Not your adventure");
     // x-accel-buffering: proxies in front of hosted servers deliver each event right away instead of holding them.
     res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive", "x-accel-buffering": "no" });
@@ -328,14 +342,16 @@ export function createApp(options: AppOptions) {
     broadcast(t, "online", online(t));
     sub.send("story", view(t, []));
     const keepAlive = setInterval(() => res.write(": keep-alive\n\n"), 25_000);
+    streams.add(res);
     req.on("close", () => {
+      streams.delete(res);
       clearInterval(keepAlive);
       t.subscribers.delete(sub);
       broadcast(t, "online", online(t));
     });
   }
 
-  return async (req: IncomingMessage, res: ServerResponse) => {
+  const handler = async (req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? "/", "http://localhost");
     // Clients that ask for a stream get narration as it's written, then the final result.
     const streaming = req.method === "POST" && (req.headers.accept ?? "").includes("text/event-stream");
@@ -344,9 +360,9 @@ export function createApp(options: AppOptions) {
       const body: Record<string, unknown> = req.method === "POST" || req.method === "PUT" ? await readJson(req) : Object.fromEntries([...url.searchParams].map(([k, v]) => [k, /^\d+$/.test(v) ? Number(v) : v]));
       const auth = req.headers.authorization;
       const token = auth?.startsWith("Bearer ") ? auth.slice(7).trim() : body.token !== undefined ? String(body.token) : undefined;
-      const me = players?.byToken(token);
+      const me = await players?.byToken(token);
       const live = /^\/api\/adventures\/([a-z0-9-]+)\/stream$/.exec(url.pathname);
-      if (live && req.method === "GET") return stream(live[1]!, me, req, res);
+      if (live && req.method === "GET") return await stream(live[1]!, me, req, res);
       if (streaming) {
         res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive", "x-accel-buffering": "no" });
         const result = await route(req.method ?? "GET", url.pathname, body, me, token, (delta) => sse("text", delta));
@@ -363,6 +379,10 @@ export function createApp(options: AppOptions) {
       } else if (!res.headersSent) send(res, status, { error });
     }
   };
+  return Object.assign(handler, {
+    /** End live streams so the server can shut down. */
+    closeStreams: () => streams.forEach((r) => r.end()),
+  });
 }
 
 /** Six letters, no look-alikes (no O/0, I/1). */

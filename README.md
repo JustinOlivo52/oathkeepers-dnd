@@ -58,7 +58,7 @@ Done:
 - [x] Levels 1-5 for every class, with a level-up walkthrough
 - [x] Player accounts (name + PIN) with saved characters and adventures
 - [x] Multiplayer: invite codes, live tables, shared server-run battles, drop in/out at breaks
-- [x] Deployable: Docker image, group code for signups, Render config
+- [x] Deployable: Docker image, Postgres saves, group code for signups, Render config
 
 Next:
 
@@ -73,7 +73,6 @@ Later:
 - [ ] Levels 6+
 - [ ] Original subclasses
 - [ ] Starting equipment packages and gold
-- [ ] Backups for saved data
 
 ## Legal
 

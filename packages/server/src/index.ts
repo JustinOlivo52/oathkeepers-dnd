@@ -10,6 +10,7 @@ import { ClaudeSummarizer } from "./memory.js";
 import { loadBoards } from "./battle.js";
 import { PlayerStore } from "./players.js";
 import { Store } from "./store.js";
+import { FileBackend, importFiles, PostgresBackend, type Backend } from "./db.js";
 import { staticFiles } from "./static.js";
 import { loadSettings, PROJECT_ROOT } from "./env.js";
 
@@ -29,10 +30,23 @@ providers.push(new DemoProvider());
 
 const dataDir = process.env.DATA_DIR ?? join(here, "..", "data");
 const groupCode = process.env.GROUP_CODE?.trim() || undefined;
+// Postgres when DATABASE_URL is set (hosting); otherwise save files in the data folder.
+let backend: Backend;
+if (process.env.DATABASE_URL) {
+  const db = await PostgresBackend.connect(process.env.DATABASE_URL);
+  const copied = await importFiles(new FileBackend(dataDir), db);
+  if (copied) console.log(`Imported ${copied} saves from ${dataDir}`);
+  backend = db;
+  console.log("Storage: Postgres");
+} else {
+  backend = new FileBackend(dataDir);
+  console.log(`Storage: files in ${dataDir}`);
+}
+
 const app = createApp({
   content: loadContent(),
-  store: new Store(dataDir),
-  players: new PlayerStore(dataDir),
+  store: await new Store(backend).init(),
+  players: new PlayerStore(backend),
   boards: loadBoards(join(PROJECT_ROOT, "packages", "web", "public", "assets", "boards")),
   providers,
   // Claude adventures get Haiku recaps; demo adventures get the offline recap.
@@ -45,9 +59,20 @@ const app = createApp({
 const webDist = join(PROJECT_ROOT, "packages", "web", "dist");
 const web = existsSync(join(webDist, "index.html")) && process.env.SERVE_WEB !== "0" ? staticFiles(webDist) : undefined;
 
-createServer((req, res) => (web && !req.url?.startsWith("/api/") ? web(req, res) : app(req, res))).listen(port, () => {
+const server = createServer((req, res) => (web && !req.url?.startsWith("/api/") ? web(req, res) : app(req, res)));
+server.listen(port, () => {
   console.log(`Listening on :${port}`);
   if (web) console.log(`Serving web build: ${webDist}`);
   if (!groupCode) console.warn("GROUP_CODE not set: account signup is open");
   console.log(`DM: ${providers.map((p) => p.name).join(", ")}${budget !== undefined ? ` · budget $${budget}/month` : " · no budget cap set"}`);
+});
+
+// Hosts stop the old server on each deploy: finish saving, then exit. Live streams don't hold it open.
+process.once("SIGTERM", () => {
+  console.log("Shutting down");
+  // Requests in progress finish (and save); live streams end, and browsers reconnect to the new server.
+  server.close(() => void backend.close().finally(() => process.exit(0)));
+  app.closeStreams();
+  server.closeIdleConnections();
+  setTimeout(() => process.exit(1), 20_000).unref();
 });

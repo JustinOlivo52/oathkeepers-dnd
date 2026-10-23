@@ -499,14 +499,15 @@ One server runs everything: the game pages, the API, the AI DM and the shared ta
 | `ANTHROPIC_API_KEY` | The AI DM. Set it in the host's secret settings, never in a file in the repo. |
 | `GROUP_CODE` | Required before going public. New players need it to make an account, and only signed-in players get the AI DM. |
 | `DM_MONTHLY_BUDGET_USD` | Spending cap. The server stops calling Claude when it's reached. Start with 10 to 20. |
-| `DATA_DIR` | Already `/data` in the image. Mount a persistent volume there, or saves vanish on every redeploy. |
+| `DATABASE_URL` | Postgres connection string. Saves go to the database. Without it the server writes JSON files to `DATA_DIR`, which needs a persistent volume on a host. |
+| `DATA_DIR` | Save folder when there's no database. Already `/data` in the image. On the first start with a database, saves found here are copied in. |
 | `PORT` | Already 8080 in the image. Most hosts set it for you. |
 
 Run exactly **one** copy of the server. Live tables are held in memory, so two copies would split the players.
 
 ### Render (recommended)
 
-`render.yaml` sets up the service: Docker build, health check, 1 GB disk at `/data`, autodeploy from `master`. The disk needs a paid instance (Starter); the free tier has no disk and sleeps when idle.
+`render.yaml` sets up the web service (Docker build, health check, autodeploy from `master`) and a Postgres database, and connects them with `DATABASE_URL`. Starter web plan so it doesn't sleep; check current prices on Render before applying.
 
 1. render.com: sign in with GitHub, New, Blueprint, pick `oathkeepers-dnd`. It reads `render.yaml`.
 2. It asks for `ANTHROPIC_API_KEY` and `GROUP_CODE`. `DM_MONTHLY_BUDGET_USD` defaults to 20; change it under Environment.
@@ -522,19 +523,26 @@ Not taking new users as of 2026-10. `railway.json` is ready if that changes: dep
 - Open the URL: the game loads, and `/api/health` shows `"providers":["claude","demo"]` and `"groupCode":true`.
 - Sign in with a new name: it asks for the group code.
 - Start an adventure with Claude, invite a friend from another device, play one fight together.
-- Redeploy, then continue the adventure: it's still there (the volume works).
+- Redeploy, then continue the adventure: it's still there (saves are in Postgres).
 
 ### Try the production build locally
 
 ```bash
 npm run build
-DATA_DIR=./tmp-data GROUP_CODE=test npm start   # http://localhost:8787
+DATA_DIR=./tmp-data GROUP_CODE=test npm start   # save files, http://localhost:8787
+DATABASE_URL=postgres://user:pass@localhost:5432/oathkeepers npm start   # Postgres
+```
+
+Storage tests run against Postgres too when `TEST_DATABASE_URL` is set (its tables get dropped):
+
+```bash
+TEST_DATABASE_URL=postgres://user:pass@localhost:5432/oath_test npm test
 ```
 
 ### Still to do before a wider launch
 
 - Real sign-in (name + PIN is a stand-in; the group code keeps it to people you invite)
-- Backups of the `/data` volume
+- Database backups (Render's paid Postgres plans include them; check retention)
 
 ## Art
 
