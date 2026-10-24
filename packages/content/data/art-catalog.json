@@ -4390,5 +4390,385 @@
     "integrationStatus": "pending",
     "source": "codex-imagegen",
     "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-fire-projectile",
+    "kind": "vfx",
+    "title": "Fire Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-fire-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-fire",
+    "kind": "vfx",
+    "title": "Fire",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-fire.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-cold-projectile",
+    "kind": "vfx",
+    "title": "Cold Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-cold-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-cold",
+    "kind": "vfx",
+    "title": "Cold",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-cold.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-lightning-projectile",
+    "kind": "vfx",
+    "title": "Lightning Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-lightning-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-lightning",
+    "kind": "vfx",
+    "title": "Lightning",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-lightning.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-acid-projectile",
+    "kind": "vfx",
+    "title": "Acid Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-acid-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-acid",
+    "kind": "vfx",
+    "title": "Acid",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-acid.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-poison-projectile",
+    "kind": "vfx",
+    "title": "Poison Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-poison-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-poison",
+    "kind": "vfx",
+    "title": "Poison",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-poison.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-necrotic-projectile",
+    "kind": "vfx",
+    "title": "Necrotic Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-necrotic-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-necrotic",
+    "kind": "vfx",
+    "title": "Necrotic",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-necrotic.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-radiant-projectile",
+    "kind": "vfx",
+    "title": "Radiant Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-radiant-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-radiant",
+    "kind": "vfx",
+    "title": "Radiant",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-radiant.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-force-projectile",
+    "kind": "vfx",
+    "title": "Force Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-force-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-force",
+    "kind": "vfx",
+    "title": "Force",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-force.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-thunder-projectile",
+    "kind": "vfx",
+    "title": "Thunder Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-thunder-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-thunder",
+    "kind": "vfx",
+    "title": "Thunder",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-thunder.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-psychic-projectile",
+    "kind": "vfx",
+    "title": "Psychic Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-psychic-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-psychic",
+    "kind": "vfx",
+    "title": "Psychic",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-psychic.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
   }
 ]

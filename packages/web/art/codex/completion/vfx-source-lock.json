@@ -1,0 +1,80 @@
+{
+  "effects-0": {
+    "file": "effects-0.png",
+    "sha256": "99197f8cd54fdbaf2d57ecef5e119a3bc2ae1465e7d39a09efc6bdb05cbb6387",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-1": {
+    "file": "effects-1-clean.png",
+    "sha256": "c8abde776aca75f86c98bc9a8e7ebbe540f5eda6c4df5760f9c0c00a16f96c85",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-2": {
+    "file": "effects-2.png",
+    "sha256": "17e56e394b0beae07aa1d2d5f73a15244a14d67587606fb4e5c8e6a4e9e5db0e",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-3": {
+    "file": "effects-3.png",
+    "sha256": "8c6755be5cd5c63f245167622a6127b680d1693c3a070f24e242c6df738dbec5",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-4": {
+    "file": "effects-4.png",
+    "sha256": "038e2b5167c224320860d414f278a97f0db316fc5c2359d466c7a500cb129e01",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-5": {
+    "file": "effects-5.png",
+    "sha256": "95f15cfcb06d944d5ea6d93f7940b3941941d4fc8ced9c7e6a0f4d559e5002d2",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-6": {
+    "file": "effects-6.png",
+    "sha256": "ab39121ede06ded64d08d9e94687b7741984ead51aec2bc11c0f4cd4da4cd0b8",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-7": {
+    "file": "effects-7.png",
+    "sha256": "34a162147cd3f9a0408887df2a1696c47a24b65a773d55f2b8de858e721614ac",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-8": {
+    "file": "effects-8.png",
+    "sha256": "5819293504b5f5be0101d26ff6b2cf71af7c43e808610f74d64f6189e801ec67",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-9": {
+    "file": "effects-9.png",
+    "sha256": "b53f351628ec14da6dde324ba45c56c6fa59ed05c79530d9cd618450bd977b42",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-10": {
+    "file": "effects-10.png",
+    "sha256": "e1784f4a76233057668a87339db76251d4cc660e27ecdbe9aaf454f5a48fe2a6",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-11": {
+    "file": "effects-11.png",
+    "sha256": "a130f6395f9390958b340df9e3d2a49c346516309f7bbdcfd9eb81a7afe736c9",
+    "width": 1774,
+    "height": 887
+  },
+  "effects-12": {
+    "file": "effects-12.png",
+    "sha256": "24c04c7b21f43aeea82de607cde4e8a3eb2e5e004dca8c65d9acdbbee8268928",
+    "width": 1774,
+    "height": 887
+  }
+}

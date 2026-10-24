@@ -85,28 +85,38 @@ Validation: 270 tests passed, 1 skipped; TypeScript and production build passed
 (existing bundle-size advisory). All forty output hashes, bounds, formats and
 roster coverage verified.
 
+## Spell animation checkpoint 1 — 20/50 exports
+
+Exported ten damage-type projectile/impact pairs from the existing effects-0
+through effects-4 atlases. Uses the preserved effects-1-clean.png for lightning
+and acid. No source illustrations regenerated or overwritten.
+
+Reproduce: `python3 packages/web/art/codex/completion/export-vfx.py --batch 1`.
+Requires Python, Pillow and numpy. `vfx-source-lock.json` pins source dimensions
+and SHA-256 hashes. Projectiles use the four authored middle phases (1,2,3,4),
+64px frames at 14 fps; impacts use all eight phases, 192px at 16 fps. Registration
+retains a common cell scale/center; alpha cleanup removes nearly invisible noise,
+a 14px edge window isolates atlas glows, and one-shot opacity gains give a clear
+build/peak/fade. These are processing operations on the saved art.
+
+Independent audit: 20 sheets / 120 distinct frames passed dimensions, hashes,
+transparent margins, source identity and one-shot fade checks. Standalone browser
+viewer loaded every sheet and visited every frame. Phaser loaded and animated
+all 20 sheets without errors; mobile viewer has no horizontal overflow.
+This verifies asset playback, not spell routing in actual encounters.
+Project checks: 270 tests passed, 1 skipped; TypeScript and production build
+passed, with the existing large-bundle advisory.
+
+Artifacts: `spell-effects-export-report.json`, `spell-effects-audit.json`,
+`spell-effects.jpg`, `spell-effects.html`, browser light/dark screenshots and
+`spell-effects-browser-check.json`, all in `docs/art/`. Source scripts remain in
+`packages/web/art/codex/completion/`. Catalog art-ready; integration pending.
+
 ## Resume here
 
-Batch size: **20 at a time**, or the remaining count if fewer than twenty.
-Current total: **40/40 icons exported; 0/50 VFX sheets exported**.
-
-No spell icons remain to generate or export. Keep all checkpoint previews and
-reports, and the two original source atlases. The icon branch is saved in PR #4;
-its catalog entries remain integration-pending until live UI review.
-
-Next production checkpoint: begin the reusable damage-type spell-effect exports.
-The 50 effect definitions are in `packages/web/art/codex/completion/vfx-manifest.json`;
-all 13 original `effects-*.png` atlases already exist under `source/completion`.
-Reuse these sources. Inspect their actual row/cell layouts rather than assuming
-the generated grid is exact. Check `effects-1-clean.png` against `effects-1.png`;
-keep rejected sources out of runtime exports.
-
-Required formats from `CODEX_BRIEF_SPELLS.md`: projectile four 64px frames in one
-row, impact eight 192px frames, area eight 384px frames. The generated sources
-request eight phases per row, so choose/review projectile frames deliberately.
-Respect per-role catalog metadata, anchors, transparency, margins and frame
-counts. Preserve code fallbacks and readiness gates. Preview actual animation
-and battle playback before promoting integration. Save source hashes, export
-scripts, contact sheets, reports and resume notes after each batch.
-
-Leave other artwork, monster rules and archived alternatives intact.
+Current total: **40/40 icons exported; 20/50 VFX sheets exported**.
+Next: export batch 2 (effects 21–40), then batch 3 (41–50), audit and run the browser
+review after each. All source atlases exist; do not regenerate them.
+Keep code fallbacks and readiness gates. Final acceptance still needs real battle
+review, including cone/line orientation, Chromatic Orb damage selection, ongoing
+Spirit Guardians and Vampiric Touch's combined damage/heal behavior.

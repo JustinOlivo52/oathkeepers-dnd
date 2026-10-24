@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "expected": 20,
+  "loaded": 20,
+  "errors": [],
+  "framesDrawn": {
+    "vfx-fire": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-cold": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-cold-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-fire-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-lightning-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-lightning": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-acid-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-acid": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-poison-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-necrotic-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-poison": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-necrotic": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-force-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-radiant-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-thunder-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-radiant": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-force": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-psychic-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-thunder": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ],
+    "vfx-psychic": [
+      3,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      4
+    ]
+  },
+  "phaser": {
+    "textures": 20,
+    "animated": 20,
+    "loadErrors": []
+  },
+  "mobileOverflow": false,
+  "pageErrors": [],
+  "failedRequests": [],
+  "scope": "Standalone animation viewer and Phaser texture/playback smoke; not live battle acceptance"
+}
