@@ -1,0 +1,1535 @@
+{
+  "catalogEntries": 89,
+  "pendingEntries": 66,
+  "staticChecks": "passed",
+  "scope": "File existence, dimensions, byte budgets, sprite alpha and frame bounds; no gameplay approval.",
+  "entries": [
+    {
+      "id": "monster-goblin-boss",
+      "files": [
+        "sprites/monster-goblin-boss.png"
+      ],
+      "frameBounds": [
+        [
+          33,
+          55,
+          131,
+          166
+        ],
+        [
+          30,
+          57,
+          125,
+          166
+        ],
+        [
+          22,
+          56,
+          124,
+          166
+        ],
+        [
+          35,
+          51,
+          137,
+          166
+        ],
+        [
+          18,
+          53,
+          124,
+          166
+        ],
+        [
+          29,
+          51,
+          135,
+          166
+        ],
+        [
+          18,
+          33,
+          131,
+          166
+        ],
+        [
+          39,
+          69,
+          187,
+          166
+        ],
+        [
+          16,
+          72,
+          164,
+          166
+        ],
+        [
+          5,
+          56,
+          129,
+          166
+        ],
+        [
+          20,
+          111,
+          171,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-goblin-boss",
+      "files": [
+        "library/portraits/monster-goblin-boss.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 70004
+    },
+    {
+      "id": "monster-bandit",
+      "files": [
+        "sprites/monster-bandit.png"
+      ],
+      "frameBounds": [
+        [
+          23,
+          38,
+          123,
+          166
+        ],
+        [
+          26,
+          38,
+          124,
+          166
+        ],
+        [
+          19,
+          36,
+          124,
+          166
+        ],
+        [
+          24,
+          38,
+          152,
+          166
+        ],
+        [
+          19,
+          39,
+          125,
+          166
+        ],
+        [
+          26,
+          41,
+          141,
+          166
+        ],
+        [
+          10,
+          25,
+          125,
+          166
+        ],
+        [
+          7,
+          57,
+          175,
+          166
+        ],
+        [
+          10,
+          61,
+          161,
+          166
+        ],
+        [
+          5,
+          43,
+          132,
+          166
+        ],
+        [
+          11,
+          118,
+          181,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-bandit",
+      "files": [
+        "library/portraits/monster-bandit.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 61994
+    },
+    {
+      "id": "monster-bandit-captain",
+      "files": [
+        "sprites/monster-bandit-captain.png"
+      ],
+      "frameBounds": [
+        [
+          22,
+          38,
+          123,
+          166
+        ],
+        [
+          24,
+          40,
+          123,
+          166
+        ],
+        [
+          22,
+          38,
+          123,
+          166
+        ],
+        [
+          22,
+          37,
+          127,
+          166
+        ],
+        [
+          5,
+          39,
+          122,
+          166
+        ],
+        [
+          21,
+          38,
+          125,
+          166
+        ],
+        [
+          5,
+          24,
+          125,
+          166
+        ],
+        [
+          5,
+          55,
+          154,
+          166
+        ],
+        [
+          9,
+          66,
+          150,
+          166
+        ],
+        [
+          7,
+          57,
+          123,
+          166
+        ],
+        [
+          7,
+          117,
+          185,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-bandit-captain",
+      "files": [
+        "library/portraits/monster-bandit-captain.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 63024
+    },
+    {
+      "id": "monster-cultist",
+      "files": [
+        "sprites/monster-cultist.png"
+      ],
+      "frameBounds": [
+        [
+          46,
+          38,
+          167,
+          166
+        ],
+        [
+          49,
+          37,
+          160,
+          166
+        ],
+        [
+          38,
+          38,
+          163,
+          166
+        ],
+        [
+          42,
+          38,
+          158,
+          166
+        ],
+        [
+          38,
+          40,
+          167,
+          166
+        ],
+        [
+          38,
+          40,
+          154,
+          166
+        ],
+        [
+          43,
+          30,
+          157,
+          166
+        ],
+        [
+          32,
+          59,
+          187,
+          166
+        ],
+        [
+          44,
+          63,
+          169,
+          166
+        ],
+        [
+          48,
+          48,
+          175,
+          166
+        ],
+        [
+          14,
+          107,
+          178,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-cultist",
+      "files": [
+        "library/portraits/monster-cultist.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 47348
+    },
+    {
+      "id": "monster-bugbear-warrior",
+      "files": [
+        "sprites/monster-bugbear-warrior.png"
+      ],
+      "frameBounds": [
+        [
+          22,
+          31,
+          142,
+          166
+        ],
+        [
+          19,
+          32,
+          136,
+          166
+        ],
+        [
+          11,
+          31,
+          140,
+          166
+        ],
+        [
+          27,
+          30,
+          136,
+          166
+        ],
+        [
+          7,
+          31,
+          141,
+          166
+        ],
+        [
+          21,
+          30,
+          133,
+          166
+        ],
+        [
+          14,
+          9,
+          151,
+          166
+        ],
+        [
+          5,
+          51,
+          176,
+          166
+        ],
+        [
+          22,
+          63,
+          183,
+          166
+        ],
+        [
+          5,
+          43,
+          138,
+          166
+        ],
+        [
+          14,
+          98,
+          179,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-bugbear-warrior",
+      "files": [
+        "library/portraits/monster-bugbear-warrior.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 84264
+    },
+    {
+      "id": "monster-ghoul",
+      "files": [
+        "sprites/monster-ghoul.png"
+      ],
+      "frameBounds": [
+        [
+          34,
+          40,
+          137,
+          166
+        ],
+        [
+          33,
+          40,
+          135,
+          166
+        ],
+        [
+          17,
+          40,
+          127,
+          166
+        ],
+        [
+          40,
+          40,
+          145,
+          166
+        ],
+        [
+          16,
+          39,
+          129,
+          166
+        ],
+        [
+          40,
+          35,
+          146,
+          166
+        ],
+        [
+          17,
+          21,
+          127,
+          166
+        ],
+        [
+          8,
+          61,
+          163,
+          166
+        ],
+        [
+          5,
+          63,
+          167,
+          166
+        ],
+        [
+          11,
+          48,
+          130,
+          166
+        ],
+        [
+          12,
+          111,
+          179,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-ghoul",
+      "files": [
+        "library/portraits/monster-ghoul.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 73292
+    },
+    {
+      "id": "monster-wight",
+      "files": [
+        "sprites/monster-wight.png"
+      ],
+      "frameBounds": [
+        [
+          12,
+          38,
+          133,
+          166
+        ],
+        [
+          20,
+          38,
+          135,
+          166
+        ],
+        [
+          6,
+          38,
+          124,
+          166
+        ],
+        [
+          30,
+          36,
+          149,
+          166
+        ],
+        [
+          6,
+          38,
+          130,
+          166
+        ],
+        [
+          22,
+          36,
+          139,
+          166
+        ],
+        [
+          37,
+          28,
+          156,
+          166
+        ],
+        [
+          14,
+          59,
+          165,
+          166
+        ],
+        [
+          9,
+          56,
+          147,
+          166
+        ],
+        [
+          7,
+          47,
+          129,
+          166
+        ],
+        [
+          11,
+          109,
+          181,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-wight",
+      "files": [
+        "library/portraits/monster-wight.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 87390
+    },
+    {
+      "id": "monster-giant-rat",
+      "files": [
+        "sprites/monster-giant-rat.png"
+      ],
+      "frameBounds": [
+        [
+          48,
+          106,
+          159,
+          166
+        ],
+        [
+          51,
+          102,
+          157,
+          166
+        ],
+        [
+          43,
+          108,
+          157,
+          166
+        ],
+        [
+          36,
+          106,
+          145,
+          166
+        ],
+        [
+          45,
+          104,
+          158,
+          166
+        ],
+        [
+          36,
+          107,
+          150,
+          166
+        ],
+        [
+          27,
+          110,
+          140,
+          166
+        ],
+        [
+          60,
+          94,
+          174,
+          166
+        ],
+        [
+          40,
+          107,
+          164,
+          166
+        ],
+        [
+          52,
+          80,
+          137,
+          166
+        ],
+        [
+          33,
+          120,
+          158,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-giant-rat",
+      "files": [
+        "library/portraits/monster-giant-rat.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 80456
+    },
+    {
+      "id": "monster-harpy",
+      "files": [
+        "sprites/monster-harpy.png"
+      ],
+      "frameBounds": [
+        [
+          36,
+          32,
+          133,
+          166
+        ],
+        [
+          36,
+          34,
+          132,
+          166
+        ],
+        [
+          20,
+          36,
+          134,
+          166
+        ],
+        [
+          31,
+          32,
+          129,
+          166
+        ],
+        [
+          23,
+          35,
+          132,
+          166
+        ],
+        [
+          25,
+          34,
+          124,
+          166
+        ],
+        [
+          5,
+          34,
+          141,
+          166
+        ],
+        [
+          14,
+          27,
+          158,
+          166
+        ],
+        [
+          44,
+          35,
+          187,
+          166
+        ],
+        [
+          42,
+          39,
+          173,
+          166
+        ],
+        [
+          19,
+          110,
+          173,
+          166
+        ]
+      ]
+    },
+    {
+      "id": "portrait-harpy",
+      "files": [
+        "library/portraits/monster-harpy.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 78650
+    },
+    {
+      "id": "monster-dire-wolf",
+      "files": [
+        "sprites/monster-dire-wolf.png"
+      ],
+      "frameBounds": [
+        [
+          26,
+          128,
+          321,
+          340
+        ],
+        [
+          31,
+          126,
+          318,
+          340
+        ],
+        [
+          30,
+          139,
+          336,
+          340
+        ],
+        [
+          5,
+          133,
+          308,
+          340
+        ],
+        [
+          5,
+          146,
+          306,
+          340
+        ],
+        [
+          11,
+          145,
+          310,
+          340
+        ],
+        [
+          22,
+          162,
+          320,
+          340
+        ],
+        [
+          69,
+          140,
+          379,
+          340
+        ],
+        [
+          5,
+          146,
+          317,
+          340
+        ],
+        [
+          26,
+          99,
+          300,
+          340
+        ],
+        [
+          22,
+          223,
+          362,
+          340
+        ]
+      ]
+    },
+    {
+      "id": "portrait-dire-wolf",
+      "files": [
+        "library/portraits/monster-dire-wolf.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 83048
+    },
+    {
+      "id": "monster-worg",
+      "files": [
+        "sprites/monster-worg.png"
+      ],
+      "frameBounds": [
+        [
+          31,
+          121,
+          331,
+          340
+        ],
+        [
+          34,
+          122,
+          338,
+          340
+        ],
+        [
+          36,
+          123,
+          347,
+          340
+        ],
+        [
+          53,
+          134,
+          353,
+          340
+        ],
+        [
+          20,
+          125,
+          340,
+          340
+        ],
+        [
+          62,
+          125,
+          371,
+          340
+        ],
+        [
+          53,
+          149,
+          359,
+          340
+        ],
+        [
+          58,
+          99,
+          379,
+          340
+        ],
+        [
+          5,
+          144,
+          343,
+          340
+        ],
+        [
+          62,
+          49,
+          325,
+          340
+        ],
+        [
+          8,
+          200,
+          375,
+          340
+        ]
+      ]
+    },
+    {
+      "id": "portrait-worg",
+      "files": [
+        "library/portraits/monster-worg.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 76678
+    },
+    {
+      "id": "monster-brown-bear",
+      "files": [
+        "sprites/monster-brown-bear.png"
+      ],
+      "frameBounds": [
+        [
+          35,
+          115,
+          355,
+          340
+        ],
+        [
+          36,
+          116,
+          352,
+          340
+        ],
+        [
+          37,
+          131,
+          353,
+          340
+        ],
+        [
+          47,
+          133,
+          352,
+          340
+        ],
+        [
+          27,
+          124,
+          359,
+          340
+        ],
+        [
+          34,
+          130,
+          367,
+          340
+        ],
+        [
+          86,
+          33,
+          379,
+          340
+        ],
+        [
+          48,
+          98,
+          377,
+          340
+        ],
+        [
+          23,
+          130,
+          379,
+          340
+        ],
+        [
+          127,
+          64,
+          365,
+          340
+        ],
+        [
+          6,
+          199,
+          378,
+          340
+        ]
+      ]
+    },
+    {
+      "id": "portrait-brown-bear",
+      "files": [
+        "library/portraits/monster-brown-bear.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 81950
+    },
+    {
+      "id": "monster-owlbear",
+      "files": [
+        "sprites/monster-owlbear.png"
+      ],
+      "frameBounds": [
+        [
+          51,
+          113,
+          320,
+          340
+        ],
+        [
+          53,
+          113,
+          318,
+          340
+        ],
+        [
+          5,
+          113,
+          301,
+          340
+        ],
+        [
+          5,
+          120,
+          272,
+          340
+        ],
+        [
+          36,
+          118,
+          319,
+          340
+        ],
+        [
+          38,
+          120,
+          332,
+          340
+        ],
+        [
+          104,
+          73,
+          379,
+          340
+        ],
+        [
+          5,
+          139,
+          313,
+          340
+        ],
+        [
+          24,
+          132,
+          324,
+          340
+        ],
+        [
+          85,
+          85,
+          340,
+          340
+        ],
+        [
+          6,
+          198,
+          378,
+          340
+        ]
+      ]
+    },
+    {
+      "id": "portrait-owlbear",
+      "files": [
+        "library/portraits/monster-owlbear.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 88984
+    },
+    {
+      "id": "npc-innkeeper-human",
+      "files": [
+        "library/portraits/npc-innkeeper-human.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 69078
+    },
+    {
+      "id": "npc-town-guard",
+      "files": [
+        "library/portraits/npc-town-guard.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 74470
+    },
+    {
+      "id": "npc-blacksmith",
+      "files": [
+        "library/portraits/npc-blacksmith.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 64536
+    },
+    {
+      "id": "npc-priest",
+      "files": [
+        "library/portraits/npc-priest.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 65058
+    },
+    {
+      "id": "npc-priestess-dark",
+      "files": [
+        "library/portraits/npc-priestess-dark.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 56782
+    },
+    {
+      "id": "npc-noble",
+      "files": [
+        "library/portraits/npc-noble.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 61418
+    },
+    {
+      "id": "npc-farmer",
+      "files": [
+        "library/portraits/npc-farmer.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 79252
+    },
+    {
+      "id": "npc-scholar",
+      "files": [
+        "library/portraits/npc-scholar.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 79754
+    },
+    {
+      "id": "npc-hunter",
+      "files": [
+        "library/portraits/npc-hunter.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 85860
+    },
+    {
+      "id": "npc-thief",
+      "files": [
+        "library/portraits/npc-thief.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 60190
+    },
+    {
+      "id": "npc-bard",
+      "files": [
+        "library/portraits/npc-bard.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 79840
+    },
+    {
+      "id": "npc-elder",
+      "files": [
+        "library/portraits/npc-elder.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 91980
+    },
+    {
+      "id": "npc-child",
+      "files": [
+        "library/portraits/npc-child.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 66042
+    },
+    {
+      "id": "npc-mage",
+      "files": [
+        "library/portraits/npc-mage.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 69328
+    },
+    {
+      "id": "npc-soldier-veteran",
+      "files": [
+        "library/portraits/npc-soldier-veteran.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 79296
+    },
+    {
+      "id": "npc-cult-leader",
+      "files": [
+        "library/portraits/npc-cult-leader.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 60744
+    },
+    {
+      "id": "npc-bandit-leader",
+      "files": [
+        "library/portraits/npc-bandit-leader.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 81114
+    },
+    {
+      "id": "scene-abbey-exterior",
+      "files": [
+        "library/scenes/scene-abbey-exterior.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 372682
+    },
+    {
+      "id": "scene-cave-depths",
+      "files": [
+        "library/scenes/scene-cave-depths.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 357900
+    },
+    {
+      "id": "scene-cave-entrance",
+      "files": [
+        "library/scenes/scene-cave-entrance.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 399088
+    },
+    {
+      "id": "scene-crypt",
+      "files": [
+        "library/scenes/scene-crypt.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 331062
+    },
+    {
+      "id": "scene-farmstead",
+      "files": [
+        "library/scenes/scene-farmstead.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 377706
+    },
+    {
+      "id": "scene-forest-night",
+      "files": [
+        "library/scenes/scene-forest-night.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 346044
+    },
+    {
+      "id": "scene-goblin-camp",
+      "files": [
+        "library/scenes/scene-goblin-camp.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 370658
+    },
+    {
+      "id": "scene-river-crossing",
+      "files": [
+        "library/scenes/scene-river-crossing.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 342766
+    },
+    {
+      "id": "scene-smithy",
+      "files": [
+        "library/scenes/scene-smithy.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 373582
+    },
+    {
+      "id": "scene-tavern-quiet",
+      "files": [
+        "library/scenes/scene-tavern-quiet.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 311782
+    },
+    {
+      "id": "scene-temple",
+      "files": [
+        "library/scenes/scene-temple.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 386300
+    },
+    {
+      "id": "scene-thornwatch-gate-day",
+      "files": [
+        "library/scenes/scene-thornwatch-gate-day.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 397670
+    },
+    {
+      "id": "scene-thornwatch-square",
+      "files": [
+        "library/scenes/scene-thornwatch-square.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 364556
+    },
+    {
+      "id": "scene-watchtower",
+      "files": [
+        "library/scenes/scene-watchtower.webp"
+      ],
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 352180
+    },
+    {
+      "id": "tiles-cave",
+      "files": [
+        "sprites/props-cave.png",
+        "sprites/tiles-cave.png"
+      ]
+    },
+    {
+      "id": "board-cave",
+      "files": [
+        "boards/board-cave.json"
+      ]
+    },
+    {
+      "id": "tiles-crypt",
+      "files": [
+        "sprites/props-crypt.png",
+        "sprites/tiles-crypt.png"
+      ]
+    },
+    {
+      "id": "board-crypt",
+      "files": [
+        "boards/board-crypt.json"
+      ]
+    },
+    {
+      "id": "portrait-wren-ashdown",
+      "files": [
+        "library/portraits/companion-wren-ashdown.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 60644
+    },
+    {
+      "id": "portrait-brother-odric-vale",
+      "files": [
+        "library/portraits/companion-brother-odric-vale.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 76562
+    },
+    {
+      "id": "portrait-tamsin-reed",
+      "files": [
+        "library/portraits/companion-tamsin-reed.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 69324
+    },
+    {
+      "id": "portrait-sister-maren-holt",
+      "files": [
+        "library/portraits/companion-sister-maren-holt.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 62720
+    },
+    {
+      "id": "portrait-pip-thistlewick",
+      "files": [
+        "library/portraits/companion-pip-thistlewick.webp"
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 74562
+    }
+  ]
+}
