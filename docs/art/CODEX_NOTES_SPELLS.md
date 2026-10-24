@@ -128,12 +128,70 @@ playback checks cover all 40, with dark/light review and no mobile overflow.
 Project validation: 270 tests passed, 1 skipped; TypeScript and build passed,
 with the existing bundle advisory. Runtime battle integration remains pending.
 
-## Resume here
+## Spell animation checkpoint 3 — complete 50/50 exports
 
-Current total: **40/40 icons exported; 40/50 VFX sheets exported**.
-Next: export batch 3 (41–50), then audit and run browser review. All source atlases
-exist; do not regenerate them. The final two rows in effects-12 use explicit taller
-bounds instead of the nominal four-row grid. Preserve all earlier outputs.
-Final battle acceptance still needs cone/line placement and orientation, Chromatic
-Orb's damage selection, Spirit Guardians' ongoing area and Vampiric Touch's
-combined damage/heal presentation. Keep code fallbacks and readiness gates.
+Added Lesser Restoration, Revivify, Vampiric Touch, Magic Missile/Eldritch Blast/
+Scorching Ray projectiles, Sacred Flame, Guiding Bolt, Spiritual Weapon and Vicious
+Mockery. Taller reviewed row boundaries preserve the final atlas's uneven layout.
+All previous forty exports remain byte-for-byte unchanged. No artwork regenerated.
+A final visual pass also tightened Vampiric Touch crop boundaries to exclude
+neighboring purple fragments.
+
+Final inventory: **13 projectile loops, 29 impacts, 8 areas — 50 sheets / 348 frames**.
+Final checks: 270 tests passed, 1 skipped; TypeScript and production build passed
+(existing bundle advisory). Independent audit: all 348 frames passed; browser
+and Phaser playback: 50/50, zero load/page errors and no mobile overflow.
+
+Projectiles: 4×64px at 14 fps. Impacts: 8×192px at 16 fps. Areas: 8×384px at 16 fps.
+All use transparent RGBA PNGs and unique `vfx-*` catalog IDs. Source files, selected
+phases, crop boxes, opacity gains, output sizes and SHA-256 hashes are recorded.
+Catalog entries remain integration-pending; the existing battle art lookup can
+load art-ready effects. No game code, spell rules or fallback rendering changed.
+
+Reproduce all fifty (Python 3, Pillow, numpy):
+
+```sh
+python3 packages/web/art/codex/completion/export-vfx.py --batch all
+python3 packages/web/art/codex/completion/audit-vfx.py --expected 50
+```
+
+Or run `--batch 1`, `--batch 2`, `--batch 3` for 20/20/10 subsets. All fifty sheets
+were regenerated with the script and reproduced byte-for-byte. The independent
+audit validates exact manifest coverage/roles, dimensions, source/output hashes,
+unique nonempty frames, transparent margins, buildup/fade and readiness metadata.
+All forty icon files remain unchanged and exactly match the forty-spell roster.
+
+Browser review: serve the repository root on localhost:8765, then run:
+
+```sh
+PLAYWRIGHT_MODULE=/path/to/playwright node packages/web/art/codex/completion/review-vfx.cjs 50
+```
+
+The runner uses Chromium (override `CHROMIUM_PATH` if needed). It verifies every
+frame in the standalone viewer, light/dark screenshots, mobile overflow, and a
+Phaser texture/frame-count/playback smoke check. All fifty animations loaded and
+played, with no image-load or page errors. This is asset playback evidence, not
+proof of correct presentation in every live encounter.
+
+## Resume here — artwork production complete for this spell brief
+
+**40/40 spell icons and 50/50 spell animation sheets are exported and saved in PR #4.**
+Do not regenerate these collections. Source atlases and reproducible processing
+remain preserved; rejected attempts are not used. Browse `spell-effects.html`,
+`spell-effects.jpg`, the browser screenshots and JSON audit/export reports.
+
+Next work is live battle acceptance and integration review:
+
+- Verify cone/line placement, orientation and stretching for Burning Hands and
+  Lightning Bolt; the existing area renderer places art in an axis-aligned box.
+- Verify Chromatic Orb uses the chosen damage type's effect.
+- Verify ongoing Spirit Guardians and Vampiric Touch's combined damage/heal
+  presentation; one-shot source atlases alone do not implement their mechanics.
+- Check all effect timing and impact positions over characters and terrain,
+  and all forty icons in real spell buttons. Preserve code fallbacks.
+- Promote integration readiness only after that review; this delivery does not
+  assert that all forty spells' mechanics/presentation are complete.
+
+Other artwork integration, environment props wiring, and the older consolidated
+art checklist remain separate follow-up work. Do not regenerate already-saved
+character, monster, portrait, card or environment art to address readiness flags.

@@ -5150,5 +5150,195 @@
     "integrationStatus": "pending",
     "source": "codex-imagegen",
     "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-lesser-restoration",
+    "kind": "vfx",
+    "title": "Lesser Restoration",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-lesser-restoration.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-revivify",
+    "kind": "vfx",
+    "title": "Revivify",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-revivify.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-vampiric-touch",
+    "kind": "vfx",
+    "title": "Vampiric Touch",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-vampiric-touch.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-magic-missile-projectile",
+    "kind": "vfx",
+    "title": "Magic Missile Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-magic-missile-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-eldritch-blast-projectile",
+    "kind": "vfx",
+    "title": "Eldritch Blast Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-eldritch-blast-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-scorching-ray-projectile",
+    "kind": "vfx",
+    "title": "Scorching Ray Projectile",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-scorching-ray-projectile.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frames": 4,
+      "fps": 14,
+      "role": "projectile"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-sacred-flame",
+    "kind": "vfx",
+    "title": "Sacred Flame",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-sacred-flame.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-guiding-bolt",
+    "kind": "vfx",
+    "title": "Guiding Bolt",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-guiding-bolt.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-spiritual-weapon",
+    "kind": "vfx",
+    "title": "Spiritual Weapon",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-spiritual-weapon.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-vicious-mockery",
+    "kind": "vfx",
+    "title": "Vicious Mockery",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-vicious-mockery.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
   }
 ]

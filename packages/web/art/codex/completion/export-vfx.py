@@ -135,7 +135,7 @@ def main():
     catalog_path.write_text(json.dumps(catalog,indent=2)+'\n')
     report['effects'] = [reports[e['id']] for e in effects if e['id'] in reports]
     report['exported'] = len(report['effects']); report['planned'] = len(effects)
-    report['processing'] = '8px alpha noise cutoff; 14px source-cell edge window; shared canvas scale; authored fade gain'
+    report['processing'] = 'alpha < 8/255 noise cutoff; 14px source-cell edge window; shared canvas scale; authored fade gain'
     report_path.write_text(json.dumps(report,indent=2)+'\n')
     preview([e for e in catalog if e['id'] in reports])
     print(f"Checkpoint saved locally: {report['exported']}/{len(effects)} effects")

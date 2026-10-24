@@ -5039,9 +5039,1237 @@
       ],
       "bytes": 118735,
       "sha256": "bfa6e9fae415bf6a9d1cbb8e8ee6b6bd2b2f27078b2e020112aa14ab00438075"
+    },
+    {
+      "id": "vfx-lesser-restoration",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-lesser-restoration.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-10.png",
+      "sourceSha256": "e1784f4a76233057668a87339db76251d4cc660e27ecdbe9aaf454f5a48fe2a6",
+      "sourceRow": 0,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            0,
+            176,
+            250
+          ],
+          "bounds": [
+            93,
+            87,
+            147,
+            131
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            176,
+            0,
+            409,
+            250
+          ],
+          "bounds": [
+            73,
+            69,
+            167,
+            153
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            409,
+            0,
+            640,
+            250
+          ],
+          "bounds": [
+            44,
+            52,
+            168,
+            164
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            640,
+            0,
+            884,
+            250
+          ],
+          "bounds": [
+            30,
+            37,
+            173,
+            175
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            884,
+            0,
+            1107,
+            250
+          ],
+          "bounds": [
+            26,
+            43,
+            166,
+            169
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1107,
+            0,
+            1321,
+            250
+          ],
+          "bounds": [
+            60,
+            58,
+            163,
+            159
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1321,
+            0,
+            1566,
+            250
+          ],
+          "bounds": [
+            62,
+            58,
+            149,
+            160
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1566,
+            0,
+            1774,
+            250
+          ],
+          "bounds": [
+            73,
+            93,
+            122,
+            131
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 172023,
+      "sha256": "119e7fdad49914f01ce17a0280bba95bf3e52e1c7de1e77283e191b06645e134"
+    },
+    {
+      "id": "vfx-revivify",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-revivify.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-10.png",
+      "sourceSha256": "e1784f4a76233057668a87339db76251d4cc660e27ecdbe9aaf454f5a48fe2a6",
+      "sourceRow": 1,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            250,
+            201,
+            470
+          ],
+          "bounds": [
+            92,
+            77,
+            130,
+            113
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            201,
+            250,
+            408,
+            470
+          ],
+          "bounds": [
+            73,
+            57,
+            151,
+            134
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            408,
+            250,
+            641,
+            470
+          ],
+          "bounds": [
+            48,
+            43,
+            159,
+            152
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            641,
+            250,
+            901,
+            470
+          ],
+          "bounds": [
+            22,
+            30,
+            171,
+            163
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            901,
+            250,
+            1146,
+            470
+          ],
+          "bounds": [
+            27,
+            40,
+            146,
+            154
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1146,
+            250,
+            1358,
+            470
+          ],
+          "bounds": [
+            40,
+            50,
+            136,
+            146
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1358,
+            250,
+            1575,
+            470
+          ],
+          "bounds": [
+            52,
+            54,
+            134,
+            139
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1575,
+            250,
+            1774,
+            470
+          ],
+          "bounds": [
+            68,
+            67,
+            120,
+            123
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 123731,
+      "sha256": "8caf9c877b4504a9099e5046b0634958f00e70d198528eda8307b70bd77cb1de"
+    },
+    {
+      "id": "vfx-vampiric-touch",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-vampiric-touch.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-10.png",
+      "sourceSha256": "e1784f4a76233057668a87339db76251d4cc660e27ecdbe9aaf454f5a48fe2a6",
+      "sourceRow": 2,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            470,
+            230,
+            710
+          ],
+          "bounds": [
+            77,
+            62,
+            131,
+            112
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            230,
+            470,
+            433,
+            710
+          ],
+          "bounds": [
+            55,
+            47,
+            133,
+            124
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            433,
+            470,
+            653,
+            710
+          ],
+          "bounds": [
+            28,
+            30,
+            163,
+            146
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            653,
+            470,
+            910,
+            710
+          ],
+          "bounds": [
+            17,
+            21,
+            175,
+            167
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            910,
+            470,
+            1121,
+            710
+          ],
+          "bounds": [
+            31,
+            26,
+            158,
+            144
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1121,
+            470,
+            1350,
+            710
+          ],
+          "bounds": [
+            40,
+            32,
+            161,
+            138
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1350,
+            470,
+            1570,
+            710
+          ],
+          "bounds": [
+            47,
+            50,
+            156,
+            130
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1570,
+            470,
+            1774,
+            710
+          ],
+          "bounds": [
+            55,
+            55,
+            131,
+            120
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 171352,
+      "sha256": "7ee6ab90b1d11e8e427f1ffb4dbd2059a8160be41fcc3fd8e5fdcc6121fff551"
+    },
+    {
+      "id": "vfx-magic-missile-projectile",
+      "role": "projectile",
+      "file": "sprites/vfx/vfx-magic-missile-projectile.png",
+      "frames": 4,
+      "frameSize": 64,
+      "source": "packages/web/art/codex/source/completion/effects-10.png",
+      "sourceSha256": "e1784f4a76233057668a87339db76251d4cc660e27ecdbe9aaf454f5a48fe2a6",
+      "sourceRow": 3,
+      "frameDetails": [
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            177,
+            710,
+            455,
+            887
+          ],
+          "bounds": [
+            14,
+            21,
+            58,
+            35
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            455,
+            710,
+            666,
+            887
+          ],
+          "bounds": [
+            12,
+            18,
+            52,
+            36
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            666,
+            710,
+            939,
+            887
+          ],
+          "bounds": [
+            7,
+            16,
+            57,
+            39
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            939,
+            710,
+            1160,
+            887
+          ],
+          "bounds": [
+            11,
+            19,
+            52,
+            35
+          ],
+          "alphaGain": 1
+        }
+      ],
+      "bytes": 7653,
+      "sha256": "1d2e077955b3ec47761bc7f725d89d390b07982b77ccf3c49a752da579c1c4ad"
+    },
+    {
+      "id": "vfx-eldritch-blast-projectile",
+      "role": "projectile",
+      "file": "sprites/vfx/vfx-eldritch-blast-projectile.png",
+      "frames": 4,
+      "frameSize": 64,
+      "source": "packages/web/art/codex/source/completion/effects-11.png",
+      "sourceSha256": "a130f6395f9390958b340df9e3d2a49c346516309f7bbdcfd9eb81a7afe736c9",
+      "sourceRow": 0,
+      "frameDetails": [
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            172,
+            0,
+            419,
+            230
+          ],
+          "bounds": [
+            22,
+            25,
+            55,
+            42
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            419,
+            0,
+            644,
+            230
+          ],
+          "bounds": [
+            14,
+            24,
+            54,
+            44
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            644,
+            0,
+            899,
+            230
+          ],
+          "bounds": [
+            8,
+            20,
+            56,
+            48
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            899,
+            0,
+            1130,
+            230
+          ],
+          "bounds": [
+            9,
+            21,
+            54,
+            44
+          ],
+          "alphaGain": 1
+        }
+      ],
+      "bytes": 8949,
+      "sha256": "8cd59c12bbcf0c17d3a005f3bce26a8ba2b72a457a533200667342ffa6a55197"
+    },
+    {
+      "id": "vfx-scorching-ray-projectile",
+      "role": "projectile",
+      "file": "sprites/vfx/vfx-scorching-ray-projectile.png",
+      "frames": 4,
+      "frameSize": 64,
+      "source": "packages/web/art/codex/source/completion/effects-11.png",
+      "sourceSha256": "a130f6395f9390958b340df9e3d2a49c346516309f7bbdcfd9eb81a7afe736c9",
+      "sourceRow": 1,
+      "frameDetails": [
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            185,
+            230,
+            414,
+            410
+          ],
+          "bounds": [
+            20,
+            25,
+            54,
+            42
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            414,
+            230,
+            657,
+            410
+          ],
+          "bounds": [
+            12,
+            22,
+            56,
+            45
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            657,
+            230,
+            916,
+            410
+          ],
+          "bounds": [
+            6,
+            17,
+            58,
+            46
+          ],
+          "alphaGain": 1
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            916,
+            230,
+            1142,
+            410
+          ],
+          "bounds": [
+            10,
+            22,
+            51,
+            45
+          ],
+          "alphaGain": 1
+        }
+      ],
+      "bytes": 9643,
+      "sha256": "717ec726bbbb20362d54221e909184e590846b88b755ea051ab259b14ced9f76"
+    },
+    {
+      "id": "vfx-sacred-flame",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-sacred-flame.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-11.png",
+      "sourceSha256": "a130f6395f9390958b340df9e3d2a49c346516309f7bbdcfd9eb81a7afe736c9",
+      "sourceRow": 2,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            410,
+            197,
+            645
+          ],
+          "bounds": [
+            81,
+            70,
+            132,
+            152
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            197,
+            410,
+            437,
+            645
+          ],
+          "bounds": [
+            59,
+            42,
+            152,
+            161
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            437,
+            410,
+            660,
+            645
+          ],
+          "bounds": [
+            40,
+            29,
+            154,
+            164
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            660,
+            410,
+            885,
+            645
+          ],
+          "bounds": [
+            27,
+            23,
+            164,
+            170
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            885,
+            410,
+            1137,
+            645
+          ],
+          "bounds": [
+            27,
+            27,
+            145,
+            164
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1137,
+            410,
+            1340,
+            645
+          ],
+          "bounds": [
+            35,
+            32,
+            130,
+            160
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1340,
+            410,
+            1534,
+            645
+          ],
+          "bounds": [
+            60,
+            46,
+            136,
+            157
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1534,
+            410,
+            1774,
+            645
+          ],
+          "bounds": [
+            77,
+            69,
+            111,
+            151
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 131343,
+      "sha256": "d519bac9197df8ce2ce407e42d38e13eaef42210ed2d957f0a4ac6457a9fe263"
+    },
+    {
+      "id": "vfx-guiding-bolt",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-guiding-bolt.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-11.png",
+      "sourceSha256": "a130f6395f9390958b340df9e3d2a49c346516309f7bbdcfd9eb81a7afe736c9",
+      "sourceRow": 3,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            645,
+            168,
+            887
+          ],
+          "bounds": [
+            99,
+            72,
+            134,
+            106
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            168,
+            645,
+            398,
+            887
+          ],
+          "bounds": [
+            83,
+            50,
+            165,
+            127
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            398,
+            645,
+            642,
+            887
+          ],
+          "bounds": [
+            58,
+            37,
+            169,
+            141
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            642,
+            645,
+            901,
+            887
+          ],
+          "bounds": [
+            19,
+            22,
+            175,
+            165
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            901,
+            645,
+            1103,
+            887
+          ],
+          "bounds": [
+            35,
+            30,
+            155,
+            147
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1103,
+            645,
+            1346,
+            887
+          ],
+          "bounds": [
+            46,
+            39,
+            148,
+            137
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1346,
+            645,
+            1559,
+            887
+          ],
+          "bounds": [
+            51,
+            44,
+            147,
+            132
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1559,
+            645,
+            1774,
+            887
+          ],
+          "bounds": [
+            69,
+            63,
+            122,
+            114
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 117036,
+      "sha256": "9ce6a9ad91e66c5c54db2c6adeeb9f89610d26d41181b24573325bf2a040d667"
+    },
+    {
+      "id": "vfx-spiritual-weapon",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-spiritual-weapon.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-12.png",
+      "sourceSha256": "24c04c7b21f43aeea82de607cde4e8a3eb2e5e004dca8c65d9acdbbee8268928",
+      "sourceRow": 0,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            0,
+            198,
+            275
+          ],
+          "bounds": [
+            76,
+            98,
+            133,
+            147
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            198,
+            0,
+            421,
+            275
+          ],
+          "bounds": [
+            60,
+            72,
+            158,
+            158
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            421,
+            0,
+            656,
+            275
+          ],
+          "bounds": [
+            42,
+            46,
+            163,
+            163
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            656,
+            0,
+            918,
+            275
+          ],
+          "bounds": [
+            20,
+            20,
+            171,
+            172
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            918,
+            0,
+            1153,
+            275
+          ],
+          "bounds": [
+            29,
+            55,
+            158,
+            165
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1153,
+            0,
+            1344,
+            275
+          ],
+          "bounds": [
+            42,
+            66,
+            150,
+            159
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1344,
+            0,
+            1571,
+            275
+          ],
+          "bounds": [
+            52,
+            79,
+            151,
+            156
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1571,
+            0,
+            1774,
+            275
+          ],
+          "bounds": [
+            57,
+            100,
+            117,
+            145
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 169214,
+      "sha256": "90c304cd787b87a0310c7afebb71b3efcc7052c9e08c8e76e3592b98526c3ef9"
+    },
+    {
+      "id": "vfx-vicious-mockery",
+      "role": "impact",
+      "file": "sprites/vfx/vfx-vicious-mockery.png",
+      "frames": 8,
+      "frameSize": 192,
+      "source": "packages/web/art/codex/source/completion/effects-12.png",
+      "sourceSha256": "24c04c7b21f43aeea82de607cde4e8a3eb2e5e004dca8c65d9acdbbee8268928",
+      "sourceRow": 1,
+      "frameDetails": [
+        {
+          "sourcePhase": 0,
+          "sourceCrop": [
+            0,
+            275,
+            190,
+            560
+          ],
+          "bounds": [
+            83,
+            69,
+            130,
+            112
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 1,
+          "sourceCrop": [
+            190,
+            275,
+            427,
+            560
+          ],
+          "bounds": [
+            60,
+            48,
+            149,
+            125
+          ],
+          "alphaGain": 0.6
+        },
+        {
+          "sourcePhase": 2,
+          "sourceCrop": [
+            427,
+            275,
+            655,
+            560
+          ],
+          "bounds": [
+            37,
+            29,
+            159,
+            142
+          ],
+          "alphaGain": 0.9
+        },
+        {
+          "sourcePhase": 3,
+          "sourceCrop": [
+            655,
+            275,
+            909,
+            560
+          ],
+          "bounds": [
+            25,
+            17,
+            167,
+            159
+          ],
+          "alphaGain": 1.0
+        },
+        {
+          "sourcePhase": 4,
+          "sourceCrop": [
+            909,
+            275,
+            1142,
+            560
+          ],
+          "bounds": [
+            32,
+            26,
+            160,
+            152
+          ],
+          "alphaGain": 0.85
+        },
+        {
+          "sourcePhase": 5,
+          "sourceCrop": [
+            1142,
+            275,
+            1363,
+            560
+          ],
+          "bounds": [
+            37,
+            35,
+            154,
+            141
+          ],
+          "alphaGain": 0.55
+        },
+        {
+          "sourcePhase": 6,
+          "sourceCrop": [
+            1363,
+            275,
+            1580,
+            560
+          ],
+          "bounds": [
+            41,
+            47,
+            148,
+            136
+          ],
+          "alphaGain": 0.25
+        },
+        {
+          "sourcePhase": 7,
+          "sourceCrop": [
+            1580,
+            275,
+            1774,
+            560
+          ],
+          "bounds": [
+            56,
+            58,
+            120,
+            123
+          ],
+          "alphaGain": 0.04
+        }
+      ],
+      "bytes": 178542,
+      "sha256": "d2057d54a94e460a5d5763a3d3ebda55e035250c6795c63df6de4fadf8dc94ca"
     }
   ],
-  "exported": 40,
+  "exported": 50,
   "planned": 50,
-  "processing": "8px alpha noise cutoff; 14px source-cell edge window; shared canvas scale; authored fade gain"
+  "processing": "alpha < 8/255 noise cutoff; 14px source-cell edge window; shared canvas scale; authored fade gain"
 }
