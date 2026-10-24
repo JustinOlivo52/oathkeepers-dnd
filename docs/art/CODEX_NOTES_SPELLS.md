@@ -34,17 +34,44 @@ TypeScript and production build passed (existing large-bundle advisory).
 Full test suite: 30 files passed; 270 tests passed, 1 skipped. Tests ran with
 network access so the local HTTP server fixtures could bind.
 
+## Checkpoint 2 — ten more spell icons (2026-10-24)
+
+Continues the same branch and PR #4. Exports Chill Touch, Poison Spray, Eldritch
+Blast, Sacred Flame, Produce Flame, Vicious Mockery, Magic Missile, Burning Hands,
+Thunderwave and Guiding Bolt from the same saved atlas. No regeneration.
+
+Run `python3 packages/web/art/codex/completion/export-icons-checkpoint-2.py`.
+The guarded checkpoint 1 exporter now accepts a batch and checkpoint number;
+its original four-icon command and outputs remain unchanged. Checkpoint 2 writes
+its own 64px/20px preview and per-file hash/crop report in `docs/art/`.
+All ten exports are 64×64 RGBA, under 10 KB each, with transparent edge margins.
+Preview inspected at 64px and 20px. Integration remains pending live UI review.
+Validation: 270 tests passed, 1 skipped; TypeScript and production build passed
+(existing bundle-size advisory). All checkpoint 1 image hashes remain unchanged.
+
 ## Resume here
 
-1. Confirm this branch/PR and inspect its preview; do not regenerate these four icons.
-2. Next small export batch: Chill Touch, Poison Spray, Eldritch Blast, Sacred Flame
-   (the second painted row of the same saved atlas). Review their actual crop boxes.
-3. Then continue through the remaining 32 icons in the two saved icon atlases.
-4. Export the 50 effect definitions from the 13 saved `effects-*.png` source atlases.
-   These are source-only, not completed runtime sheets. Write a separate export path
-   for the required projectile/impact/area dimensions and frame counts.
-5. Review each subset in the real UI before promoting integration readiness.
+Batch size: **10 icons at a time** (or the remaining count if fewer than ten).
+Current total: **14/40 icons exported; 0/50 VFX sheets exported**.
 
-Current spell-art total after this checkpoint: **4/40 icons exported; 0/50 effect
-sheets exported**. All source atlases already exist; reuse them. Leave all other
-artwork, monster rules, archived alternatives and unrelated readiness flags intact.
+Next ten, in manifest order:
+
+- Inflict Wounds
+- Cure Wounds
+- Healing Word
+- Bless
+- Shield of Faith
+- Scorching Ray
+- Shatter
+- Hold Person
+- Misty Step
+- Spiritual Weapon
+
+The first six are the remaining cards of `icons-0.png`; the final four are the
+first row of `icons-1.png`. Inspect that atlas and review actual crop boxes before
+exporting. All icon and VFX sources are already saved: do not regenerate them.
+
+After icons, export the 50 effect definitions from the 13 saved `effects-*.png`
+atlases with the required projectile/impact/area sizes and frame counts. Review
+each subset in the real UI before promoting integration readiness. Leave all
+other artwork, monster rules and archived alternatives intact.

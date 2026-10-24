@@ -21,7 +21,7 @@ ITEMS = [
 ]
 
 
-def main():
+def main(items=ITEMS, checkpoint=1):
     source_bytes = SOURCE.read_bytes()
     source = Image.open(SOURCE).convert('RGBA')
     assert source.size == (1122, 1402), 'Source changed; review crop boxes first'
@@ -31,10 +31,11 @@ def main():
     catalog_path = REPO / 'packages/content/data/art-catalog.json'
     catalog = json.loads(catalog_path.read_text())
     report = {'source': str(SOURCE.relative_to(REPO)), 'sourceSha256': SOURCE_SHA256, 'icons': []}
-    preview = Image.new('RGB', (640, 210), '#24262b')
+    columns = 4 if len(items) <= 4 else 5
+    preview = Image.new('RGB', (columns * 160, ((len(items)+columns-1)//columns)*210), '#24262b')
     from PIL import ImageDraw
     draw = ImageDraw.Draw(preview)
-    for index, (spell, title, box) in enumerate(ITEMS):
+    for index, (spell, title, box) in enumerate(items):
         # Crop to the reviewed painted card border, then retain transparent margins.
         crop = source.crop(box)
         crop.thumbnail((60, 60), Image.Resampling.LANCZOS)
@@ -59,15 +60,16 @@ def main():
         report['icons'].append(dict(id=asset_id, image=relative, sourceCrop=list(box),
                                    width=64, height=64, bytes=path.stat().st_size,
                                    sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
-        x = index * 160 + 48
-        preview.paste(icon, (x, 30), icon)
+        x = (index % columns) * 160 + 48
+        y = (index // columns) * 210
+        preview.paste(icon, (x, y+30), icon)
         tiny = icon.resize((20, 20), Image.Resampling.LANCZOS)
-        preview.paste(tiny, (x+22, 115), tiny)
-        draw.text((index*160+8, 160), title, fill='white')
+        preview.paste(tiny, (x+22, y+115), tiny)
+        draw.text(((index % columns)*160+8, y+160), title, fill='white')
     assert len({e['id'] for e in catalog}) == len(catalog), 'Duplicate catalog id'
     catalog_path.write_text(json.dumps(catalog, indent=2)+'\n')
-    preview.save(DOCS / 'spell-icons-checkpoint-1.png')
-    (DOCS / 'spell-icons-checkpoint-1.json').write_text(json.dumps(report, indent=2)+'\n')
+    preview.save(DOCS / f'spell-icons-checkpoint-{checkpoint}.png')
+    (DOCS / f'spell-icons-checkpoint-{checkpoint}.json').write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report, indent=2))
 
 
