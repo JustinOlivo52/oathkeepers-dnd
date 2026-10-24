@@ -3919,7 +3919,7 @@
     "image": "library/icons/icon-fire-bolt.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -3931,7 +3931,7 @@
     "image": "library/icons/icon-ray-of-frost.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -3943,7 +3943,7 @@
     "image": "library/icons/icon-shocking-grasp.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -3955,7 +3955,7 @@
     "image": "library/icons/icon-acid-splash.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -3967,7 +3967,7 @@
     "image": "library/icons/icon-chill-touch.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -3979,7 +3979,7 @@
     "image": "library/icons/icon-poison-spray.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -3991,7 +3991,7 @@
     "image": "library/icons/icon-eldritch-blast.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4003,7 +4003,7 @@
     "image": "library/icons/icon-sacred-flame.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4015,7 +4015,7 @@
     "image": "library/icons/icon-produce-flame.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4027,7 +4027,7 @@
     "image": "library/icons/icon-vicious-mockery.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4039,7 +4039,7 @@
     "image": "library/icons/icon-magic-missile.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4051,7 +4051,7 @@
     "image": "library/icons/icon-burning-hands.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4063,7 +4063,7 @@
     "image": "library/icons/icon-thunderwave.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4075,7 +4075,7 @@
     "image": "library/icons/icon-guiding-bolt.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4087,7 +4087,7 @@
     "image": "library/icons/icon-inflict-wounds.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4099,7 +4099,7 @@
     "image": "library/icons/icon-cure-wounds.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4111,7 +4111,7 @@
     "image": "library/icons/icon-healing-word.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4123,7 +4123,7 @@
     "image": "library/icons/icon-bless.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4135,7 +4135,7 @@
     "image": "library/icons/icon-shield-of-faith.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4147,7 +4147,7 @@
     "image": "library/icons/icon-scorching-ray.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4159,7 +4159,7 @@
     "image": "library/icons/icon-shatter.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4171,7 +4171,7 @@
     "image": "library/icons/icon-hold-person.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4183,7 +4183,7 @@
     "image": "library/icons/icon-misty-step.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4195,7 +4195,7 @@
     "image": "library/icons/icon-spiritual-weapon.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4207,7 +4207,7 @@
     "image": "library/icons/icon-chromatic-orb.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4219,7 +4219,7 @@
     "image": "library/icons/icon-entangle.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4231,7 +4231,7 @@
     "image": "library/icons/icon-command.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4243,7 +4243,7 @@
     "image": "library/icons/icon-heroism.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4255,7 +4255,7 @@
     "image": "library/icons/icon-divine-favor.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4267,7 +4267,7 @@
     "image": "library/icons/icon-thunderous-smite.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4279,7 +4279,7 @@
     "image": "library/icons/icon-searing-smite.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4291,7 +4291,7 @@
     "image": "library/icons/icon-wrathful-smite.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4303,7 +4303,7 @@
     "image": "library/icons/icon-aid.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4315,7 +4315,7 @@
     "image": "library/icons/icon-lesser-restoration.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4327,7 +4327,7 @@
     "image": "library/icons/icon-fireball.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4339,7 +4339,7 @@
     "image": "library/icons/icon-lightning-bolt.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4351,7 +4351,7 @@
     "image": "library/icons/icon-mass-healing-word.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4363,7 +4363,7 @@
     "image": "library/icons/icon-revivify.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4375,7 +4375,7 @@
     "image": "library/icons/icon-spirit-guardians.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4387,7 +4387,7 @@
     "image": "library/icons/icon-vampiric-touch.png",
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4406,7 +4406,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4425,7 +4425,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4444,7 +4444,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4463,7 +4463,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4482,7 +4482,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4501,7 +4501,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4520,7 +4520,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4539,7 +4539,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4558,7 +4558,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4577,7 +4577,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4596,7 +4596,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4615,7 +4615,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4634,7 +4634,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4653,7 +4653,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4672,7 +4672,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4691,7 +4691,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4710,7 +4710,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4729,7 +4729,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4748,7 +4748,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4767,7 +4767,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4786,7 +4786,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4805,7 +4805,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4824,7 +4824,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4843,7 +4843,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4862,7 +4862,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4881,7 +4881,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4900,7 +4900,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4919,7 +4919,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4938,7 +4938,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4957,7 +4957,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4976,7 +4976,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -4995,7 +4995,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5014,7 +5014,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5033,7 +5033,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5052,7 +5052,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5071,7 +5071,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5090,7 +5090,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5109,7 +5109,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5128,7 +5128,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5147,7 +5147,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5166,7 +5166,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5185,7 +5185,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5204,7 +5204,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5223,7 +5223,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5242,7 +5242,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5261,7 +5261,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5280,7 +5280,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5299,7 +5299,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5318,7 +5318,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   },
@@ -5337,7 +5337,7 @@
     },
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
-    "integrationStatus": "pending",
+    "integrationStatus": "ready",
     "source": "codex-imagegen",
     "added": "2026-10-24"
   }

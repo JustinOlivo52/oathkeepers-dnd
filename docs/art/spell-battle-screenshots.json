@@ -1,0 +1,182 @@
+{
+  "passed": true,
+  "scope": "Actual app spell panel plus production BattleScene playback of deterministic engine fixtures",
+  "cases": [
+    {
+      "id": "lightning-bolt",
+      "direction": "north",
+      "art": [
+        {
+          "key": "vfx-lightning-bolt",
+          "rotation": -1.5707963267948966,
+          "flipX": false,
+          "masked": true,
+          "width": 576,
+          "height": 96.00000000000003,
+          "x": 816,
+          "y": 288
+        }
+      ]
+    },
+    {
+      "id": "burning-hands",
+      "direction": "diagonal",
+      "art": [
+        {
+          "key": "vfx-burning-hands",
+          "rotation": -0.7853981633974492,
+          "flipX": true,
+          "masked": true,
+          "width": 271.5290039756343,
+          "height": 407.29350596345137,
+          "x": 960,
+          "y": 480
+        }
+      ]
+    },
+    {
+      "id": "spirit-guardians",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-spirit-guardians",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 672,
+          "height": 672,
+          "x": 816,
+          "y": 624
+        },
+        {
+          "key": "vfx-radiant",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-bless",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ],
+      "guardianMoveDamageAndCleanup": true
+    },
+    {
+      "id": "vampiric-touch",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-vampiric-touch",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-heal",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 816,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "magic-missile",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    }
+  ],
+  "covered": [
+    "vfx-bless",
+    "vfx-burning-hands",
+    "vfx-force",
+    "vfx-heal",
+    "vfx-lightning-bolt",
+    "vfx-magic-missile-projectile",
+    "vfx-radiant",
+    "vfx-spirit-guardians",
+    "vfx-vampiric-touch"
+  ],
+  "errors": [],
+  "iconCount": 40,
+  "pageErrors": [],
+  "failedAssets": []
+}

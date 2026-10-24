@@ -2,6 +2,7 @@
   "passed": true,
   "effects": 50,
   "frames": 348,
+  "integrationReady": 50,
   "roles": {
     "projectile": 13,
     "impact": 29,

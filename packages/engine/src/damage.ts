@@ -6,6 +6,7 @@ import type { Rng } from "./rng.js";
 
 export interface DamageOptions {
   sourceId?: string;
+  spellId?: string;
   roll?: DiceRoll;
   /** Damage came from a critical hit. Counts as two death save failures on a creature at 0 HP. */
   critical?: boolean;
@@ -47,6 +48,7 @@ export function applyDamage(
     targetId: target.id,
     ...(options.sourceId ? { sourceId: options.sourceId } : {}),
     ...(options.roll ? { roll: options.roll } : {}),
+    ...(options.spellId ? { spellId: options.spellId } : {}),
     amount,
     damageType: type,
     hpAfter: target.hp,
@@ -73,12 +75,12 @@ export function applyDamage(
   return amount;
 }
 
-export function heal(log: EventLog, target: Creature, amount: number, roll?: DiceRoll): number {
+export function heal(log: EventLog, target: Creature, amount: number, roll?: DiceRoll, spellId?: string): number {
   if (target.dead) return 0;
   const before = target.hp;
   target.hp = Math.min(target.maxHp, target.hp + Math.max(0, amount));
   const healed = target.hp - before;
-  log.push({ type: "heal", targetId: target.id, ...(roll ? { roll } : {}), amount: healed, hpAfter: target.hp });
+  log.push({ type: "heal", targetId: target.id, ...(roll ? { roll } : {}), ...(spellId ? { spellId } : {}), amount: healed, hpAfter: target.hp });
   if (before === 0 && target.hp > 0) revive(log, target);
   return healed;
 }

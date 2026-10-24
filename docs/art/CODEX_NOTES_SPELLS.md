@@ -173,25 +173,59 @@ Phaser texture/frame-count/playback smoke check. All fifty animations loaded and
 played, with no image-load or page errors. This is asset playback evidence, not
 proof of correct presentation in every live encounter.
 
-## Resume here — artwork production complete for this spell brief
+## Battle integration review — approved for runtime use
 
-**40/40 spell icons and 50/50 spell animation sheets are exported and saved in PR #4.**
-Do not regenerate these collections. Source atlases and reproducible processing
-remain preserved; rejected attempts are not used. Browse `spell-effects.html`,
-`spell-effects.jpg`, the browser screenshots and JSON audit/export reports.
+The production battle scene passed 61 deterministic engine-to-renderer scenarios:
+all forty real spell definitions, northward/diagonal cones and lines, upcast Magic
+Missile, ten reusable damage-type fallbacks, missed attacks and five visual captures.
+All fifty animation IDs were exercised. The actual app's spell panel rendered and
+loaded all forty icons at their real 20px display size. No paid AI service was used.
 
-Next work is live battle acceptance and integration review:
+Fixed presentation gaps before approval:
 
-- Verify cone/line placement, orientation and stretching for Burning Hands and
-  Lightning Bolt; the existing area renderer places art in an axis-aligned box.
-- Verify Chromatic Orb uses the chosen damage type's effect.
-- Verify ongoing Spirit Guardians and Vampiric Touch's combined damage/heal
-  presentation; one-shot source atlases alone do not implement their mechanics.
-- Check all effect timing and impact positions over characters and terrain,
-  and all forty icons in real spell buttons. Preserve code fallbacks.
-- Promote integration readiness only after that review; this delivery does not
-  assert that all forty spells' mechanics/presentation are complete.
+- Spell attack logs optionally carry the resolved damage type, so Chromatic Orb's
+  art matches the engine's existing target-specific damage choice, including misses.
+- Cones and lines rotate toward the aim. Every area effect is masked to exactly
+  the engine's affected squares; blocked cells are not painted. Spheres and even
+  squares keep their original target alignment when walls clip their area.
+- Spirit Guardians has a persistent aura that follows movement and stops on lost
+  or replaced concentration. Its ongoing damage gets a radiant hit effect.
+- Vampiric Touch is a melee impact with a separate healing cue when healing occurs.
+  Melee spells no longer fire generic projectiles. Misses have no damage impact.
+- Misty Step fades out, relocates without a walking animation, and fades in.
+- Magic Missile's dart count follows slot level. Smites and Divine Favor show their
+  impact again on the actual weapon hit, using existing extra-damage events.
 
-Other artwork integration, environment props wiring, and the older consolidated
-art checklist remain separate follow-up work. Do not regenerate already-saved
-character, monster, portrait, card or environment art to address readiness flags.
+Only optional presentation fields were added to battle logs. Existing snapshots
+and older events remain compatible. Spell mechanics, costs, damage amounts and
+other artwork readiness were not changed. The ninety spell-art entries (40 icons,
+50 VFX) are integration-ready after this review; historical checkpoint statements
+about pending readiness describe the earlier production handoff.
+
+Evidence: `docs/art/spell-battle-check.json`, `spell-battle-screenshots.json`,
+`spell-battle-icons.jpg`, and the directional/aura/healing/missile battle captures.
+These use production BattleScene and actual engine casts with deterministic test
+creatures; they do not assert every possible player build or multiplayer network
+condition has been manually played. Browser review is reproducible with Vite:
+
+```sh
+npm run dev -w @oathkeepers/web -- --host 127.0.0.1 --port 5173
+PLAYWRIGHT_MODULE=/path/to/playwright node packages/web/art/codex/completion/review-battle-spells.cjs
+```
+
+Project validation: 277 tests passed, 1 skipped; TypeScript and production build
+passed (existing large-bundle advisory). The source/output audit still covers all
+348 frames and can require integration-ready metadata:
+
+```sh
+python3 packages/web/art/codex/completion/audit-vfx.py --expected 50 --require-integrated
+```
+
+## Resume here
+
+**40/40 icons and 50/50 spell animations are produced, reviewed and integrated.**
+Do not regenerate these collections. Sources, exporters, manifests, checkpoint
+reports and screenshots remain preserved. PR #4 carries the complete delivery.
+Other character/monster/environment integration and the forest/cave/crypt props
+renderer wiring remain separate follow-up work. Check actual assets before
+following older artwork checklists.

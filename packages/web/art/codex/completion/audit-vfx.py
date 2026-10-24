@@ -10,7 +10,8 @@ ASSETS = REPO/'packages/web/public/assets'
 
 
 def main():
-    p = argparse.ArgumentParser(); p.add_argument('--expected',type=int,required=True); args=p.parse_args()
+    p = argparse.ArgumentParser(); p.add_argument('--expected',type=int,required=True)
+    p.add_argument('--require-integrated',action='store_true');args=p.parse_args()
     catalog=json.loads((REPO/'packages/content/data/art-catalog.json').read_text())
     manifest=json.loads((REPO/'packages/web/art/codex/completion/vfx-manifest.json').read_text())
     reports=json.loads((REPO/'docs/art/spell-effects-export-report.json').read_text())
@@ -39,11 +40,13 @@ def main():
         if role!='projectile':
             assert alpha_mass[-1] < max(alpha_mass)*0.12,(e['id'],'does not fade out')
             assert alpha_mass[0] < max(alpha_mass)*0.50,(e['id'],'does not build up')
-        assert e['integrationStatus']=='pending'
+        assert e['integrationStatus'] in ('pending','ready')
+        if args.require_integrated: assert e['integrationStatus']=='ready',e['id']
         results.append(dict(id=e['id'],role=role,frames=count,size=size,bytes=path.stat().st_size,
                             uniqueFrames=len(set(frame_hashes)),alphaMass=alpha_mass))
     if args.expected==len(planned): assert {e['id'] for e in entries}==set(planned)
     output=dict(passed=True,effects=len(entries),frames=sum(e['frames'] for e in results),
+                integrationReady=sum(e['integrationStatus']=='ready' for e in entries),
                 roles={role:sum(e['role']==role for e in results) for role in ['projectile','impact','area']},results=results)
     (REPO/'docs/art/spell-effects-audit.json').write_text(json.dumps(output,indent=2)+'\n')
     print(json.dumps({k:v for k,v in output.items() if k!='results'}))

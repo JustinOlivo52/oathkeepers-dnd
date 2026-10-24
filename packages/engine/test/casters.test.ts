@@ -83,6 +83,7 @@ describe("Sorcerer", () => {
     const combat = battle([sorcerer(), foe("orc", 6, 3, { resistances: ["fire"], vulnerabilities: ["cold"] })]);
     combat.castSpell("sorc", "chromatic-orb", { targetIds: ["orc"] });
     expect(damageTo(combat, "orc")[0]!.damageType).toBe("cold");
+    expect(combat.log.ofType("attack").find(e=>e.attackId==="chromatic-orb")?.damageType).toBe("cold");
   });
 
   it("Thunderwave pushes those who fail 10 ft away", () => {

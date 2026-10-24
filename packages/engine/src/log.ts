@@ -18,6 +18,8 @@ export type GameEvent =
       targetAc: number;
       hit: boolean;
       critical: boolean;
+      /** Resolved spell damage type, including Chromatic Orb's target-specific choice. */
+      damageType?: DamageType;
     }
   | {
       type: "damage";
@@ -28,8 +30,10 @@ export type GameEvent =
       amount: number;
       damageType: DamageType;
       hpAfter: number;
+      /** Optional presentation context for ongoing spell damage. */
+      spellId?: string;
     }
-  | { type: "heal"; targetId: string; roll?: DiceRoll; amount: number; hpAfter: number }
+  | { type: "heal"; targetId: string; roll?: DiceRoll; amount: number; hpAfter: number; spellId?: string }
   | { type: "feature_used"; creatureId: string; featureId: string }
   | { type: "move"; creatureId: string; path: Point[]; costFt: number }
   | { type: "action"; creatureId: string; action: "dash" | "disengage" | "dodge"; bonus?: boolean }
