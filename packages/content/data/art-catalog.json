@@ -1735,5 +1735,475 @@
       "tense"
     ],
     "image": "library/scenes/scene-watchtower.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "tiles-cave",
+    "kind": "tileset",
+    "title": "Cave terrain",
+    "tags": [
+      "cave",
+      "underground",
+      "tense"
+    ],
+    "tiles": "sprites/tiles-cave.png",
+    "props": "sprites/props-cave.png"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "board-cave",
+    "kind": "board",
+    "title": "Echoing Limestone Chambers",
+    "tags": [
+      "cave",
+      "underground",
+      "tense"
+    ],
+    "tiles": "tiles-cave",
+    "board": "boards/board-cave.json"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "tiles-crypt",
+    "kind": "tileset",
+    "title": "Crypt terrain",
+    "tags": [
+      "crypt",
+      "dungeon",
+      "underground"
+    ],
+    "tiles": "sprites/tiles-crypt.png",
+    "props": "sprites/props-crypt.png"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "board-crypt",
+    "kind": "board",
+    "title": "The Diamond Vaults",
+    "tags": [
+      "crypt",
+      "dungeon",
+      "underground"
+    ],
+    "tiles": "tiles-crypt",
+    "board": "boards/board-crypt.json"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-wren-ashdown",
+    "kind": "hero",
+    "title": "Wren Ashdown",
+    "tags": [
+      "halfling",
+      "woman",
+      "hero",
+      "expert",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-wren-ashdown.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 92
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-wren-ashdown",
+    "kind": "npc",
+    "title": "Wren Ashdown portrait",
+    "tags": [
+      "halfling",
+      "woman",
+      "hero",
+      "expert",
+      "skirmisher"
+    ],
+    "image": "library/portraits/companion-wren-ashdown.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-brother-odric-vale",
+    "kind": "hero",
+    "title": "Brother Odric Vale",
+    "tags": [
+      "dwarf",
+      "man",
+      "hero",
+      "divine",
+      "leader"
+    ],
+    "sprite": {
+      "file": "sprites/hero-brother-odric-vale.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 112
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-brother-odric-vale",
+    "kind": "npc",
+    "title": "Brother Odric Vale portrait",
+    "tags": [
+      "dwarf",
+      "man",
+      "hero",
+      "divine",
+      "leader"
+    ],
+    "image": "library/portraits/companion-brother-odric-vale.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-tamsin-reed",
+    "kind": "hero",
+    "title": "Tamsin Reed",
+    "tags": [
+      "elf",
+      "woman",
+      "hero",
+      "expert",
+      "archer"
+    ],
+    "sprite": {
+      "file": "sprites/hero-tamsin-reed.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 132
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-tamsin-reed",
+    "kind": "npc",
+    "title": "Tamsin Reed portrait",
+    "tags": [
+      "elf",
+      "woman",
+      "hero",
+      "expert",
+      "archer"
+    ],
+    "image": "library/portraits/companion-tamsin-reed.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-sister-maren-holt",
+    "kind": "hero",
+    "title": "Sister Maren Holt",
+    "tags": [
+      "human",
+      "woman",
+      "hero",
+      "divine",
+      "healer"
+    ],
+    "sprite": {
+      "file": "sprites/hero-sister-maren-holt.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 129
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-sister-maren-holt",
+    "kind": "npc",
+    "title": "Sister Maren Holt portrait",
+    "tags": [
+      "human",
+      "woman",
+      "hero",
+      "divine",
+      "healer"
+    ],
+    "image": "library/portraits/companion-sister-maren-holt.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-pip-thistlewick",
+    "kind": "hero",
+    "title": "Pip Thistlewick",
+    "tags": [
+      "gnome",
+      "man",
+      "hero",
+      "arcane",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-pip-thistlewick.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 95
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-pip-thistlewick",
+    "kind": "npc",
+    "title": "Pip Thistlewick portrait",
+    "tags": [
+      "gnome",
+      "man",
+      "hero",
+      "arcane",
+      "caster"
+    ],
+    "image": "library/portraits/companion-pip-thistlewick.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "id": "monster-boar",
+    "kind": "monster",
+    "title": "Boar",
+    "tags": [
+      "beast",
+      "brute",
+      "hostile"
+    ],
+    "sprite": {
+      "file": "sprites/monster-boar.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 81
+    },
+    "monsterId": "boar"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-boar",
+    "kind": "npc",
+    "title": "Boar portrait",
+    "tags": [
+      "beast",
+      "brute",
+      "hostile"
+    ],
+    "monsterId": "boar",
+    "image": "library/portraits/monster-boar.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "id": "monster-panther",
+    "kind": "monster",
+    "title": "Panther",
+    "tags": [
+      "beast",
+      "skirmisher",
+      "forest"
+    ],
+    "sprite": {
+      "file": "sprites/monster-panther.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 93
+    },
+    "monsterId": "panther"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-panther",
+    "kind": "npc",
+    "title": "Panther portrait",
+    "tags": [
+      "beast",
+      "skirmisher",
+      "forest"
+    ],
+    "monsterId": "panther",
+    "image": "library/portraits/monster-panther.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "id": "monster-giant-badger",
+    "kind": "monster",
+    "title": "Giant Badger",
+    "tags": [
+      "beast",
+      "brute",
+      "forest"
+    ],
+    "sprite": {
+      "file": "sprites/monster-giant-badger.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 79
+    },
+    "monsterId": "giant-badger"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-giant-badger",
+    "kind": "npc",
+    "title": "Giant Badger portrait",
+    "tags": [
+      "beast",
+      "brute",
+      "forest"
+    ],
+    "monsterId": "giant-badger",
+    "image": "library/portraits/monster-giant-badger.webp"
   }
 ]
