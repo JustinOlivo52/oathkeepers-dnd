@@ -1,34 +1,45 @@
-# Batch 2 progress — all thirteen monsters
+# Batch 2 delivery and remaining work
 
-Branch: `art/library-batch-2`, based on master `13e1a89`.
+Updated 2026-10-24. Branch: `art/library-batch-2`; audited starting commit `7b8180c` against master `f2b4e59`. The full checklist is in [OATHKEEPERS.md](../OATHKEEPERS.md#artwork-remaining-and-claude-handoff).
 
-Completed in brief order: goblin-boss, bandit, bandit-captain, cultist, bugbear-warrior.
-Each has an eleven-frame 192×192 transparent battle sheet and a matching 512×512 WebP portrait under 150 KB. Ten catalog entries use the exact requested ids/tags. Goblin Boss remains rules-size Small; the atlas format is Medium. All art is reviewed and ready; monster mechanics and all integration remain pending. No game code, engine rules or stat blocks changed.
+## Delivered files
 
-## Sources and rebuild
+- 13 monster sheets (143 frames) and matching portraits: goblin-boss, bandit, bandit-captain, cultist, bugbear-warrior, ghoul, wight, giant-rat, harpy, dire-wolf, worg, brown-bear, owlbear.
+- All 17 remaining NPC portraits and all 14 remaining scene backdrops.
+- Cave and crypt: two five-frame tilesets, two four-frame props sheets and two boards declaring Large routes/spawns.
+- Five new companion portraits: Wren Ashdown, Brother Odric Vale, Tamsin Reed, Sister Maren Holt and Pip Thistlewick.
 
-Original image-model generations are preserved in `packages/web/art/codex/source/library2/`. The existing goblin source supplied the style reference. Five original sprite atlases and one matching portrait atlas were generated, with no named artists or official artwork references.
+The five companion portraits are new artwork from this continuation, generated as a 2x3 atlas. The first five cells hold the named companions in brief order; the sixth is unused. Preserve this source for consistent companion sprite designs. Exports are 512x512 WebP, quality 85, below 150,000 bytes each. Original designs; no official art, artist imitation, logos, text or real-world religious symbols were requested.
 
-`python3 packages/web/art/codex/library2/build-library.py` extracts whole connected poses from source alpha, registers feet, scales each creature consistently, exports sheets/portraits, updates these catalog entries and builds the contact sheet and interactive viewer. It does no illustration. Whole-pose extraction is necessary because generated poses cross the approximate source grid. It asserts eleven isolated substantial pose components, transparent nonempty output frames and clear canvas margins. Registration uses the lower foot pixels; wide strikes may shift horizontally to keep weapons within bounds.
+## Catalog correction
 
-Then run `python3 packages/web/art/measure-sprites.py` to measure visible heights. The first five measure 111, 128, 128, 128 and 135 pixels respectively. No existing catalog entries are intentionally changed by the builder.
+The incoming catalog had 100 entries, including 16 marked art-ready whose files and generation sources were absent: all companion sheets/portraits and boar, panther and giant-badger sheets/portraits. Removed these broken entries and restored only the five companion portraits after actual generation/export/review. Final catalog: 89 entries, 66 pending additions over master's 23 entries. Props are referenced files, not separate entries.
 
-Preview: `library-batch-2.png`; browser viewer: `library-batch-2.html`. Serve the repository root over HTTP to use the viewer. It supports all five animations, pause, manual stepping and mirroring. All sheets share a source-pixel scale.
+The five companion sheets and six optional beast files remain to make. No mechanics, game code or existing integrated readiness changed. New monsters retain mechanics pending; all additions retain integration pending.
 
-## Verification
+## Rebuild and evidence
 
-- `npm install` completed; lockfile kept unchanged.
-- `npm test`: 212 tests passed (19 files).
-- `npm run typecheck`: passed.
-- `npm run build`: passed; existing bundle-size advisory remains.
-- Chromium: all 10 image assets loaded; all 55 frames exercised across idle/walk/attack/hit/down, mirroring and canvas pixels verified; no page errors or asset failures.
-- Desktop 1440×1000 and mobile 390×844: no document horizontal overflow.
-- Browser screenshot and check results saved alongside this note.
+Sources: `packages/web/art/codex/source/library2/`.
 
-The restricted command sandbox blocked server-test sockets; rerunning with local socket access passed. This was an execution restriction, not a code failure.
+- `build-library.py`: rebuilds the 13 monster sets and original monster-only contact sheet/viewer.
+- `finish-library.py`: contains NPC, scene and terrain exporters; only NPC export runs by default. Invoke `export_scenes()` / `export_terrain()` explicitly. Its companion/beast exporters require absent sources and are not a production inventory.
+- `export-companion-portraits.py`: rebuilds the five new portraits from the preserved atlas without a model call.
+- `audit-library.py`: checks all references, pending image sizes/budgets and all pending sprite frames' alpha, bounds and margins; produces `docs/art/library-batch-2-complete.jpg` and `library-batch-2-static-check.json`.
 
-## Remaining and limitations
+Run these Python scripts from `packages/web/art/codex/library2/` or by their full repo-relative paths; they resolve paths independently of the working directory. The complete static contact sheet includes all pending NPCs, scenes, terrain, boards and companion portraits. The JSON records export dimensions and byte budgets. Static previews were inspected; they do not prove coherent animation or gameplay behavior.
 
-All thirteen required monsters are now exported (143 frames) with thirteen portraits. Added ghoul, wight, giant-rat, harpy, dire-wolf, worg, brown-bear and owlbear on 2026-10-24. The four Large beasts use 384px frames with (192,340) anchors and 2x2 footprints. NPC production is in progress. Full current-master verification will be rerun before final handoff. NPCs, scenes, cave/crypt sets and companions are still pending.
+## Review findings and Claude handoff
 
-Only left/right facing via mirroring. Four-pose walks are compact and can slide; one melee attack per creature. Captain's offhand blade is partly occluded during strike. Bugbear target idle height is constrained slightly by its wide down pose to preserve a shared scale across frames. Runtime encounter integration and actual battle playthrough are pending and must be reviewed separately once mechanics exist. Nothing is merged to master.
+- Monster silhouettes, portraits and scenes share the established warm, outlined fantasy style. Goblin Boss/Giant Rat remain rules-size Small on 192px canvases; four Large beasts use 384px canvases and 2x2 footprints.
+- Compact gaits may slide. Captain's offhand blade is partly occluded during strike. Review actual abilities at battle scale before promoting integration.
+- Cave/crypt floors, walls and rubble are distinct. Review adjacent stone joints, floor repetition, props and Large movement in the game. Current renderer loads library tiles without library props; Claude must wire that hook.
+- Scene exports fit budgets. Thornwatch's palisade/market palette is consistent at thumbnail scale; review geography at full resolution.
+- Bind companion portraits to stable named identities explicitly. The player portrait helper selects kind `portrait`; companion entries use the brief's kind `npc`. Catalog addition alone does not display these in companion panels.
+- Forest seams/props, spider leg overlap and ogre club/strike fixes remain on the separate fixes brief/branch.
+- Old browser evidence covers the first five monsters only. Extend the viewer and run complete browser/gameplay checks after mechanics/UI integration. This delivery grants no gameplay approval.
+
+## Validation
+
+`npm install --cache /tmp/oathkeepers-npm-cache` succeeded; original lockfile preserved. Project checks: 270 tests passed, one skipped; TypeScript and production build passed. Existing bundle-size advisory remains. Static audit checks all delivered references and 143 expansion sprite frames. Repeat checks after the final portrait export; machine-readable audit contains the final inventory.
+
+Earlier first-five-monster evidence (212 tests and gallery browser checks) remains historical. These notes supersede stale claims that NPCs, scenes and terrain were unproduced.
