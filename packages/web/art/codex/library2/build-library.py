@@ -19,11 +19,19 @@ SPECS = [
     ('bandit-captain', 'Bandit Captain', 'medium', 128, ['humanoid', 'bandit', 'leader']),
     ('cultist', 'Cultist', 'medium', 128, ['humanoid', 'cultist', 'caster']),
     ('bugbear-warrior', 'Bugbear Warrior', 'medium', 144, ['goblinoid', 'humanoid', 'brute']),
+    ('ghoul', 'Ghoul', 'medium', 126, ['undead', 'skirmisher', 'hostile']),
+    ('wight', 'Wight', 'medium', 128, ['undead', 'leader', 'hostile']),
+    ('giant-rat', 'Giant Rat', 'small', 60, ['beast', 'minion', 'skirmisher']),
+    ('harpy', 'Harpy', 'medium', 132, ['monstrosity', 'skirmisher', 'hostile']),
+    ('dire-wolf', 'Dire Wolf', 'large', 204, ['beast', 'brute', 'hostile']),
+    ('worg', 'Worg', 'large', 216, ['beast', 'monstrosity', 'brute']),
+    ('brown-bear', 'Brown Bear', 'large', 222, ['beast', 'brute', 'hostile']),
+    ('owlbear', 'Owlbear', 'large', 238, ['monstrosity', 'brute', 'hostile']),
 ]
 
 
-def repack(name, target_height):
-    atlas = Image.open(SOURCE / f'{name}-source.png').convert('RGBA')
+def repack(name, target_height, size=192, prefix="monster", source_path=None):
+    atlas = Image.open(source_path or SOURCE / f'{name}-source.png').convert('RGBA')
     width, height = atlas.size
     # Extract whole connected poses before registering. Generated atlas baselines
     # are approximate: rigid cell slicing can sever feet and import neighbors.
@@ -65,8 +73,9 @@ def repack(name, target_height):
         cells[index] = cell
     assert all(cell is not None for cell in cells)
     scale = min(target_height / median(c.height for c in cells[:6]),
-                180 / max(c.width for c in cells), 158 / max(c.height for c in cells))
-    sheet = Image.new('RGBA', (192 * 11, 192))
+                (size - 12) / max(c.width for c in cells), (size * .82) / max(c.height for c in cells))
+    sheet = Image.new('RGBA', (size * 11, size))
+    anchor_x, anchor_y = (192, 340) if size == 384 else (96, 166)
     for i, cell in enumerate(cells):
         cell = cell.resize((max(1, round(cell.width * scale)), max(1, round(cell.height * scale))),
                            Image.Resampling.NEAREST)
@@ -74,14 +83,14 @@ def repack(name, target_height):
         feet = [x for y in range(round(cell.height * .85), cell.height)
                 for x in range(cell.width) if alpha.getpixel((x, y))]
         foot_x = median(feet) if feet and i != 10 else cell.width / 2
-        x = max(5, min(187 - cell.width, round(96 - foot_x)))
-        sheet.alpha_composite(cell, (i * 192 + x, 166 - cell.height))
-    output = ASSETS / f'sprites/monster-{name}.png'
+        x = max(5, min(size - 5 - cell.width, round(anchor_x - foot_x)))
+        sheet.alpha_composite(cell, (i * size + x, anchor_y - cell.height))
+    output = ASSETS / f'sprites/{prefix}-{name}.png'
     sheet.save(output, optimize=True)
     for i in range(11):
-        cell = sheet.crop((i * 192, 0, (i + 1) * 192, 192))
+        cell = sheet.crop((i * size, 0, (i + 1) * size, size))
         bounds = cell.getbbox()
-        assert bounds and bounds[0] > 0 and bounds[1] > 0 and bounds[2] < 192 and bounds[3] < 192, (name, i, bounds)
+        assert bounds and bounds[0] > 0 and bounds[1] > 0 and bounds[2] < size and bounds[3] < size, (name, i, bounds)
         assert cell.getchannel('A').getextrema() == (0, 255)
     return sheet
 
@@ -92,22 +101,30 @@ def main():
     ids = {prefix + spec[0] for spec in SPECS for prefix in ('monster-', 'portrait-')}
     catalog = [entry for entry in catalog if entry['id'] not in ids]
     portraits = Image.open(SOURCE / 'portraits-source.png').convert('RGB')
-    preview = Image.new('RGB', (2152, len(SPECS) * 470 + 40), '#17272c')
+    preview = Image.new('RGB', (4264, len(SPECS) * 650 + 40), '#17272c')
     draw = ImageDraw.Draw(preview)
     entries = []
     for index, (name, title, rules_size, target_height, tags) in enumerate(SPECS):
-        sheet = repack(name, target_height)
+        size = 384 if rules_size == "large" else 192
+        sheet = repack(name, target_height, size)
         shared = dict(tags=tags, source='codex-imagegen', added='2026-10-23',
                       artStatus='ready', integrationStatus='pending', monsterId=name)
-        sprite = dict(file=f'sprites/monster-{name}.png', frameWidth=192, frameHeight=192,
-                      size='medium', rulesSize=rules_size, footprint=dict(width=1, height=1),
-                      anchor=dict(x=96, y=166))
-        sprite['visibleHeight'] = 166 - sheet.crop((0, 0, 192, 192)).getbbox()[1]
+        sprite = dict(file=f'sprites/monster-{name}.png', frameWidth=size, frameHeight=size,
+                      size="large" if size == 384 else "medium", rulesSize=rules_size,
+                      footprint=dict(width=size//192, height=size//192),
+                      anchor=dict(x=192 if size==384 else 96, y=340 if size==384 else 166))
+        sprite['visibleHeight'] = sprite['anchor']['y'] - sheet.crop((0, 0, size, size)).getbbox()[1]
         entries.append(dict(id=f'monster-{name}', kind='monster', title=title,
                             sprite=sprite, mechanicsStatus='pending', **shared))
-        col, row = index % 3, index // 3
-        portrait = portraits.crop((round(col * portraits.width / 3), round(row * portraits.height / 2),
-                                   round((col + 1) * portraits.width / 3), round((row + 1) * portraits.height / 2)))
+        if index < 5:
+            portraits = Image.open(SOURCE / 'portraits-source.png').convert('RGB')
+            columns, rows, portrait_index = 3, 2, index
+        else:
+            portraits = Image.open(SOURCE / f'monster-portraits-{2+(index-5)//4}.png').convert('RGB')
+            columns, rows, portrait_index = 2, 2, (index-5)%4
+        col, row = portrait_index % columns, portrait_index // columns
+        portrait = portraits.crop((round(col * portraits.width / columns), round(row * portraits.height / rows),
+                                   round((col + 1) * portraits.width / columns), round((row + 1) * portraits.height / rows)))
         portrait = portrait.resize((512, 512), Image.Resampling.LANCZOS)
         path = ASSETS / f'library/portraits/monster-{name}.webp'
         portrait.save(path, 'WEBP', quality=85, method=6)
@@ -115,16 +132,16 @@ def main():
         entries.append(dict(id=f'portrait-{name}', kind='npc', title=f'{title} portrait',
                             image=f'library/portraits/monster-{name}.webp',
                             mechanicsStatus='not-required', **shared))
-        y = 20 + index * 470
+        y = 20 + index * 650
         draw.text((20, y), f'{title} | {rules_size} | frames 0-10 | mechanics / integration pending', fill='#e9c685')
         preview.paste(sheet, (20, y + 30), sheet)
-        preview.paste(portrait.resize((220, 220)), (20, y + 235))
+        preview.paste(portrait.resize((220, 220)), (20, y + 420))
     catalog.extend(entries)
     catalog_path.write_text(json.dumps(catalog, indent=2) + '\n')
     preview.save(REPO / 'docs/art/library-batch-2.png', optimize=True)
     template = (HERE / 'review-template.html').read_text()
     (REPO / 'docs/art/library-batch-2.html').write_text(template.replace('__PILOT_DATA__', json.dumps(entries)))
-    print('Exported and validated 55 transparent frames and 5 portraits; wrote catalog and review assets.')
+    print('Exported and validated 143 transparent frames and 13 portraits; wrote catalog and review assets.')
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-# Batch 2 progress — first five monsters
+# Batch 2 progress — all thirteen monsters
 
 Branch: `art/library-batch-2`, based on master `13e1a89`.
 
@@ -29,6 +29,6 @@ The restricted command sandbox blocked server-test sockets; rerunning with local
 
 ## Remaining and limitations
 
-This is a complete first-five subset, not the full batch. Remaining monsters: ghoul, wight, giant-rat, harpy, dire-wolf, worg, brown-bear, owlbear. NPCs, scenes, cave/crypt sets and companions are still pending.
+All thirteen required monsters are now exported (143 frames) with thirteen portraits. Added ghoul, wight, giant-rat, harpy, dire-wolf, worg, brown-bear and owlbear on 2026-10-24. The four Large beasts use 384px frames with (192,340) anchors and 2x2 footprints. NPC production is in progress. Full current-master verification will be rerun before final handoff. NPCs, scenes, cave/crypt sets and companions are still pending.
 
 Only left/right facing via mirroring. Four-pose walks are compact and can slide; one melee attack per creature. Captain's offhand blade is partly occluded during strike. Bugbear target idle height is constrained slightly by its wide down pose to preserve a shared scale across frames. Runtime encounter integration and actual battle playthrough are pending and must be reviewed separately once mechanics exist. Nothing is merged to master.

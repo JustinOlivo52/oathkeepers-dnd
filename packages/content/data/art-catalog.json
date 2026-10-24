@@ -786,5 +786,397 @@
     "artStatus": "ready",
     "integrationStatus": "pending",
     "monsterId": "bugbear-warrior"
+  },
+  {
+    "id": "monster-ghoul",
+    "kind": "monster",
+    "title": "Ghoul",
+    "sprite": {
+      "file": "sprites/monster-ghoul.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 126
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "undead",
+      "skirmisher",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "ghoul"
+  },
+  {
+    "id": "portrait-ghoul",
+    "kind": "npc",
+    "title": "Ghoul portrait",
+    "image": "library/portraits/monster-ghoul.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "undead",
+      "skirmisher",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "ghoul"
+  },
+  {
+    "id": "monster-wight",
+    "kind": "monster",
+    "title": "Wight",
+    "sprite": {
+      "file": "sprites/monster-wight.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 128
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "undead",
+      "leader",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "wight"
+  },
+  {
+    "id": "portrait-wight",
+    "kind": "npc",
+    "title": "Wight portrait",
+    "image": "library/portraits/monster-wight.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "undead",
+      "leader",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "wight"
+  },
+  {
+    "id": "monster-giant-rat",
+    "kind": "monster",
+    "title": "Giant Rat",
+    "sprite": {
+      "file": "sprites/monster-giant-rat.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 60
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "beast",
+      "minion",
+      "skirmisher"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "giant-rat"
+  },
+  {
+    "id": "portrait-giant-rat",
+    "kind": "npc",
+    "title": "Giant Rat portrait",
+    "image": "library/portraits/monster-giant-rat.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "beast",
+      "minion",
+      "skirmisher"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "giant-rat"
+  },
+  {
+    "id": "monster-harpy",
+    "kind": "monster",
+    "title": "Harpy",
+    "sprite": {
+      "file": "sprites/monster-harpy.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 134
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "monstrosity",
+      "skirmisher",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "harpy"
+  },
+  {
+    "id": "portrait-harpy",
+    "kind": "npc",
+    "title": "Harpy portrait",
+    "image": "library/portraits/monster-harpy.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "monstrosity",
+      "skirmisher",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "harpy"
+  },
+  {
+    "id": "monster-dire-wolf",
+    "kind": "monster",
+    "title": "Dire Wolf",
+    "sprite": {
+      "file": "sprites/monster-dire-wolf.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "size": "large",
+      "rulesSize": "large",
+      "footprint": {
+        "width": 2,
+        "height": 2
+      },
+      "anchor": {
+        "x": 192,
+        "y": 340
+      },
+      "visibleHeight": 212
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "beast",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "dire-wolf"
+  },
+  {
+    "id": "portrait-dire-wolf",
+    "kind": "npc",
+    "title": "Dire Wolf portrait",
+    "image": "library/portraits/monster-dire-wolf.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "beast",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "dire-wolf"
+  },
+  {
+    "id": "monster-worg",
+    "kind": "monster",
+    "title": "Worg",
+    "sprite": {
+      "file": "sprites/monster-worg.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "size": "large",
+      "rulesSize": "large",
+      "footprint": {
+        "width": 2,
+        "height": 2
+      },
+      "anchor": {
+        "x": 192,
+        "y": 340
+      },
+      "visibleHeight": 219
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "beast",
+      "monstrosity",
+      "brute"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "worg"
+  },
+  {
+    "id": "portrait-worg",
+    "kind": "npc",
+    "title": "Worg portrait",
+    "image": "library/portraits/monster-worg.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "beast",
+      "monstrosity",
+      "brute"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "worg"
+  },
+  {
+    "id": "monster-brown-bear",
+    "kind": "monster",
+    "title": "Brown Bear",
+    "sprite": {
+      "file": "sprites/monster-brown-bear.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "size": "large",
+      "rulesSize": "large",
+      "footprint": {
+        "width": 2,
+        "height": 2
+      },
+      "anchor": {
+        "x": 192,
+        "y": 340
+      },
+      "visibleHeight": 225
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "beast",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "brown-bear"
+  },
+  {
+    "id": "portrait-brown-bear",
+    "kind": "npc",
+    "title": "Brown Bear portrait",
+    "image": "library/portraits/monster-brown-bear.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "beast",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "brown-bear"
+  },
+  {
+    "id": "monster-owlbear",
+    "kind": "monster",
+    "title": "Owlbear",
+    "sprite": {
+      "file": "sprites/monster-owlbear.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "size": "large",
+      "rulesSize": "large",
+      "footprint": {
+        "width": 2,
+        "height": 2
+      },
+      "anchor": {
+        "x": 192,
+        "y": 340
+      },
+      "visibleHeight": 227
+    },
+    "mechanicsStatus": "pending",
+    "tags": [
+      "monstrosity",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "owlbear"
+  },
+  {
+    "id": "portrait-owlbear",
+    "kind": "npc",
+    "title": "Owlbear portrait",
+    "image": "library/portraits/monster-owlbear.webp",
+    "mechanicsStatus": "not-required",
+    "tags": [
+      "monstrosity",
+      "brute",
+      "hostile"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-23",
+    "artStatus": "ready",
+    "integrationStatus": "pending",
+    "monsterId": "owlbear"
   }
 ]
