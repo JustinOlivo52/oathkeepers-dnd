@@ -1178,5 +1178,311 @@
     "artStatus": "ready",
     "integrationStatus": "pending",
     "monsterId": "owlbear"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-innkeeper-human",
+    "kind": "npc",
+    "title": "Weary human innkeeper",
+    "tags": [
+      "innkeeper",
+      "human",
+      "man",
+      "neutral",
+      "tavern",
+      "indoor"
+    ],
+    "image": "library/portraits/npc-innkeeper-human.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-town-guard",
+    "kind": "npc",
+    "title": "Young town guard",
+    "tags": [
+      "guard",
+      "soldier",
+      "halfling",
+      "man",
+      "friendly",
+      "gate"
+    ],
+    "image": "library/portraits/npc-town-guard.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-blacksmith",
+    "kind": "npc",
+    "title": "Frontier blacksmith",
+    "tags": [
+      "smith",
+      "goliath",
+      "woman",
+      "friendly",
+      "smithy"
+    ],
+    "image": "library/portraits/npc-blacksmith.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-priest",
+    "kind": "npc",
+    "title": "Kindly temple priest",
+    "tags": [
+      "priest",
+      "healer",
+      "human",
+      "man",
+      "friendly",
+      "temple"
+    ],
+    "image": "library/portraits/npc-priest.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-priestess-dark",
+    "kind": "npc",
+    "title": "Severe priestess with secrets",
+    "tags": [
+      "priest",
+      "elf",
+      "woman",
+      "sinister",
+      "temple"
+    ],
+    "image": "library/portraits/npc-priestess-dark.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-noble",
+    "kind": "npc",
+    "title": "Frontier lord",
+    "tags": [
+      "noble",
+      "human",
+      "man",
+      "neutral"
+    ],
+    "image": "library/portraits/npc-noble.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-farmer",
+    "kind": "npc",
+    "title": "Worried farmer",
+    "tags": [
+      "farmer",
+      "human",
+      "woman",
+      "friendly",
+      "farm"
+    ],
+    "image": "library/portraits/npc-farmer.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-scholar",
+    "kind": "npc",
+    "title": "Absent-minded scholar",
+    "tags": [
+      "scholar",
+      "mage",
+      "gnome",
+      "woman",
+      "friendly"
+    ],
+    "image": "library/portraits/npc-scholar.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-hunter",
+    "kind": "npc",
+    "title": "Grizzled hunter and tracker",
+    "tags": [
+      "hunter",
+      "elf",
+      "man",
+      "neutral",
+      "forest"
+    ],
+    "image": "library/portraits/npc-hunter.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-thief",
+    "kind": "npc",
+    "title": "Charming pickpocket",
+    "tags": [
+      "thief",
+      "tiefling",
+      "woman",
+      "neutral",
+      "town"
+    ],
+    "image": "library/portraits/npc-thief.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-bard",
+    "kind": "npc",
+    "title": "Traveling orc bard",
+    "tags": [
+      "bard",
+      "orc",
+      "man",
+      "friendly",
+      "tavern"
+    ],
+    "image": "library/portraits/npc-bard.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-elder",
+    "kind": "npc",
+    "title": "Village elder",
+    "tags": [
+      "elder",
+      "halfling",
+      "woman",
+      "friendly",
+      "town"
+    ],
+    "image": "library/portraits/npc-elder.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-child",
+    "kind": "npc",
+    "title": "Curious street child",
+    "tags": [
+      "child",
+      "human",
+      "androgynous",
+      "friendly",
+      "town"
+    ],
+    "image": "library/portraits/npc-child.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-mage",
+    "kind": "npc",
+    "title": "Mysterious hedge wizard",
+    "tags": [
+      "mage",
+      "dragonborn",
+      "man",
+      "sinister"
+    ],
+    "image": "library/portraits/npc-mage.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-soldier-veteran",
+    "kind": "npc",
+    "title": "One-armed veteran soldier",
+    "tags": [
+      "soldier",
+      "dwarf",
+      "man",
+      "friendly"
+    ],
+    "image": "library/portraits/npc-soldier-veteran.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-cult-leader",
+    "kind": "npc",
+    "title": "Cult leader (villain)",
+    "tags": [
+      "cultist",
+      "villain",
+      "human",
+      "woman",
+      "sinister"
+    ],
+    "image": "library/portraits/npc-cult-leader.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "npc-bandit-leader",
+    "kind": "npc",
+    "title": "Bandit chief (villain)",
+    "tags": [
+      "bandit",
+      "villain",
+      "orc",
+      "man",
+      "hostile"
+    ],
+    "image": "library/portraits/npc-bandit-leader.webp"
   }
 ]
