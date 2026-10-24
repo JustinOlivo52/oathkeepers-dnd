@@ -1,0 +1,597 @@
+{
+  "effects": [
+    {
+      "id": "vfx-fire-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of orange-yellow flame and embers"
+    },
+    {
+      "id": "vfx-fire",
+      "role": "impact",
+      "look": "centered radial hit burst of orange-yellow flame and embers"
+    },
+    {
+      "id": "vfx-cold-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of pale blue frost shards and white mist"
+    },
+    {
+      "id": "vfx-cold",
+      "role": "impact",
+      "look": "centered radial hit burst of pale blue frost shards and white mist"
+    },
+    {
+      "id": "vfx-lightning-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of jagged white-yellow electrical arcs"
+    },
+    {
+      "id": "vfx-lightning",
+      "role": "impact",
+      "look": "centered radial hit burst of jagged white-yellow electrical arcs"
+    },
+    {
+      "id": "vfx-acid-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of green liquid and bubbling droplets"
+    },
+    {
+      "id": "vfx-acid",
+      "role": "impact",
+      "look": "centered radial hit burst of green liquid and bubbling droplets"
+    },
+    {
+      "id": "vfx-poison-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of sickly green vapor"
+    },
+    {
+      "id": "vfx-poison",
+      "role": "impact",
+      "look": "centered radial hit burst of sickly green vapor"
+    },
+    {
+      "id": "vfx-necrotic-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of purple-black wisps"
+    },
+    {
+      "id": "vfx-necrotic",
+      "role": "impact",
+      "look": "centered radial hit burst of purple-black wisps"
+    },
+    {
+      "id": "vfx-radiant-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of warm gold-white rays"
+    },
+    {
+      "id": "vfx-radiant",
+      "role": "impact",
+      "look": "centered radial hit burst of warm gold-white rays"
+    },
+    {
+      "id": "vfx-force-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of violet geometric energy shards"
+    },
+    {
+      "id": "vfx-force",
+      "role": "impact",
+      "look": "centered radial hit burst of violet geometric energy shards"
+    },
+    {
+      "id": "vfx-thunder-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of pale blue concentric shock rings"
+    },
+    {
+      "id": "vfx-thunder",
+      "role": "impact",
+      "look": "centered radial hit burst of pale blue concentric shock rings"
+    },
+    {
+      "id": "vfx-psychic-projectile",
+      "role": "projectile",
+      "look": "right-facing flying bolt of pink-magenta ripples"
+    },
+    {
+      "id": "vfx-psychic",
+      "role": "impact",
+      "look": "centered radial hit burst of pink-magenta ripples"
+    },
+    {
+      "id": "vfx-heal",
+      "role": "impact",
+      "look": "green-gold rising motes"
+    },
+    {
+      "id": "vfx-bless",
+      "role": "impact",
+      "look": "soft golden aura"
+    },
+    {
+      "id": "vfx-shield-of-faith",
+      "role": "impact",
+      "look": "shimmering golden barrier dome"
+    },
+    {
+      "id": "vfx-hold",
+      "role": "impact",
+      "look": "violet luminous chains closing in"
+    },
+    {
+      "id": "vfx-teleport",
+      "role": "impact",
+      "look": "silver mist puff"
+    },
+    {
+      "id": "vfx-shatter",
+      "role": "area",
+      "look": "circular thunder ring with small crystal fragments"
+    },
+    {
+      "id": "vfx-acid-splash",
+      "role": "area",
+      "look": "circular green acid splash"
+    },
+    {
+      "id": "vfx-burning-hands",
+      "role": "area",
+      "look": "orange flaming CONE pointing right"
+    },
+    {
+      "id": "vfx-thunderwave",
+      "role": "area",
+      "look": "pale blue square-edged expanding wave"
+    },
+    {
+      "id": "vfx-entangle",
+      "role": "area",
+      "look": "square patch of green grasping vines"
+    },
+    {
+      "id": "vfx-fireball",
+      "role": "area",
+      "look": "round orange-red fiery explosion"
+    },
+    {
+      "id": "vfx-lightning-bolt",
+      "role": "area",
+      "look": "horizontal rightward LINE of white-blue lightning"
+    },
+    {
+      "id": "vfx-spirit-guardians",
+      "role": "area",
+      "look": "round golden ring with small original abstract spirit silhouettes"
+    },
+    {
+      "id": "vfx-command",
+      "role": "impact",
+      "look": "purple descending chevron pulse, no writing"
+    },
+    {
+      "id": "vfx-heroism",
+      "role": "impact",
+      "look": "golden heart-like courage aura"
+    },
+    {
+      "id": "vfx-divine-favor",
+      "role": "impact",
+      "look": "golden blade-shaped blessing"
+    },
+    {
+      "id": "vfx-thunderous-smite",
+      "role": "impact",
+      "look": "steel blade silhouette with pale blue shock rings"
+    },
+    {
+      "id": "vfx-searing-smite",
+      "role": "impact",
+      "look": "steel blade silhouette with orange flames"
+    },
+    {
+      "id": "vfx-wrathful-smite",
+      "role": "impact",
+      "look": "dark blade silhouette with violet dread wisps"
+    },
+    {
+      "id": "vfx-aid",
+      "role": "impact",
+      "look": "three warm-gold rising points connected by a curved protective arc"
+    },
+    {
+      "id": "vfx-lesser-restoration",
+      "role": "impact",
+      "look": "green-white cleansing spiral breaking dark flecks"
+    },
+    {
+      "id": "vfx-revivify",
+      "role": "impact",
+      "look": "gold-white pulse inside an open diamond shape"
+    },
+    {
+      "id": "vfx-vampiric-touch",
+      "role": "impact",
+      "look": "dark violet spectral grasp with green-gold life motes returning"
+    },
+    {
+      "id": "vfx-magic-missile-projectile",
+      "role": "projectile",
+      "look": "rightward small violet dart"
+    },
+    {
+      "id": "vfx-eldritch-blast-projectile",
+      "role": "projectile",
+      "look": "rightward purple-green beam head"
+    },
+    {
+      "id": "vfx-scorching-ray-projectile",
+      "role": "projectile",
+      "look": "rightward thin orange fire streak"
+    },
+    {
+      "id": "vfx-sacred-flame",
+      "role": "impact",
+      "look": "gold-white column descending from above"
+    },
+    {
+      "id": "vfx-guiding-bolt",
+      "role": "impact",
+      "look": "bright gold starburst leaving faint glowing point"
+    },
+    {
+      "id": "vfx-spiritual-weapon",
+      "role": "impact",
+      "look": "spectral blue-gold mace swinging downward"
+    },
+    {
+      "id": "vfx-vicious-mockery",
+      "role": "impact",
+      "look": "jagged pink-magenta ripples, no writing"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "effects-0",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-fire-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of orange-yellow flame and embers"
+        },
+        {
+          "id": "vfx-fire",
+          "role": "impact",
+          "look": "centered radial hit burst of orange-yellow flame and embers"
+        },
+        {
+          "id": "vfx-cold-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of pale blue frost shards and white mist"
+        },
+        {
+          "id": "vfx-cold",
+          "role": "impact",
+          "look": "centered radial hit burst of pale blue frost shards and white mist"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: right-facing flying bolt of orange-yellow flame and embers; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 2: centered radial hit burst of orange-yellow flame and embers; effect viewed front-on centered on a creature's chest. ROW 3: right-facing flying bolt of pale blue frost shards and white mist; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 4: centered radial hit burst of pale blue frost shards and white mist; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-1",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-lightning-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of jagged white-yellow electrical arcs"
+        },
+        {
+          "id": "vfx-lightning",
+          "role": "impact",
+          "look": "centered radial hit burst of jagged white-yellow electrical arcs"
+        },
+        {
+          "id": "vfx-acid-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of green liquid and bubbling droplets"
+        },
+        {
+          "id": "vfx-acid",
+          "role": "impact",
+          "look": "centered radial hit burst of green liquid and bubbling droplets"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: right-facing flying bolt of jagged white-yellow electrical arcs; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 2: centered radial hit burst of jagged white-yellow electrical arcs; effect viewed front-on centered on a creature's chest. ROW 3: right-facing flying bolt of green liquid and bubbling droplets; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 4: centered radial hit burst of green liquid and bubbling droplets; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-2",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-poison-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of sickly green vapor"
+        },
+        {
+          "id": "vfx-poison",
+          "role": "impact",
+          "look": "centered radial hit burst of sickly green vapor"
+        },
+        {
+          "id": "vfx-necrotic-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of purple-black wisps"
+        },
+        {
+          "id": "vfx-necrotic",
+          "role": "impact",
+          "look": "centered radial hit burst of purple-black wisps"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: right-facing flying bolt of sickly green vapor; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 2: centered radial hit burst of sickly green vapor; effect viewed front-on centered on a creature's chest. ROW 3: right-facing flying bolt of purple-black wisps; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 4: centered radial hit burst of purple-black wisps; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-3",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-radiant-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of warm gold-white rays"
+        },
+        {
+          "id": "vfx-radiant",
+          "role": "impact",
+          "look": "centered radial hit burst of warm gold-white rays"
+        },
+        {
+          "id": "vfx-force-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of violet geometric energy shards"
+        },
+        {
+          "id": "vfx-force",
+          "role": "impact",
+          "look": "centered radial hit burst of violet geometric energy shards"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: right-facing flying bolt of warm gold-white rays; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 2: centered radial hit burst of warm gold-white rays; effect viewed front-on centered on a creature's chest. ROW 3: right-facing flying bolt of violet geometric energy shards; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 4: centered radial hit burst of violet geometric energy shards; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-4",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-thunder-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of pale blue concentric shock rings"
+        },
+        {
+          "id": "vfx-thunder",
+          "role": "impact",
+          "look": "centered radial hit burst of pale blue concentric shock rings"
+        },
+        {
+          "id": "vfx-psychic-projectile",
+          "role": "projectile",
+          "look": "right-facing flying bolt of pink-magenta ripples"
+        },
+        {
+          "id": "vfx-psychic",
+          "role": "impact",
+          "look": "centered radial hit burst of pink-magenta ripples"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: right-facing flying bolt of pale blue concentric shock rings; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 2: centered radial hit burst of pale blue concentric shock rings; effect viewed front-on centered on a creature's chest. ROW 3: right-facing flying bolt of pink-magenta ripples; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 4: centered radial hit burst of pink-magenta ripples; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-5",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-heal",
+          "role": "impact",
+          "look": "green-gold rising motes"
+        },
+        {
+          "id": "vfx-bless",
+          "role": "impact",
+          "look": "soft golden aura"
+        },
+        {
+          "id": "vfx-shield-of-faith",
+          "role": "impact",
+          "look": "shimmering golden barrier dome"
+        },
+        {
+          "id": "vfx-hold",
+          "role": "impact",
+          "look": "violet luminous chains closing in"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: green-gold rising motes; effect viewed front-on centered on a creature's chest. ROW 2: soft golden aura; effect viewed front-on centered on a creature's chest. ROW 3: shimmering golden barrier dome; effect viewed front-on centered on a creature's chest. ROW 4: violet luminous chains closing in; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-6",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-teleport",
+          "role": "impact",
+          "look": "silver mist puff"
+        },
+        {
+          "id": "vfx-shatter",
+          "role": "area",
+          "look": "circular thunder ring with small crystal fragments"
+        },
+        {
+          "id": "vfx-acid-splash",
+          "role": "area",
+          "look": "circular green acid splash"
+        },
+        {
+          "id": "vfx-burning-hands",
+          "role": "area",
+          "look": "orange flaming CONE pointing right"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: silver mist puff; effect viewed front-on centered on a creature's chest. ROW 2: circular thunder ring with small crystal fragments; effect viewed from TOP-DOWN with clearly readable ground footprint shape. ROW 3: circular green acid splash; effect viewed from TOP-DOWN with clearly readable ground footprint shape. ROW 4: orange flaming CONE pointing right; effect viewed from TOP-DOWN with clearly readable ground footprint shape. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-7",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-thunderwave",
+          "role": "area",
+          "look": "pale blue square-edged expanding wave"
+        },
+        {
+          "id": "vfx-entangle",
+          "role": "area",
+          "look": "square patch of green grasping vines"
+        },
+        {
+          "id": "vfx-fireball",
+          "role": "area",
+          "look": "round orange-red fiery explosion"
+        },
+        {
+          "id": "vfx-lightning-bolt",
+          "role": "area",
+          "look": "horizontal rightward LINE of white-blue lightning"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: pale blue square-edged expanding wave; effect viewed from TOP-DOWN with clearly readable ground footprint shape. ROW 2: square patch of green grasping vines; effect viewed from TOP-DOWN with clearly readable ground footprint shape. ROW 3: round orange-red fiery explosion; effect viewed from TOP-DOWN with clearly readable ground footprint shape. ROW 4: horizontal rightward LINE of white-blue lightning; effect viewed from TOP-DOWN with clearly readable ground footprint shape. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-8",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-spirit-guardians",
+          "role": "area",
+          "look": "round golden ring with small original abstract spirit silhouettes"
+        },
+        {
+          "id": "vfx-command",
+          "role": "impact",
+          "look": "purple descending chevron pulse, no writing"
+        },
+        {
+          "id": "vfx-heroism",
+          "role": "impact",
+          "look": "golden heart-like courage aura"
+        },
+        {
+          "id": "vfx-divine-favor",
+          "role": "impact",
+          "look": "golden blade-shaped blessing"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: round golden ring with small original abstract spirit silhouettes; effect viewed from TOP-DOWN with clearly readable ground footprint shape. ROW 2: purple descending chevron pulse, no writing; effect viewed front-on centered on a creature's chest. ROW 3: golden heart-like courage aura; effect viewed front-on centered on a creature's chest. ROW 4: golden blade-shaped blessing; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-9",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-thunderous-smite",
+          "role": "impact",
+          "look": "steel blade silhouette with pale blue shock rings"
+        },
+        {
+          "id": "vfx-searing-smite",
+          "role": "impact",
+          "look": "steel blade silhouette with orange flames"
+        },
+        {
+          "id": "vfx-wrathful-smite",
+          "role": "impact",
+          "look": "dark blade silhouette with violet dread wisps"
+        },
+        {
+          "id": "vfx-aid",
+          "role": "impact",
+          "look": "three warm-gold rising points connected by a curved protective arc"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: steel blade silhouette with pale blue shock rings; effect viewed front-on centered on a creature's chest. ROW 2: steel blade silhouette with orange flames; effect viewed front-on centered on a creature's chest. ROW 3: dark blade silhouette with violet dread wisps; effect viewed front-on centered on a creature's chest. ROW 4: three warm-gold rising points connected by a curved protective arc; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-10",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-lesser-restoration",
+          "role": "impact",
+          "look": "green-white cleansing spiral breaking dark flecks"
+        },
+        {
+          "id": "vfx-revivify",
+          "role": "impact",
+          "look": "gold-white pulse inside an open diamond shape"
+        },
+        {
+          "id": "vfx-vampiric-touch",
+          "role": "impact",
+          "look": "dark violet spectral grasp with green-gold life motes returning"
+        },
+        {
+          "id": "vfx-magic-missile-projectile",
+          "role": "projectile",
+          "look": "rightward small violet dart"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: green-white cleansing spiral breaking dark flecks; effect viewed front-on centered on a creature's chest. ROW 2: gold-white pulse inside an open diamond shape; effect viewed front-on centered on a creature's chest. ROW 3: dark violet spectral grasp with green-gold life motes returning; effect viewed front-on centered on a creature's chest. ROW 4: rightward small violet dart; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-11",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-eldritch-blast-projectile",
+          "role": "projectile",
+          "look": "rightward purple-green beam head"
+        },
+        {
+          "id": "vfx-scorching-ray-projectile",
+          "role": "projectile",
+          "look": "rightward thin orange fire streak"
+        },
+        {
+          "id": "vfx-sacred-flame",
+          "role": "impact",
+          "look": "gold-white column descending from above"
+        },
+        {
+          "id": "vfx-guiding-bolt",
+          "role": "impact",
+          "look": "bright gold starburst leaving faint glowing point"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: rightward purple-green beam head; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 2: rightward thin orange fire streak; projectile facing RIGHT, compact bolt centered in each frame; eight visually varying loop phases, consistent direction and size. ROW 3: gold-white column descending from above; effect viewed front-on centered on a creature's chest. ROW 4: bright gold starburst leaving faint glowing point; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    },
+    {
+      "id": "effects-12",
+      "kind": "effects",
+      "effects": [
+        {
+          "id": "vfx-spiritual-weapon",
+          "role": "impact",
+          "look": "spectral blue-gold mace swinging downward"
+        },
+        {
+          "id": "vfx-vicious-mockery",
+          "role": "impact",
+          "look": "jagged pink-magenta ripples, no writing"
+        }
+      ],
+      "prompt": "Production fantasy game VFX animation atlas, fully TRANSPARENT background. EXACT EIGHT columns and FOUR rows of equal square cells. No labels, no text, no opaque backgrounds or drawn grid. Each row is ONE eight-frame animated sequence, time left-to-right. Tiny start in frame0, grows frame1, frame2; strongest complete shape frame3, softens frame4, disperses frame5, fades frame6, almost transparent but faint remaining motes frame7. Every frame centered in its cell with generous clear margins, no pixels touching cell edges. Soft luminous painterly 2D glows, crisp sparks, original symbols, readable over dark fantasy terrain. ROW 1: spectral blue-gold mace swinging downward; effect viewed front-on centered on a creature's chest. ROW 2: jagged pink-magenta ripples, no writing; effect viewed front-on centered on a creature's chest. Unused rows completely transparent. NO character, floor, scenery, lettering, or borders. Overall image wide aspect ratio 2:1."
+    }
+  ]
+}

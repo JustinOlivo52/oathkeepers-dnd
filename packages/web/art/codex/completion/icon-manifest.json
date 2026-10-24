@@ -1,0 +1,178 @@
+{
+  "jobs": [
+    {
+      "id": "icons-0",
+      "kind": "icons",
+      "icons": [
+        {
+          "id": "icon-fire-bolt",
+          "symbol": "single orange flame dart"
+        },
+        {
+          "id": "icon-ray-of-frost",
+          "symbol": "pale blue ice spear"
+        },
+        {
+          "id": "icon-shocking-grasp",
+          "symbol": "white lightning in an open hand"
+        },
+        {
+          "id": "icon-acid-splash",
+          "symbol": "green droplet breaking into a splash"
+        },
+        {
+          "id": "icon-chill-touch",
+          "symbol": "violet skeletal hand"
+        },
+        {
+          "id": "icon-poison-spray",
+          "symbol": "green vapor puff"
+        },
+        {
+          "id": "icon-eldritch-blast",
+          "symbol": "purple-green star bolt"
+        },
+        {
+          "id": "icon-sacred-flame",
+          "symbol": "gold flame descending"
+        },
+        {
+          "id": "icon-produce-flame",
+          "symbol": "orange flame above open palm"
+        },
+        {
+          "id": "icon-vicious-mockery",
+          "symbol": "jagged pink ripples"
+        },
+        {
+          "id": "icon-magic-missile",
+          "symbol": "three violet darts"
+        },
+        {
+          "id": "icon-burning-hands",
+          "symbol": "two hands emitting orange fan"
+        },
+        {
+          "id": "icon-thunderwave",
+          "symbol": "blue square shockwave"
+        },
+        {
+          "id": "icon-guiding-bolt",
+          "symbol": "gold star with long ray"
+        },
+        {
+          "id": "icon-inflict-wounds",
+          "symbol": "dark violet hand burst"
+        },
+        {
+          "id": "icon-cure-wounds",
+          "symbol": "green healing hand"
+        },
+        {
+          "id": "icon-healing-word",
+          "symbol": "gold-green rising mote ring, no letters"
+        },
+        {
+          "id": "icon-bless",
+          "symbol": "three small gold stars"
+        },
+        {
+          "id": "icon-shield-of-faith",
+          "symbol": "gold protective shield"
+        },
+        {
+          "id": "icon-scorching-ray",
+          "symbol": "three thin red-orange rays"
+        }
+      ],
+      "prompt": "Original fantasy game spell icon atlas. EXACT FOUR columns and FIVE rows equal square cells, twenty independent icons in reading order. No labels, NO TEXT, no numbers, no official D&D icons, no real-world religious marks. Each cell one dark charcoal rounded square with subtle warm bevel and one BOLD SIMPLE luminous painted symbol, thick silhouettes that stay readable at twenty pixels. Transparent outside each rounded square, margins inside cells; no overlaps. Icons left-to-right top-to-bottom: 1: single orange flame dart; 2: pale blue ice spear; 3: white lightning in an open hand; 4: green droplet breaking into a splash; 5: violet skeletal hand; 6: green vapor puff; 7: purple-green star bolt; 8: gold flame descending; 9: orange flame above open palm; 10: jagged pink ripples; 11: three violet darts; 12: two hands emitting orange fan; 13: blue square shockwave; 14: gold star with long ray; 15: dark violet hand burst; 16: green healing hand; 17: gold-green rising mote ring, no letters; 18: three small gold stars; 19: gold protective shield; 20: three thin red-orange rays. Consistent visual weight, dark outline, vivid restrained magic colors. Overall portrait4:5 ratio."
+    },
+    {
+      "id": "icons-1",
+      "kind": "icons",
+      "icons": [
+        {
+          "id": "icon-shatter",
+          "symbol": "blue shattered crystal"
+        },
+        {
+          "id": "icon-hold-person",
+          "symbol": "violet chain links around simple humanoid silhouette"
+        },
+        {
+          "id": "icon-misty-step",
+          "symbol": "silver boot dissolving into mist"
+        },
+        {
+          "id": "icon-spiritual-weapon",
+          "symbol": "spectral blue-gold mace"
+        },
+        {
+          "id": "icon-chromatic-orb",
+          "symbol": "orb split into colorful facets"
+        },
+        {
+          "id": "icon-entangle",
+          "symbol": "green grasping vines"
+        },
+        {
+          "id": "icon-command",
+          "symbol": "purple downward chevron over bowed head"
+        },
+        {
+          "id": "icon-heroism",
+          "symbol": "golden heart and ray"
+        },
+        {
+          "id": "icon-divine-favor",
+          "symbol": "gold-glowing sword"
+        },
+        {
+          "id": "icon-thunderous-smite",
+          "symbol": "sword with blue shock ring"
+        },
+        {
+          "id": "icon-searing-smite",
+          "symbol": "flaming sword"
+        },
+        {
+          "id": "icon-wrathful-smite",
+          "symbol": "violet shadow sword"
+        },
+        {
+          "id": "icon-aid",
+          "symbol": "three upward gold points"
+        },
+        {
+          "id": "icon-lesser-restoration",
+          "symbol": "green cleansing spiral"
+        },
+        {
+          "id": "icon-fireball",
+          "symbol": "orange explosion sphere"
+        },
+        {
+          "id": "icon-lightning-bolt",
+          "symbol": "long white-blue zigzag"
+        },
+        {
+          "id": "icon-mass-healing-word",
+          "symbol": "three green hearts connected by arc"
+        },
+        {
+          "id": "icon-revivify",
+          "symbol": "gold diamond surrounding bright life spark"
+        },
+        {
+          "id": "icon-spirit-guardians",
+          "symbol": "three gold abstract spirits around a ring"
+        },
+        {
+          "id": "icon-vampiric-touch",
+          "symbol": "violet grasp with green returning motes"
+        }
+      ],
+      "prompt": "Original fantasy game spell icon atlas. EXACT FOUR columns and FIVE rows equal square cells, twenty independent icons in reading order. No labels, NO TEXT, no numbers, no official D&D icons, no real-world religious marks. Each cell one dark charcoal rounded square with subtle warm bevel and one BOLD SIMPLE luminous painted symbol, thick silhouettes that stay readable at twenty pixels. Transparent outside each rounded square, margins inside cells; no overlaps. Icons left-to-right top-to-bottom: 1: blue shattered crystal; 2: violet chain links around simple humanoid silhouette; 3: silver boot dissolving into mist; 4: spectral blue-gold mace; 5: orb split into colorful facets; 6: green grasping vines; 7: purple downward chevron over bowed head; 8: golden heart and ray; 9: gold-glowing sword; 10: sword with blue shock ring; 11: flaming sword; 12: violet shadow sword; 13: three upward gold points; 14: green cleansing spiral; 15: orange explosion sphere; 16: long white-blue zigzag; 17: three green hearts connected by arc; 18: gold diamond surrounding bright life spark; 19: three gold abstract spirits around a ring; 20: violet grasp with green returning motes. Consistent visual weight, dark outline, vivid restrained magic colors. Overall portrait4:5 ratio."
+    }
+  ]
+}

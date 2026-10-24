@@ -348,7 +348,7 @@
         "x": 192,
         "y": 340
       },
-      "visibleHeight": 150
+      "visibleHeight": 156
     }
   },
   {
@@ -397,7 +397,7 @@
         "x": 192,
         "y": 340
       },
-      "visibleHeight": 256
+      "visibleHeight": 247
     }
   },
   {
@@ -523,7 +523,8 @@
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
     "integrationStatus": "ready",
-    "tiles": "sprites/tiles-forest.png"
+    "tiles": "sprites/tiles-forest.png",
+    "props": "sprites/props-forest.png"
   },
   {
     "id": "board-forest-road",
@@ -1893,5 +1894,2021 @@
     "artStatus": "ready",
     "mechanicsStatus": "not-required",
     "integrationStatus": "pending"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-barbarian",
+    "kind": "hero",
+    "title": "Barbarian",
+    "classId": "barbarian",
+    "tags": [
+      "martial",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-barbarian.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 129
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-barbarian-small",
+    "kind": "hero",
+    "title": "Barbarian (Small)",
+    "classId": "barbarian",
+    "tags": [
+      "martial",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-barbarian-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-bard",
+    "kind": "hero",
+    "title": "Bard",
+    "classId": "bard",
+    "tags": [
+      "expert",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-bard.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 129
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-bard-small",
+    "kind": "hero",
+    "title": "Bard (Small)",
+    "classId": "bard",
+    "tags": [
+      "expert",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-bard-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 89
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-cleric",
+    "kind": "hero",
+    "title": "Cleric",
+    "classId": "cleric",
+    "tags": [
+      "divine",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-cleric.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 132
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-cleric-small",
+    "kind": "hero",
+    "title": "Cleric (Small)",
+    "classId": "cleric",
+    "tags": [
+      "divine",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-cleric-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-druid",
+    "kind": "hero",
+    "title": "Druid",
+    "classId": "druid",
+    "tags": [
+      "divine",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-druid.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 133
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-druid-small",
+    "kind": "hero",
+    "title": "Druid (Small)",
+    "classId": "druid",
+    "tags": [
+      "divine",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-druid-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 91
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-fighter",
+    "kind": "hero",
+    "title": "Fighter",
+    "classId": "fighter",
+    "tags": [
+      "martial",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-fighter.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 130
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-fighter-small",
+    "kind": "hero",
+    "title": "Fighter (Small)",
+    "classId": "fighter",
+    "tags": [
+      "martial",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-fighter-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-monk",
+    "kind": "hero",
+    "title": "Monk",
+    "classId": "monk",
+    "tags": [
+      "martial",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-monk.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 136
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-monk-small",
+    "kind": "hero",
+    "title": "Monk (Small)",
+    "classId": "monk",
+    "tags": [
+      "martial",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-monk-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 88
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-paladin",
+    "kind": "hero",
+    "title": "Paladin",
+    "classId": "paladin",
+    "tags": [
+      "divine",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-paladin.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 131
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-paladin-small",
+    "kind": "hero",
+    "title": "Paladin (Small)",
+    "classId": "paladin",
+    "tags": [
+      "divine",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-paladin-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 91
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-ranger",
+    "kind": "hero",
+    "title": "Ranger",
+    "classId": "ranger",
+    "tags": [
+      "expert",
+      "hero",
+      "archer"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-ranger.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 128
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-ranger-small",
+    "kind": "hero",
+    "title": "Ranger (Small)",
+    "classId": "ranger",
+    "tags": [
+      "expert",
+      "hero",
+      "archer"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-ranger-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-rogue",
+    "kind": "hero",
+    "title": "Rogue",
+    "classId": "rogue",
+    "tags": [
+      "expert",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-rogue.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 134
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-rogue-small",
+    "kind": "hero",
+    "title": "Rogue (Small)",
+    "classId": "rogue",
+    "tags": [
+      "expert",
+      "hero",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-rogue-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 91
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-sorcerer",
+    "kind": "hero",
+    "title": "Sorcerer",
+    "classId": "sorcerer",
+    "tags": [
+      "arcane",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-sorcerer.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 127
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-sorcerer-small",
+    "kind": "hero",
+    "title": "Sorcerer (Small)",
+    "classId": "sorcerer",
+    "tags": [
+      "arcane",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-sorcerer-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-warlock",
+    "kind": "hero",
+    "title": "Warlock",
+    "classId": "warlock",
+    "tags": [
+      "arcane",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-warlock.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 133
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-warlock-small",
+    "kind": "hero",
+    "title": "Warlock (Small)",
+    "classId": "warlock",
+    "tags": [
+      "arcane",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-warlock-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-wizard",
+    "kind": "hero",
+    "title": "Wizard",
+    "classId": "wizard",
+    "tags": [
+      "arcane",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-wizard.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 130
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-class-wizard-small",
+    "kind": "hero",
+    "title": "Wizard (Small)",
+    "classId": "wizard",
+    "tags": [
+      "arcane",
+      "hero",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-class-wizard-small.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dragonborn-martial",
+    "kind": "portrait",
+    "title": "Dragonborn martial",
+    "tags": [
+      "dragonborn",
+      "martial",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-dragonborn-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dragonborn-expert",
+    "kind": "portrait",
+    "title": "Dragonborn expert",
+    "tags": [
+      "dragonborn",
+      "expert",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-dragonborn-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dragonborn-arcane",
+    "kind": "portrait",
+    "title": "Dragonborn arcane",
+    "tags": [
+      "dragonborn",
+      "arcane",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-dragonborn-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dragonborn-divine",
+    "kind": "portrait",
+    "title": "Dragonborn divine",
+    "tags": [
+      "dragonborn",
+      "divine",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-dragonborn-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dwarf-martial",
+    "kind": "portrait",
+    "title": "Dwarf martial",
+    "tags": [
+      "dwarf",
+      "martial",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-dwarf-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dwarf-expert",
+    "kind": "portrait",
+    "title": "Dwarf expert",
+    "tags": [
+      "dwarf",
+      "expert",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-dwarf-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dwarf-arcane",
+    "kind": "portrait",
+    "title": "Dwarf arcane",
+    "tags": [
+      "dwarf",
+      "arcane",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-dwarf-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-dwarf-divine",
+    "kind": "portrait",
+    "title": "Dwarf divine",
+    "tags": [
+      "dwarf",
+      "divine",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-dwarf-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-elf-martial",
+    "kind": "portrait",
+    "title": "Elf martial",
+    "tags": [
+      "elf",
+      "martial",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-elf-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-elf-expert",
+    "kind": "portrait",
+    "title": "Elf expert",
+    "tags": [
+      "elf",
+      "expert",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-elf-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-elf-arcane",
+    "kind": "portrait",
+    "title": "Elf arcane",
+    "tags": [
+      "elf",
+      "arcane",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-elf-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-elf-divine",
+    "kind": "portrait",
+    "title": "Elf divine",
+    "tags": [
+      "elf",
+      "divine",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-elf-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-gnome-martial",
+    "kind": "portrait",
+    "title": "Gnome martial",
+    "tags": [
+      "gnome",
+      "martial",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-gnome-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-gnome-expert",
+    "kind": "portrait",
+    "title": "Gnome expert",
+    "tags": [
+      "gnome",
+      "expert",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-gnome-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-gnome-arcane",
+    "kind": "portrait",
+    "title": "Gnome arcane",
+    "tags": [
+      "gnome",
+      "arcane",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-gnome-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-gnome-divine",
+    "kind": "portrait",
+    "title": "Gnome divine",
+    "tags": [
+      "gnome",
+      "divine",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-gnome-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-goliath-martial",
+    "kind": "portrait",
+    "title": "Goliath martial",
+    "tags": [
+      "goliath",
+      "martial",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-goliath-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-goliath-expert",
+    "kind": "portrait",
+    "title": "Goliath expert",
+    "tags": [
+      "goliath",
+      "expert",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-goliath-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-goliath-arcane",
+    "kind": "portrait",
+    "title": "Goliath arcane",
+    "tags": [
+      "goliath",
+      "arcane",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-goliath-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-goliath-divine",
+    "kind": "portrait",
+    "title": "Goliath divine",
+    "tags": [
+      "goliath",
+      "divine",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-goliath-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-halfling-martial",
+    "kind": "portrait",
+    "title": "Halfling martial",
+    "tags": [
+      "halfling",
+      "martial",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-halfling-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-halfling-expert",
+    "kind": "portrait",
+    "title": "Halfling expert",
+    "tags": [
+      "halfling",
+      "expert",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-halfling-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-halfling-arcane",
+    "kind": "portrait",
+    "title": "Halfling arcane",
+    "tags": [
+      "halfling",
+      "arcane",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-halfling-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-halfling-divine",
+    "kind": "portrait",
+    "title": "Halfling divine",
+    "tags": [
+      "halfling",
+      "divine",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-halfling-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-human-martial",
+    "kind": "portrait",
+    "title": "Human martial",
+    "tags": [
+      "human",
+      "martial",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-human-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-human-expert",
+    "kind": "portrait",
+    "title": "Human expert",
+    "tags": [
+      "human",
+      "expert",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-human-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-human-arcane",
+    "kind": "portrait",
+    "title": "Human arcane",
+    "tags": [
+      "human",
+      "arcane",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-human-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-human-divine",
+    "kind": "portrait",
+    "title": "Human divine",
+    "tags": [
+      "human",
+      "divine",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-human-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-orc-martial",
+    "kind": "portrait",
+    "title": "Orc martial",
+    "tags": [
+      "orc",
+      "martial",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-orc-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-orc-expert",
+    "kind": "portrait",
+    "title": "Orc expert",
+    "tags": [
+      "orc",
+      "expert",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-orc-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-orc-arcane",
+    "kind": "portrait",
+    "title": "Orc arcane",
+    "tags": [
+      "orc",
+      "arcane",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-orc-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-orc-divine",
+    "kind": "portrait",
+    "title": "Orc divine",
+    "tags": [
+      "orc",
+      "divine",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-orc-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-tiefling-martial",
+    "kind": "portrait",
+    "title": "Tiefling martial",
+    "tags": [
+      "tiefling",
+      "martial",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-tiefling-martial.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-tiefling-expert",
+    "kind": "portrait",
+    "title": "Tiefling expert",
+    "tags": [
+      "tiefling",
+      "expert",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-tiefling-expert.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-tiefling-arcane",
+    "kind": "portrait",
+    "title": "Tiefling arcane",
+    "tags": [
+      "tiefling",
+      "arcane",
+      "man",
+      "hero"
+    ],
+    "image": "library/portraits/player-tiefling-arcane.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "player-tiefling-divine",
+    "kind": "portrait",
+    "title": "Tiefling divine",
+    "tags": [
+      "tiefling",
+      "divine",
+      "woman",
+      "hero"
+    ],
+    "image": "library/portraits/player-tiefling-divine.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-barbarian",
+    "kind": "card",
+    "title": "Barbarian card",
+    "tags": [],
+    "image": "library/cards/class-barbarian.webp",
+    "classId": "barbarian"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-bard",
+    "kind": "card",
+    "title": "Bard card",
+    "tags": [],
+    "image": "library/cards/class-bard.webp",
+    "classId": "bard"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-cleric",
+    "kind": "card",
+    "title": "Cleric card",
+    "tags": [],
+    "image": "library/cards/class-cleric.webp",
+    "classId": "cleric"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-druid",
+    "kind": "card",
+    "title": "Druid card",
+    "tags": [],
+    "image": "library/cards/class-druid.webp",
+    "classId": "druid"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-fighter",
+    "kind": "card",
+    "title": "Fighter card",
+    "tags": [],
+    "image": "library/cards/class-fighter.webp",
+    "classId": "fighter"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-monk",
+    "kind": "card",
+    "title": "Monk card",
+    "tags": [],
+    "image": "library/cards/class-monk.webp",
+    "classId": "monk"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-paladin",
+    "kind": "card",
+    "title": "Paladin card",
+    "tags": [],
+    "image": "library/cards/class-paladin.webp",
+    "classId": "paladin"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-ranger",
+    "kind": "card",
+    "title": "Ranger card",
+    "tags": [],
+    "image": "library/cards/class-ranger.webp",
+    "classId": "ranger"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-rogue",
+    "kind": "card",
+    "title": "Rogue card",
+    "tags": [],
+    "image": "library/cards/class-rogue.webp",
+    "classId": "rogue"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-sorcerer",
+    "kind": "card",
+    "title": "Sorcerer card",
+    "tags": [],
+    "image": "library/cards/class-sorcerer.webp",
+    "classId": "sorcerer"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-warlock",
+    "kind": "card",
+    "title": "Warlock card",
+    "tags": [],
+    "image": "library/cards/class-warlock.webp",
+    "classId": "warlock"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-class-wizard",
+    "kind": "card",
+    "title": "Wizard card",
+    "tags": [],
+    "image": "library/cards/class-wizard.webp",
+    "classId": "wizard"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-dragonborn",
+    "kind": "card",
+    "title": "Dragonborn card",
+    "tags": [],
+    "image": "library/cards/species-dragonborn.webp",
+    "speciesId": "dragonborn"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-dwarf",
+    "kind": "card",
+    "title": "Dwarf card",
+    "tags": [],
+    "image": "library/cards/species-dwarf.webp",
+    "speciesId": "dwarf"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-elf",
+    "kind": "card",
+    "title": "Elf card",
+    "tags": [],
+    "image": "library/cards/species-elf.webp",
+    "speciesId": "elf"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-gnome",
+    "kind": "card",
+    "title": "Gnome card",
+    "tags": [],
+    "image": "library/cards/species-gnome.webp",
+    "speciesId": "gnome"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-goliath",
+    "kind": "card",
+    "title": "Goliath card",
+    "tags": [],
+    "image": "library/cards/species-goliath.webp",
+    "speciesId": "goliath"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-halfling",
+    "kind": "card",
+    "title": "Halfling card",
+    "tags": [],
+    "image": "library/cards/species-halfling.webp",
+    "speciesId": "halfling"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-wren-ashdown",
+    "kind": "hero",
+    "title": "Wren Ashdown",
+    "tags": [
+      "halfling",
+      "woman",
+      "hero",
+      "expert",
+      "skirmisher"
+    ],
+    "sprite": {
+      "file": "sprites/hero-wren-ashdown.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 96
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-brother-odric-vale",
+    "kind": "hero",
+    "title": "Brother Odric Vale",
+    "tags": [
+      "dwarf",
+      "man",
+      "hero",
+      "divine",
+      "leader"
+    ],
+    "sprite": {
+      "file": "sprites/hero-brother-odric-vale.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 115
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-sister-maren-holt",
+    "kind": "hero",
+    "title": "Sister Maren Holt",
+    "tags": [
+      "human",
+      "woman",
+      "hero",
+      "divine",
+      "healer"
+    ],
+    "sprite": {
+      "file": "sprites/hero-sister-maren-holt.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 128
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-pip-thistlewick",
+    "kind": "hero",
+    "title": "Pip Thistlewick",
+    "tags": [
+      "gnome",
+      "man",
+      "hero",
+      "arcane",
+      "caster"
+    ],
+    "sprite": {
+      "file": "sprites/hero-pip-thistlewick.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 97
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-human",
+    "kind": "card",
+    "title": "Human card",
+    "tags": [],
+    "image": "library/cards/species-human.webp",
+    "speciesId": "human"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-orc",
+    "kind": "card",
+    "title": "Orc card",
+    "tags": [],
+    "image": "library/cards/species-orc.webp",
+    "speciesId": "orc"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "card-species-tiefling",
+    "kind": "card",
+    "title": "Tiefling card",
+    "tags": [],
+    "image": "library/cards/species-tiefling.webp",
+    "speciesId": "tiefling"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-tamsin-reed",
+    "kind": "hero",
+    "title": "Tamsin Reed",
+    "tags": [
+      "elf",
+      "woman",
+      "hero",
+      "expert",
+      "archer"
+    ],
+    "sprite": {
+      "file": "sprites/hero-tamsin-reed.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 129
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "hero-bram-holloway",
+    "kind": "hero",
+    "title": "Bram Holloway",
+    "tags": [
+      "human",
+      "man",
+      "hero",
+      "martial",
+      "leader"
+    ],
+    "sprite": {
+      "file": "sprites/hero-bram-holloway.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 130
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "id": "monster-boar",
+    "kind": "monster",
+    "monsterId": "boar",
+    "title": "Boar",
+    "tags": [
+      "beast",
+      "brute",
+      "forest"
+    ],
+    "sprite": {
+      "file": "sprites/monster-boar.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 82
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-boar",
+    "kind": "npc",
+    "monsterId": "boar",
+    "title": "Boar portrait",
+    "tags": [
+      "beast",
+      "brute",
+      "forest"
+    ],
+    "image": "library/portraits/monster-boar.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "id": "monster-panther",
+    "kind": "monster",
+    "monsterId": "panther",
+    "title": "Panther",
+    "tags": [
+      "beast",
+      "skirmisher",
+      "forest"
+    ],
+    "sprite": {
+      "file": "sprites/monster-panther.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 99
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-panther",
+    "kind": "npc",
+    "monsterId": "panther",
+    "title": "Panther portrait",
+    "tags": [
+      "beast",
+      "skirmisher",
+      "forest"
+    ],
+    "image": "library/portraits/monster-panther.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "pending",
+    "integrationStatus": "pending",
+    "id": "monster-giant-badger",
+    "kind": "monster",
+    "monsterId": "giant-badger",
+    "title": "Giant-Badger",
+    "tags": [
+      "beast",
+      "brute",
+      "forest"
+    ],
+    "sprite": {
+      "file": "sprites/monster-giant-badger.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 92
+    }
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-giant-badger",
+    "kind": "npc",
+    "monsterId": "giant-badger",
+    "title": "Giant-Badger portrait",
+    "tags": [
+      "beast",
+      "brute",
+      "forest"
+    ],
+    "image": "library/portraits/monster-giant-badger.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "portrait-bram-holloway",
+    "kind": "npc",
+    "title": "Bram Holloway portrait",
+    "tags": [
+      "human",
+      "man",
+      "hero",
+      "martial",
+      "leader"
+    ],
+    "image": "library/portraits/companion-bram-holloway.webp"
   }
 ]

@@ -1,0 +1,208 @@
+{
+  "companions": [
+    [
+      "wren-ashdown",
+      "adult halfling woman rogue, curly dark hair and round adult face, dark hooded leather and red scarf, shortsword and shortbow",
+      "low shortsword stab",
+      94,
+      [
+        "halfling",
+        "woman",
+        "hero",
+        "expert",
+        "skirmisher"
+      ]
+    ],
+    [
+      "brother-odric-vale",
+      "stocky older dwarf man paladin, broad face, grey-streaked braided beard, chainmail, ivory shoulder cloak, shield with original diamond motif and longsword",
+      "longsword slash",
+      113,
+      [
+        "dwarf",
+        "man",
+        "hero",
+        "divine",
+        "leader"
+      ]
+    ],
+    [
+      "tamsin-reed",
+      "lean adult wood elf woman ranger with long pointed ears and tan brown skin, dark braided hair, studded leather and green-brown leaf-trimmed cloak, longbow and shortsword at hip",
+      "longbow draw and arrow release",
+      128,
+      [
+        "elf",
+        "woman",
+        "hero",
+        "expert",
+        "archer"
+      ]
+    ],
+    [
+      "sister-maren-holt",
+      "young adult human woman cleric, freckles, auburn braid, chainmail, ivory cloak, round shield with plain sun disk and triangular rays, mace",
+      "mace swing",
+      128,
+      [
+        "human",
+        "woman",
+        "hero",
+        "divine",
+        "healer"
+      ]
+    ],
+    [
+      "pip-thistlewick",
+      "adult rock gnome man wizard, expressive eyes, wild sandy hair, goggles on forehead, blue-grey robes with many pockets, quarterstaff and book",
+      "staff raised and connected blue spark",
+      94,
+      [
+        "gnome",
+        "man",
+        "hero",
+        "arcane",
+        "caster"
+      ]
+    ],
+    [
+      "bram-holloway",
+      "adult human man fighter, sturdy build, brown cropped hair, stubble, frontier chainmail and weathered russet cloak, shield and longsword",
+      "sword slash",
+      128,
+      [
+        "human",
+        "man",
+        "hero",
+        "martial",
+        "leader"
+      ]
+    ]
+  ],
+  "beasts": [
+    [
+      "boar",
+      "stocky wild boar, brown bristly fur, curved tusks",
+      "tusk charge",
+      80
+    ],
+    [
+      "panther",
+      "sleek black panther with amber eyes",
+      "low claw lunge",
+      88
+    ],
+    [
+      "giant-badger",
+      "large powerful badger, black and white striped face, grey fur, digging claws",
+      "claw swipe",
+      78
+    ]
+  ],
+  "jobs": [
+    {
+      "id": "companion-wren-ashdown",
+      "kind": "companion",
+      "characterId": "wren-ashdown",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of adult halfling woman rogue, curly dark hair and round adult face, dark hooded leather and red scarf, shortsword and shortbow. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (low shortsword stab); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. Small adult body proportions: short legs, compact torso, gear scaled to small body. Overall image landscape ratio 4:3. Match the corresponding portrait character in the provided reference atlas; for Bram create an original face. The reference is for face, costume and palette only; output the required isolated animation atlas, not portraits.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/art/codex/source/library2/companion-portraits.png"
+      ]
+    },
+    {
+      "id": "companion-brother-odric-vale",
+      "kind": "companion",
+      "characterId": "brother-odric-vale",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of stocky older dwarf man paladin, broad face, grey-streaked braided beard, chainmail, ivory shoulder cloak, shield with original diamond motif and longsword. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (longsword slash); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose.  Overall image landscape ratio 4:3. Match the corresponding portrait character in the provided reference atlas; for Bram create an original face. The reference is for face, costume and palette only; output the required isolated animation atlas, not portraits.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/art/codex/source/library2/companion-portraits.png"
+      ]
+    },
+    {
+      "id": "companion-tamsin-reed",
+      "kind": "companion",
+      "characterId": "tamsin-reed",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of lean adult wood elf woman ranger with long pointed ears and tan brown skin, dark braided hair, studded leather and green-brown leaf-trimmed cloak, longbow and shortsword at hip. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (longbow draw and arrow release); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose.  Overall image landscape ratio 4:3. Match the corresponding portrait character in the provided reference atlas; for Bram create an original face. The reference is for face, costume and palette only; output the required isolated animation atlas, not portraits.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/art/codex/source/library2/companion-portraits.png"
+      ]
+    },
+    {
+      "id": "companion-sister-maren-holt",
+      "kind": "companion",
+      "characterId": "sister-maren-holt",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of young adult human woman cleric, freckles, auburn braid, chainmail, ivory cloak, round shield with plain sun disk and triangular rays, mace. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (mace swing); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose.  Overall image landscape ratio 4:3. Match the corresponding portrait character in the provided reference atlas; for Bram create an original face. The reference is for face, costume and palette only; output the required isolated animation atlas, not portraits.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/art/codex/source/library2/companion-portraits.png"
+      ]
+    },
+    {
+      "id": "companion-pip-thistlewick",
+      "kind": "companion",
+      "characterId": "pip-thistlewick",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of adult rock gnome man wizard, expressive eyes, wild sandy hair, goggles on forehead, blue-grey robes with many pockets, quarterstaff and book. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (staff raised and connected blue spark); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. Small adult body proportions: short legs, compact torso, gear scaled to small body. Overall image landscape ratio 4:3. Match the corresponding portrait character in the provided reference atlas; for Bram create an original face. The reference is for face, costume and palette only; output the required isolated animation atlas, not portraits.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/art/codex/source/library2/companion-portraits.png"
+      ]
+    },
+    {
+      "id": "companion-bram-holloway",
+      "kind": "companion",
+      "characterId": "bram-holloway",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of adult human man fighter, sturdy build, brown cropped hair, stubble, frontier chainmail and weathered russet cloak, shield and longsword. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (sword slash); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose.  Overall image landscape ratio 4:3. Match the corresponding portrait character in the provided reference atlas; for Bram create an original face. The reference is for face, costume and palette only; output the required isolated animation atlas, not portraits.",
+      "refs": []
+    },
+    {
+      "id": "beast-boar",
+      "kind": "beast",
+      "monsterId": "boar",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of stocky wild boar, brown bristly fur, curved tusks. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (tusk charge); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. Natural quadruped anatomy. Four visibly alternating gait phases. No humanoid pose or equipment. Overall image landscape ratio 4:3."
+    },
+    {
+      "id": "beast-panther",
+      "kind": "beast",
+      "monsterId": "panther",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of sleek black panther with amber eyes. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (low claw lunge); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. Natural quadruped anatomy. Four visibly alternating gait phases. No humanoid pose or equipment. Overall image landscape ratio 4:3."
+    },
+    {
+      "id": "beast-giant-badger",
+      "kind": "beast",
+      "monsterId": "giant-badger",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of large powerful badger, black and white striped face, grey fur, digging claws. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (claw swipe); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. Natural quadruped anatomy. Four visibly alternating gait phases. No humanoid pose or equipment. Overall image landscape ratio 4:3."
+    },
+    {
+      "id": "beast-portraits",
+      "kind": "beastportraits",
+      "prompt": "Original detailed warm painterly 2D fantasy wildlife portrait atlas, dark outlines, muted earthy colors. EXACT 2 columns by 2 rows equal square cells, no borders or text or logos. Top-left wild brown boar with curved tusks, top-right sleek black panther with amber eyes, bottom-left powerful giant badger with black-white striped face, bottom-right unused calm forest background. Chest and head portraits, distinct natural anatomy, soft painted woodland backgrounds. Each wholly contained in its own cell."
+    },
+    {
+      "id": "fix-spider",
+      "kind": "fix",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of a large hairy brown giant spider matching the reference creature with eight legs and two body sections. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (forward fanged bite lunge); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. IMPORTANT FIX: eight readable legs, four near legs lighter, four far legs darker and slightly shorter, clearly separated negative space between limbs, avoid crossings especially walking and attacks. Preserve recognizable body colors/proportions of reference. Overall image landscape ratio 4:3.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/public/assets/sprites/monster-giant-spider.png"
+      ]
+    },
+    {
+      "id": "fix-ogre",
+      "kind": "fix",
+      "prompt": "Create an original production fantasy tactical game animation atlas on fully TRANSPARENT background. Detailed 2D fantasy miniature, dark crisp outlines, warm torchlight highlights and earthy colors. EXACT FOUR COLUMNS by THREE ROWS equal square cells, no lettering, labels, grid lines, logos or religious symbols. Eleven isolated full body poses of a massive bald broad grey-tan ogre in crude hides, matching the provided ogre reference, wielding huge studded wooden club. Face RIGHT throughout, side three-quarter view. Reading order row0: idle, breathing idle, walk left-foot-forward, walk passing; row1: walk right-foot-forward, walk opposite passing, attack anticipation, attack strike (club SLAMS sharply forward and low); row2: distinctly different attack recovery, hit recoil, lying defeated, EMPTY spare cell. Every pose whole and isolated with at least 12% transparent margin. No contact with neighboring poses. No cast shadows outside feet. Clearly alternating walk legs, consistent costume/anatomy/equipment, complete visible weapon in EVERY pose. IMPORTANT FIX: club visible OUTSIDE body silhouette in every walk pose. Attack anticipation club raised high, strike club touching ground forward, recovery club drawn back diagonally while ogre returns upright: three obviously different silhouettes. Preserve reference anatomy/costume. Overall image landscape ratio 4:3.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/public/assets/sprites/monster-ogre.png"
+      ]
+    },
+    {
+      "id": "forest-tiles",
+      "kind": "tiles",
+      "prompt": "Original top-down 2D tactical fantasy FOREST FLOOR tiles atlas. Detailed painted textures matching warm brown earth and muted green forest of reference. EXACT THREE columns TWO rows equal square cells, NO borders, grid lines, lettering, or logos. Row0 three very similar quiet open-earth floor variants: brown packed woodland earth, fine grit and sparse tiny leaf flecks. Every floor cell's entire outer band is SAME unobstructed brown earth at same brightness, seamless continuous texture to edges; NO roots, vines, rocks, leaf wreaths or dark frames near edges. Row1 left: clearly tall tree trunk and green canopy obstacle centered against earth. Row1 middle: pale tangled low brambles difficult terrain centered against earth. Row1 right: unused plain earth. Keep floor three variants close in value, obstacles distinct. Overall landscape3:2.",
+      "refs": [
+        "/workspace/oathkeepers-dnd/packages/web/public/assets/sprites/tiles-forest.png"
+      ]
+    },
+    {
+      "id": "forest-props",
+      "kind": "props",
+      "prompt": "Original painted 2D fantasy tactical map decoration sprite atlas, top-down slight three-quarter view, warm earthy palette, crisp dark outlines, fully TRANSPARENT background. EXACT 2 by 2 equal square cells, four isolated decorations with ample clear margin. Top-left fallen mossy log; top-right old tree stump; bottom-left rounded mossy boulder; bottom-right green fern clump. No floor, no scenery, no lettering, no logos. Each entirely inside its own square cell with nothing touching another."
+    }
+  ]
+}
