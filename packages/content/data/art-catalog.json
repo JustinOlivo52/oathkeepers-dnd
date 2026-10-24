@@ -4770,5 +4770,385 @@
     "integrationStatus": "pending",
     "source": "codex-imagegen",
     "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-heal",
+    "kind": "vfx",
+    "title": "Heal",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-heal.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-bless",
+    "kind": "vfx",
+    "title": "Bless",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-bless.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-shield-of-faith",
+    "kind": "vfx",
+    "title": "Shield Of Faith",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-shield-of-faith.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-hold",
+    "kind": "vfx",
+    "title": "Hold",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-hold.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-teleport",
+    "kind": "vfx",
+    "title": "Teleport",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-teleport.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-shatter",
+    "kind": "vfx",
+    "title": "Shatter",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-shatter.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-acid-splash",
+    "kind": "vfx",
+    "title": "Acid Splash",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-acid-splash.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-burning-hands",
+    "kind": "vfx",
+    "title": "Burning Hands",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-burning-hands.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-thunderwave",
+    "kind": "vfx",
+    "title": "Thunderwave",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-thunderwave.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-entangle",
+    "kind": "vfx",
+    "title": "Entangle",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-entangle.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-fireball",
+    "kind": "vfx",
+    "title": "Fireball",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-fireball.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-lightning-bolt",
+    "kind": "vfx",
+    "title": "Lightning Bolt",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-lightning-bolt.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-spirit-guardians",
+    "kind": "vfx",
+    "title": "Spirit Guardians",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-spirit-guardians.png",
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "frames": 8,
+      "fps": 16,
+      "role": "area"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-command",
+    "kind": "vfx",
+    "title": "Command",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-command.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-heroism",
+    "kind": "vfx",
+    "title": "Heroism",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-heroism.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-divine-favor",
+    "kind": "vfx",
+    "title": "Divine Favor",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-divine-favor.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-thunderous-smite",
+    "kind": "vfx",
+    "title": "Thunderous Smite",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-thunderous-smite.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-searing-smite",
+    "kind": "vfx",
+    "title": "Searing Smite",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-searing-smite.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-wrathful-smite",
+    "kind": "vfx",
+    "title": "Wrathful Smite",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-wrathful-smite.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "vfx-aid",
+    "kind": "vfx",
+    "title": "Aid",
+    "tags": [],
+    "vfx": {
+      "file": "sprites/vfx/vfx-aid.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "frames": 8,
+      "fps": 16,
+      "role": "impact"
+    },
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
   }
 ]

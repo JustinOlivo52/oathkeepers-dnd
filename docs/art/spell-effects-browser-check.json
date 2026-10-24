@@ -1,28 +1,24 @@
 {
   "passed": true,
-  "expected": 20,
-  "loaded": 20,
+  "expected": 40,
+  "loaded": 40,
   "errors": [],
   "framesDrawn": {
+    "vfx-fire-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
     "vfx-fire": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
-    ],
-    "vfx-cold": [
-      3,
+      4,
       5,
       6,
-      7,
-      0,
-      1,
-      2,
-      4
+      7
     ],
     "vfx-cold-projectile": [
       3,
@@ -30,7 +26,17 @@
       1,
       2
     ],
-    "vfx-fire-projectile": [
+    "vfx-lightning": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-acid-projectile": [
       3,
       0,
       1,
@@ -42,31 +48,25 @@
       1,
       2
     ],
-    "vfx-lightning": [
+    "vfx-cold": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
-    ],
-    "vfx-acid-projectile": [
-      3,
-      0,
-      1,
-      2
+      4,
+      5,
+      6,
+      7
     ],
     "vfx-acid": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
+      4,
+      5,
+      6,
+      7
     ],
     "vfx-poison-projectile": [
       3,
@@ -82,31 +82,41 @@
     ],
     "vfx-poison": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
+      4,
+      5,
+      6,
+      7
     ],
     "vfx-necrotic": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
+      4,
+      5,
+      6,
+      7
     ],
-    "vfx-force-projectile": [
+    "vfx-radiant-projectile": [
       3,
       0,
       1,
       2
     ],
-    "vfx-radiant-projectile": [
+    "vfx-radiant": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-force-projectile": [
       3,
       0,
       1,
@@ -118,25 +128,15 @@
       1,
       2
     ],
-    "vfx-radiant": [
-      3,
-      5,
-      6,
-      7,
-      0,
-      1,
-      2,
-      4
-    ],
     "vfx-force": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
+      4,
+      5,
+      6,
+      7
     ],
     "vfx-psychic-projectile": [
       3,
@@ -146,28 +146,228 @@
     ],
     "vfx-thunder": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-heal": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-shield-of-faith": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
     ],
     "vfx-psychic": [
       3,
-      5,
-      6,
-      7,
       0,
       1,
       2,
-      4
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-bless": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-shatter": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-hold": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-teleport": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-thunderwave": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-acid-splash": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-burning-hands": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-fireball": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-entangle": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-spirit-guardians": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-heroism": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-command": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-lightning-bolt": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-divine-favor": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-thunderous-smite": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-searing-smite": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-wrathful-smite": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-aid": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
     ]
   },
   "phaser": {
-    "textures": 20,
-    "animated": 20,
+    "textures": 40,
+    "animated": 40,
     "loadErrors": []
   },
   "mobileOverflow": false,

@@ -112,11 +112,28 @@ Artifacts: `spell-effects-export-report.json`, `spell-effects-audit.json`,
 `spell-effects-browser-check.json`, all in `docs/art/`. Source scripts remain in
 `packages/web/art/codex/completion/`. Catalog art-ready; integration pending.
 
+## Spell animation checkpoint 2 — 40/50 exports
+
+Added healing, blessing, shielding, restraint, teleport, control, courage, weapon
+buff and smite animations, plus all eight planned area effects. The contact-sheet
+review found neighbor fragments when assuming an equal generated grid. Corrected
+with explicit row/column crop boundaries in `vfx-source-lock.json`; each row uses
+a shared canvas scale so different crop widths do not change the animation scale.
+No illustrations regenerated. Checkpoint 1 outputs remain unchanged.
+
+Reproduce: `python3 packages/web/art/codex/completion/export-vfx.py --batch 2`.
+Audit: `python3 packages/web/art/codex/completion/audit-vfx.py --expected 40`.
+All 40 sheets / 280 frames passed the independent audit. The viewer and Phaser
+playback checks cover all 40, with dark/light review and no mobile overflow.
+Project validation: 270 tests passed, 1 skipped; TypeScript and build passed,
+with the existing bundle advisory. Runtime battle integration remains pending.
+
 ## Resume here
 
-Current total: **40/40 icons exported; 20/50 VFX sheets exported**.
-Next: export batch 2 (effects 21–40), then batch 3 (41–50), audit and run the browser
-review after each. All source atlases exist; do not regenerate them.
-Keep code fallbacks and readiness gates. Final acceptance still needs real battle
-review, including cone/line orientation, Chromatic Orb damage selection, ongoing
-Spirit Guardians and Vampiric Touch's combined damage/heal behavior.
+Current total: **40/40 icons exported; 40/50 VFX sheets exported**.
+Next: export batch 3 (41–50), then audit and run browser review. All source atlases
+exist; do not regenerate them. The final two rows in effects-12 use explicit taller
+bounds instead of the nominal four-row grid. Preserve all earlier outputs.
+Final battle acceptance still needs cone/line placement and orientation, Chromatic
+Orb's damage selection, Spirit Guardians' ongoing area and Vampiric Touch's
+combined damage/heal presentation. Keep code fallbacks and readiness gates.

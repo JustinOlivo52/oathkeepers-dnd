@@ -21,9 +21,10 @@ PROJECTILE_PHASES = [1, 2, 3, 4]
 FADE = [0.25, 0.60, 0.90, 1.0, 0.85, 0.55, 0.25, 0.04]
 
 
-def frame_from_cell(atlas, row, phase, size, gain):
-    box = (round(phase*atlas.width/8), round(row*atlas.height/4),
-           round((phase+1)*atlas.width/8), round((row+1)*atlas.height/4))
+def frame_from_cell(atlas, row, phase, size, gain, row_bounds=None, column_bounds=None):
+    top, bottom = row_bounds or (round(row*atlas.height/4),round((row+1)*atlas.height/4))
+    left,right = (column_bounds[phase],column_bounds[phase+1]) if column_bounds else (round(phase*atlas.width/8),round((phase+1)*atlas.width/8))
+    box = (left,top,right,bottom)
     cell = atlas.crop(box)
     pixels = np.array(cell)
     # Soft edge window isolates neighboring atlas glows, without a hard crop seam.
@@ -36,10 +37,19 @@ def frame_from_cell(atlas, row, phase, size, gain):
     alpha[alpha < 8] = 0  # Discard almost invisible atlas noise.
     pixels[:, :, 3] = np.rint(alpha*window*gain).astype(np.uint8)
     cell = Image.fromarray(pixels)
+    if column_bounds:
+        # Shared row canvas prevents variable crop widths from rescaling poses.
+        canvas_size=max(bottom-top,max(b-a for a,b in zip(column_bounds,column_bounds[1:])))
+        canvas=Image.new('RGBA',(canvas_size,canvas_size))
+        canvas.paste(cell,((canvas_size-cell.width)//2,(canvas_size-cell.height)//2))
+        cell=canvas
     inset = {64: 6, 192: 16, 384: 32}[size]
-    cell = cell.resize((size-2*inset, size-2*inset), Image.Resampling.LANCZOS)
+    if row_bounds:
+        cell.thumbnail((size-2*inset,size-2*inset),Image.Resampling.LANCZOS)
+    else:
+        cell = cell.resize((size-2*inset, size-2*inset), Image.Resampling.LANCZOS)
     out = Image.new('RGBA', (size, size))
-    out.alpha_composite(cell, (inset, inset))
+    out.alpha_composite(cell, ((size-cell.width)//2,(size-cell.height)//2))
     return out, box
 
 
@@ -89,7 +99,11 @@ def main():
             sheet = Image.new('RGBA',(len(phases)*size,size))
             frame_reports = []
             for i, phase in enumerate(phases):
-                frame, box = frame_from_cell(atlas,row,phase,size,1 if role=='projectile' else FADE[i])
+                row_bounds = LOCK[job['id']].get('rowBounds')
+                column_bounds = LOCK[job['id']].get('columnBounds')
+                frame, box = frame_from_cell(atlas,row,phase,size,1 if role=='projectile' else FADE[i],
+                                            row_bounds[row] if row_bounds else None,
+                                            column_bounds[row] if column_bounds else None)
                 bbox = frame.getbbox()
                 assert bbox and min(bbox[:2])>0 and max(bbox[2:])<size, (asset_id,i,bbox)
                 assert frame.getchannel('A').getextrema()[0]==0, (asset_id,i)
