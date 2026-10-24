@@ -1,0 +1,146 @@
+{
+  "source": "packages/web/art/codex/source/completion/icons-0.png",
+  "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88",
+  "icons": [
+    {
+      "id": "icon-chill-touch",
+      "image": "library/icons/icon-chill-touch.png",
+      "sourceCrop": [
+        31,
+        272,
+        280,
+        518
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9356,
+      "sha256": "92e56b1120fcd759105b810c44a1e5a4cf35c5fe0ea611d467f451569b791d97"
+    },
+    {
+      "id": "icon-poison-spray",
+      "image": "library/icons/icon-poison-spray.png",
+      "sourceCrop": [
+        303,
+        272,
+        551,
+        519
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9214,
+      "sha256": "91712a59d3d0fb2693f47f0311fd75197e75836a1a8113bb399f24cfae3f184e"
+    },
+    {
+      "id": "icon-eldritch-blast",
+      "image": "library/icons/icon-eldritch-blast.png",
+      "sourceCrop": [
+        570,
+        272,
+        821,
+        518
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8942,
+      "sha256": "9ad06fd027e60c69fff0f08b0e395689e6ec8b65245a7a09b199a6c55abf210c"
+    },
+    {
+      "id": "icon-sacred-flame",
+      "image": "library/icons/icon-sacred-flame.png",
+      "sourceCrop": [
+        843,
+        272,
+        1092,
+        519
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8316,
+      "sha256": "8e26b771284c7534e627ca4363b40b11e770137dd3ac7cc4b221f8377e49814b"
+    },
+    {
+      "id": "icon-produce-flame",
+      "image": "library/icons/icon-produce-flame.png",
+      "sourceCrop": [
+        31,
+        532,
+        280,
+        779
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8548,
+      "sha256": "4894b98522c184d5c42f76dc536f0c0a40c0c44b7d74316262ea6bec49309fd6"
+    },
+    {
+      "id": "icon-vicious-mockery",
+      "image": "library/icons/icon-vicious-mockery.png",
+      "sourceCrop": [
+        303,
+        532,
+        551,
+        779
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9467,
+      "sha256": "c9b5e17b75ff4a628e398d387cb5cfdbee9176e271202968a0165d479ca8303e"
+    },
+    {
+      "id": "icon-magic-missile",
+      "image": "library/icons/icon-magic-missile.png",
+      "sourceCrop": [
+        570,
+        532,
+        821,
+        779
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8470,
+      "sha256": "dd7cd57076797d856e82c54a1b6f6e8d32dc7733f538694e64cf9920d25bc592"
+    },
+    {
+      "id": "icon-burning-hands",
+      "image": "library/icons/icon-burning-hands.png",
+      "sourceCrop": [
+        843,
+        532,
+        1093,
+        779
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9149,
+      "sha256": "d2e5d2e4cb6c8b8d915915fa55a682bb91671b2d5a4523de539c0ae6dc4bb67f"
+    },
+    {
+      "id": "icon-thunderwave",
+      "image": "library/icons/icon-thunderwave.png",
+      "sourceCrop": [
+        30,
+        792,
+        279,
+        1043
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9988,
+      "sha256": "142b79e5b4f19f9c5b09370bd1698340d552fce56a4e6cd29c9a24fa4d0e2acd"
+    },
+    {
+      "id": "icon-guiding-bolt",
+      "image": "library/icons/icon-guiding-bolt.png",
+      "sourceCrop": [
+        303,
+        792,
+        551,
+        1043
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8278,
+      "sha256": "7e68fd95117f4e910d43baccc134cd8bf8519a497669ac65eef53f2389ecdaae"
+    }
+  ]
+}

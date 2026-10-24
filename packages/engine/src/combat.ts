@@ -476,6 +476,7 @@ export class Combat {
       targetAc: ac,
       hit,
       critical,
+      ...(attack.spell ? { damageType: attack.damageType } : {}),
     });
 
     const mastery = attacker.features.includes("weapon-mastery") ? attack.mastery : undefined;
@@ -537,9 +538,9 @@ export class Combat {
   }
 
   /** Damage from an attack, then a concentration check if the target was holding a spell. */
-  private dealDamage(attacker: Creature, target: Creature, amount: number, type: Attack["damageType"], dice?: ReturnType<typeof roll>, critical = false): void {
+  private dealDamage(attacker: Creature, target: Creature, amount: number, type: Attack["damageType"], dice?: ReturnType<typeof roll>, critical = false, spellId?: string): void {
     if (target.dead) return;
-    const dealt = applyDamage(this.log, target, amount, type, { sourceId: attacker.id, ...(dice ? { roll: dice } : {}), critical, rng: this.rng });
+    const dealt = applyDamage(this.log, target, amount, type, { sourceId: attacker.id, ...(dice ? { roll: dice } : {}), ...(spellId ? { spellId } : {}), critical, rng: this.rng });
     if (dealt > 0) this.checkConcentration(target, dealt);
     if (dealt > 0 && this.hasEffect(target, TURNED)) this.endEffect(target, TURNED);
     if (!isConscious(target) && this.hasEffect(target, RAGING)) this.endEffect(target, RAGING);
@@ -1273,7 +1274,7 @@ export class Combat {
           const { hit } = this.resolveAttack(c, t, attack, check, { ...(empower ? { empower } : {}), ...(meta.has("seeking") ? { seeking: true } : {}) });
           if (hit) this.spellRider(c, t, spell);
           if (hit && spell.pushFt) this.push(t, c, spell.pushFt);
-          if (hit && spell.effect === "vampiric") heal(this.log, c, Math.floor(Math.max(0, hpBefore - t.hp) / 2));
+          if (hit && spell.effect === "vampiric") heal(this.log, c, Math.floor(Math.max(0, hpBefore - t.hp) / 2), undefined, spell.id);
           this.checkVictory();
         }
       }
@@ -1805,7 +1806,7 @@ export class Combat {
         if (!spell?.damage) continue;
         const r = roll(this.rng, upcast(spell.damage.dice, spell.damage.perSlot, aura.value ?? 0));
         const saved = this.save(c, "wis", aura.dc ?? spell.saveDc).success;
-        this.dealDamage(g, c, saved ? Math.floor(r.total / 2) : r.total, "radiant", r);
+        this.dealDamage(g, c, saved ? Math.floor(r.total / 2) : r.total, "radiant", r, false, spell.id);
         this.checkVictory();
       }
       if (this.hasEffect(c, TURNED) && isConscious(c)) {

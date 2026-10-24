@@ -106,6 +106,7 @@ describe("level 3 spells", () => {
     combat.castSpell("c", "spirit-guardians");
     goTo(combat, "near");
     expect(combat.get("near").hp).toBeLessThan(80);
+    expect(combat.log.ofType("damage").find(e=>e.targetId==="near")).toMatchObject({spellId:"spirit-guardians",damageType:"radiant"});
     goTo(combat, "far");
     expect(combat.get("far").hp).toBe(80);
   });
@@ -116,5 +117,14 @@ describe("level 3 spells", () => {
     const combat = battle([hero("c", 1, 1, { spells: [rev], resources: slots() }), fallen, foe("orc", 10, 6)]);
     combat.castSpell("c", "revivify", { targetIds: ["dead"] });
     expect(fallen).toMatchObject({ dead: false, hp: 1 });
+  });
+
+  it("logs Vampiric Touch's actual healing separately from its melee spell hit", () => {
+    const touch=spell({id:"vampiric-touch",rangeFt:5,target:"enemy",attack:"melee",damage:{dice:"3d6",type:"necrotic"},effect:"vampiric",concentration:true});
+    const combat=battle([hero("w",1,1,{hp:10,spells:[touch],resources:slots()}),foe("target",2,1)]);
+    combat.castSpell("w","vampiric-touch",{targetIds:["target"]});
+    const damage=combat.log.ofType("damage").find(e=>e.targetId==="target")!;
+    expect(combat.log.ofType("attack").find(e=>e.attackId==="vampiric-touch")).toMatchObject({damageType:"necrotic",hit:true});
+    expect(combat.log.ofType("heal").find(e=>e.targetId==="w")).toMatchObject({spellId:"vampiric-touch",amount:Math.floor(damage.amount/2)});
   });
 });

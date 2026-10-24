@@ -1,0 +1,861 @@
+{
+  "passed": true,
+  "effects": 50,
+  "frames": 348,
+  "integrationReady": 50,
+  "roles": {
+    "projectile": 13,
+    "impact": 29,
+    "area": 8
+  },
+  "results": [
+    {
+      "id": "vfx-fire-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 12553,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        81620,
+        140721,
+        222932,
+        158752
+      ]
+    },
+    {
+      "id": "vfx-fire",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 163414,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        54200,
+        408853,
+        1243989,
+        2543350,
+        1586552,
+        691849,
+        234190,
+        23299
+      ]
+    },
+    {
+      "id": "vfx-cold-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 13939,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        82786,
+        139369,
+        229171,
+        149470
+      ]
+    },
+    {
+      "id": "vfx-cold",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 203348,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        94207,
+        491572,
+        1480526,
+        2810613,
+        1785396,
+        967730,
+        383385,
+        38211
+      ]
+    },
+    {
+      "id": "vfx-lightning-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 6586,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        30447,
+        44415,
+        55782,
+        67153
+      ]
+    },
+    {
+      "id": "vfx-lightning",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 123545,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        64143,
+        312759,
+        774265,
+        1223413,
+        820954,
+        344164,
+        100588,
+        4843
+      ]
+    },
+    {
+      "id": "vfx-acid-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 7383,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        41465,
+        61692,
+        89229,
+        106035
+      ]
+    },
+    {
+      "id": "vfx-acid",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 99880,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        38624,
+        270525,
+        741499,
+        1335465,
+        797235,
+        376587,
+        93516,
+        3996
+      ]
+    },
+    {
+      "id": "vfx-poison-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 11550,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        63064,
+        107542,
+        160893,
+        101728
+      ]
+    },
+    {
+      "id": "vfx-poison",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 173782,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        35862,
+        382369,
+        1242419,
+        2275346,
+        1083494,
+        460638,
+        74169,
+        1478
+      ]
+    },
+    {
+      "id": "vfx-necrotic-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 13429,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        64369,
+        132635,
+        210243,
+        119924
+      ]
+    },
+    {
+      "id": "vfx-necrotic",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 178364,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        51512,
+        474864,
+        1547206,
+        2684325,
+        1376675,
+        454721,
+        74925,
+        2542
+      ]
+    },
+    {
+      "id": "vfx-radiant-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 11873,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        50974,
+        78410,
+        144415,
+        70182
+      ]
+    },
+    {
+      "id": "vfx-radiant",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 224782,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        48585,
+        410969,
+        1336913,
+        2551293,
+        1242824,
+        512727,
+        134700,
+        2334
+      ]
+    },
+    {
+      "id": "vfx-force-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 15683,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        68867,
+        111450,
+        236973,
+        99491
+      ]
+    },
+    {
+      "id": "vfx-force",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 252290,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        65057,
+        738754,
+        1956367,
+        3463905,
+        1714315,
+        858946,
+        162200,
+        4579
+      ]
+    },
+    {
+      "id": "vfx-thunder-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 13012,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        58316,
+        141792,
+        219261,
+        127770
+      ]
+    },
+    {
+      "id": "vfx-thunder",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 199712,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        32188,
+        347954,
+        1434761,
+        3131064,
+        1284001,
+        436862,
+        44599,
+        268
+      ]
+    },
+    {
+      "id": "vfx-psychic-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 14915,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        63595,
+        150247,
+        242180,
+        145922
+      ]
+    },
+    {
+      "id": "vfx-psychic",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 220310,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        43674,
+        442537,
+        1730835,
+        3513201,
+        1834731,
+        629741,
+        89520,
+        392
+      ]
+    },
+    {
+      "id": "vfx-heal",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 114573,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        19754,
+        176525,
+        749051,
+        1756193,
+        845421,
+        289112,
+        43735,
+        1951
+      ]
+    },
+    {
+      "id": "vfx-bless",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 150589,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        26444,
+        167960,
+        918160,
+        1912108,
+        1106605,
+        273700,
+        48712,
+        1782
+      ]
+    },
+    {
+      "id": "vfx-shield-of-faith",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 110997,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        10799,
+        141073,
+        670785,
+        1588954,
+        876566,
+        244919,
+        43688,
+        1572
+      ]
+    },
+    {
+      "id": "vfx-hold",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 166746,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        25083,
+        290374,
+        929694,
+        2953056,
+        1174358,
+        406970,
+        77584,
+        3760
+      ]
+    },
+    {
+      "id": "vfx-teleport",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 104112,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        27694,
+        250407,
+        865268,
+        1853802,
+        1110214,
+        359443,
+        66801,
+        3529
+      ]
+    },
+    {
+      "id": "vfx-shatter",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 337107,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        78933,
+        785418,
+        2555311,
+        5348162,
+        1940740,
+        1003220,
+        134209,
+        6447
+      ]
+    },
+    {
+      "id": "vfx-acid-splash",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 284046,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        62330,
+        856606,
+        2877409,
+        7262972,
+        2337149,
+        917914,
+        73704,
+        3941
+      ]
+    },
+    {
+      "id": "vfx-burning-hands",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 324046,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        48484,
+        795439,
+        3807198,
+        6942179,
+        2398882,
+        940289,
+        181740,
+        5369
+      ]
+    },
+    {
+      "id": "vfx-thunderwave",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 322583,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        39242,
+        482460,
+        2379156,
+        5729015,
+        3098062,
+        738012,
+        78660,
+        359
+      ]
+    },
+    {
+      "id": "vfx-entangle",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 346780,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        66307,
+        866975,
+        3076703,
+        6429671,
+        3082896,
+        928060,
+        129251,
+        4190
+      ]
+    },
+    {
+      "id": "vfx-fireball",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 364304,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        33955,
+        559330,
+        2899365,
+        8026450,
+        3284418,
+        1113468,
+        118264,
+        5468
+      ]
+    },
+    {
+      "id": "vfx-lightning-bolt",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 211719,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        83623,
+        473979,
+        1608529,
+        3052245,
+        1617533,
+        529603,
+        78118,
+        975
+      ]
+    },
+    {
+      "id": "vfx-spirit-guardians",
+      "role": "area",
+      "frames": 8,
+      "size": 384,
+      "bytes": 348264,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        63785,
+        599926,
+        2279856,
+        4529969,
+        2264321,
+        690920,
+        82100,
+        2474
+      ]
+    },
+    {
+      "id": "vfx-command",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 119433,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        6707,
+        126364,
+        598719,
+        1567392,
+        689305,
+        239980,
+        44634,
+        2646
+      ]
+    },
+    {
+      "id": "vfx-heroism",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 170635,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        39043,
+        477420,
+        1402013,
+        2577295,
+        1151047,
+        473874,
+        80153,
+        3420
+      ]
+    },
+    {
+      "id": "vfx-divine-favor",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 119144,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        21216,
+        251474,
+        821740,
+        1838195,
+        722055,
+        271495,
+        39136,
+        2189
+      ]
+    },
+    {
+      "id": "vfx-thunderous-smite",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 115473,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        8374,
+        133916,
+        658753,
+        1871898,
+        1006820,
+        421880,
+        95094,
+        2372
+      ]
+    },
+    {
+      "id": "vfx-searing-smite",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 150618,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        15032,
+        226871,
+        1007856,
+        2143779,
+        1127825,
+        433208,
+        52357,
+        1602
+      ]
+    },
+    {
+      "id": "vfx-wrathful-smite",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 158597,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        19258,
+        223960,
+        1059521,
+        2375629,
+        1252395,
+        426283,
+        53939,
+        796
+      ]
+    },
+    {
+      "id": "vfx-aid",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 118735,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        13219,
+        106973,
+        575962,
+        1224773,
+        604388,
+        184133,
+        22758,
+        704
+      ]
+    },
+    {
+      "id": "vfx-lesser-restoration",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 172023,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        40142,
+        422085,
+        1328712,
+        2526551,
+        1176450,
+        333956,
+        56009,
+        401
+      ]
+    },
+    {
+      "id": "vfx-revivify",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 123731,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        20241,
+        192030,
+        628171,
+        1331615,
+        504776,
+        147460,
+        32464,
+        367
+      ]
+    },
+    {
+      "id": "vfx-vampiric-touch",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 171352,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        51590,
+        317154,
+        1394458,
+        2766535,
+        1063442,
+        372480,
+        80805,
+        3848
+      ]
+    },
+    {
+      "id": "vfx-magic-missile-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 7653,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        30615,
+        53674,
+        103964,
+        47531
+      ]
+    },
+    {
+      "id": "vfx-eldritch-blast-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 8949,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        36623,
+        60828,
+        107780,
+        73955
+      ]
+    },
+    {
+      "id": "vfx-scorching-ray-projectile",
+      "role": "projectile",
+      "frames": 4,
+      "size": 64,
+      "bytes": 9643,
+      "uniqueFrames": 4,
+      "alphaMass": [
+        42812,
+        82311,
+        125660,
+        78140
+      ]
+    },
+    {
+      "id": "vfx-sacred-flame",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 131343,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        51155,
+        374126,
+        963734,
+        1765792,
+        947974,
+        350784,
+        56369,
+        2150
+      ]
+    },
+    {
+      "id": "vfx-guiding-bolt",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 117036,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        13768,
+        163979,
+        554281,
+        1708929,
+        671859,
+        200199,
+        55945,
+        2354
+      ]
+    },
+    {
+      "id": "vfx-spiritual-weapon",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 169214,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        46845,
+        404295,
+        1275851,
+        2579096,
+        1178101,
+        425349,
+        77921,
+        1662
+      ]
+    },
+    {
+      "id": "vfx-vicious-mockery",
+      "role": "impact",
+      "frames": 8,
+      "size": 192,
+      "bytes": 178542,
+      "uniqueFrames": 8,
+      "alphaMass": [
+        34246,
+        322650,
+        1194867,
+        2751451,
+        1475346,
+        560963,
+        94377,
+        3434
+      ]
+    }
+  ]
+}

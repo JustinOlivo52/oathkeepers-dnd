@@ -892,6 +892,21 @@ No live image-generation API, provider credential, spending approval, catalog im
 
 ## Artwork remaining and Claude handoff
 
+**Spell production checkpoint, 2026-10-24:** [PR #4](https://github.com/JustinOlivo52/oathkeepers-dnd/pull/4)
+now preserves **all 40 spell icons and all 50 spell animation sheets (348 frames)**,
+exported from the saved originals. The older spell-production counts and unchecked
+spell boxes below are superseded: **do not regenerate these assets**. Use
+[current spell notes and resume instructions](art/CODEX_NOTES_SPELLS.md),
+[animation viewer](art/spell-effects.html), and the export/audit/browser reports in
+`docs/art/`. All 50 sheets passed the independent audit and Phaser playback check.
+The production battle scene also passed 61 deterministic engine-driven scenarios,
+covering all 50 animations and all 40 spell-button icons. Directional placement,
+damage-type routing, aura lifecycle, healing feedback and weapon-rider effects
+are integrated; the 90 spell-art entries are marked integration-ready. See
+`docs/art/spell-battle-check.json` and the accompanying battle screenshots.
+Verify actual files and catalog entries before treating any
+older checklist item as missing artwork.
+
 Updated 2026-10-24. This is the current artwork checklist; older trial/pilot notes below are historical. Use the linked briefs for visual designs, tags and export instructions. This review separates delivered files, missing production and Claude integration. New companion portraits are being delivered on `art/library-batch-2`; no gameplay readiness is promoted.
 
 ### Review evidence and current inventory

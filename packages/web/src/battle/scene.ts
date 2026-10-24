@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { key, type Creature, type GridMap, type LoggedEvent, type Point } from "@oathkeepers/engine";
+import { key, type Creature, type GridMap, type LoggedEvent, type Point, type SpellDef } from "@oathkeepers/engine";
+import { areaArtPlacement } from "./spell-art";
 
 /** One square is still 5 ft. Art resolution is independent of rules coordinates. */
 export const TILE = 96;
@@ -92,6 +93,8 @@ const TEXT_STYLE = { fontFamily: "system-ui, sans-serif", fontSize: "18px", font
 /** Draws the map and creatures, and plays engine log events as animations. Holds no game rules. */
 export class BattleScene extends Phaser.Scene {
   private tokens = new Map<string, Token>();
+  private guardianAuras = new Map<string, Phaser.GameObjects.Sprite>();
+  private teleporting = new Set<string>();
   private overlay!: Phaser.GameObjects.Graphics;
   private ready!: () => void;
   private panStart?: { x: number; y: number; scrollX: number; scrollY: number };
@@ -141,6 +144,7 @@ export class BattleScene extends Phaser.Scene {
     this.drawMap();
     this.overlay = this.add.graphics().setDepth(1);
     for (const c of this.creatures) this.addToken(c);
+    this.syncGuardianAuras();
 
     const camera = this.cameras.main;
     camera.setBounds(0, 0, this.map.width * TILE, this.map.height * TILE);
@@ -318,7 +322,35 @@ export class BattleScene extends Phaser.Scene {
   /** Play log events in order. Resolves when the last animation finishes. */
   async play(events: LoggedEvent[]): Promise<void> {
     for (const e of events) await this.playOne(e);
+    this.syncGuardianAuras();
     for (const t of this.tokens.values()) this.drawHp(t);
+  }
+
+  update(): void {
+    for (const [id,aura] of this.guardianAuras) {
+      const t=this.tokens.get(id);
+      if (t) aura.setPosition(t.sprite.x,t.sprite.y-(t.sheet.footprint/2-.22)*TILE);
+    }
+  }
+
+  private startGuardianAura(t: Token): boolean {
+    if (this.guardianAuras.has(t.creature.id)) return true;
+    const art=this.effectFor(["spirit-guardians"],"area");
+    if (!art) return false;
+    const diameter=(6+t.sheet.footprint)*TILE;
+    const aura=this.add.sprite(t.sprite.x,t.sprite.y-(t.sheet.footprint/2-.22)*TILE,art.key)
+      .setDepth(10).setAlpha(.45).setDisplaySize(diameter,diameter)
+      .play({key:`${art.key}:play`,repeat:-1});
+    this.guardianAuras.set(t.creature.id,aura);
+    return true;
+  }
+
+  private syncGuardianAuras(): void {
+    for (const t of this.tokens.values()) {
+      const active=t.hp>0&&!t.dead&&t.creature.effects.some(e=>e.id==="spirit-guardians");
+      if (active) this.startGuardianAura(t);
+      else { this.guardianAuras.get(t.creature.id)?.destroy();this.guardianAuras.delete(t.creature.id); }
+    }
   }
 
   private async playOne(e: LoggedEvent): Promise<void> {
@@ -326,6 +358,13 @@ export class BattleScene extends Phaser.Scene {
       case "move": {
         const t = this.tokens.get(e.creatureId)!;
         t.hpBar.clear();
+        if (e.costFt===0 && this.teleporting.delete(e.creatureId) && e.path.length) {
+          const point=center(e.path[e.path.length-1]!,t.sheet.footprint);
+          t.sprite.setPosition(point.x,point.y).setDepth(1000+point.y).play(`${t.sheet.key}:idle`);
+          await Promise.all([this.tween({targets:t.sprite,alpha:1,duration:180}),this.impact("teleport","teleport",t.sprite,SPELL_COLORS.control!,.6)]);
+          this.drawHp(t);
+          return;
+        }
         t.sprite.play(`${t.sheet.key}:walk`);
         for (const step of e.path) {
           const { x, y } = center(step, t.sheet.footprint);
@@ -345,7 +384,10 @@ export class BattleScene extends Phaser.Scene {
         const ranged = Math.abs(a.sprite.x - d.sprite.x) > TILE * 1.5 || Math.abs(a.sprite.y - d.sprite.y) > TILE * 1.5;
         a.sprite.play(`${a.sheet.key}:attack`);
         const spell = attack ? undefined : a.creature.spells?.find((x) => x.id === e.attackId);
-        if (spell) await this.spellShot(spell, a.sprite, d.sprite);
+        if (spell) {
+          const resolved=e.damageType&&spell.damage?{...spell,damage:{...spell.damage,type:e.damageType}}:spell;
+          await this.spellShot(resolved,a.sprite,d.sprite,undefined,e.hit);
+        }
         else if (ranged) await this.projectile(a.sprite, d.sprite, attack?.kind === "ranged" ? 0xd9c7a0 : 0xb0b8c0);
         else await this.lunge(a.sprite, d.sprite);
         this.float(d.sprite, e.critical ? "CRIT!" : e.hit ? `${e.roll.total}` : "Miss", e.critical ? "#ffd84a" : e.hit ? "#ffffff" : "#bbbbbb", -18);
@@ -354,6 +396,7 @@ export class BattleScene extends Phaser.Scene {
       }
       case "damage": {
         const t = this.tokens.get(e.targetId)!;
+        if (e.spellId === "spirit-guardians") await this.impact(e.spellId,e.damageType,t.sprite,SPELL_COLORS[e.damageType]??0xffe9a0,.6);
         t.hp = e.hpAfter;
         if (t.hp > 0) t.sprite.play(`${t.sheet.key}:hit`).once("animationcomplete", () => t.sprite.play(`${t.sheet.key}:idle`));
         t.sprite.setTint(0xff6060);
@@ -365,6 +408,7 @@ export class BattleScene extends Phaser.Scene {
       }
       case "heal": {
         const t = this.tokens.get(e.targetId)!;
+        if (e.spellId === "vampiric-touch" && e.amount>0) await this.impact("heal","heal",t.sprite,SPELL_COLORS.heal!,.6);
         t.hp = e.hpAfter;
         this.float(t.sprite, `+${e.amount}`, "#7fe08a", 0);
         this.drawHp(t);
@@ -416,13 +460,18 @@ export class BattleScene extends Phaser.Scene {
         this.float(caster.sprite, spell.name, "#d8c4ff", -30);
         const color = SPELL_COLORS[spell.heal ? "heal" : spell.damage?.type ?? (spell.effect === "hold" ? "control" : "buff")]!;
         if (e.area) {
-          await this.areaFlash(spell.id, spell.damage?.type, e.area, color);
+          const origin={x:caster.sprite.x,y:caster.sprite.y-(caster.sheet.footprint/2-.22)*TILE};
+          await this.areaFlash(spell.id, spell.damage?.type, e.area, color,spell.area,origin,e.point);
+          return;
+        }
+        if (spell.effect === "spirit-guardians") {
+          if (!this.startGuardianAura(caster)) await this.impact(spell.id,"radiant",caster.sprite,color);
+          else await this.wait(300);
           return;
         }
         if (spell.effect === "teleport") {
-          void this.impact(spell.id, "teleport", caster.sprite, color);
-          await this.tween({ targets: caster.sprite, alpha: 0, duration: 180 });
-          caster.sprite.setAlpha(1);
+          this.teleporting.add(e.creatureId);
+          await Promise.all([this.impact(spell.id, "teleport", caster.sprite, color),this.tween({ targets: caster.sprite, alpha: 0, duration: 180 })]);
           return;
         }
         // Attack spells animate with their attack events; everything else shows at each target here.
@@ -430,11 +479,17 @@ export class BattleScene extends Phaser.Scene {
         for (const id of e.targetIds) {
           const t = this.tokens.get(id);
           if (!t) continue;
-          if (spell.autoHit) for (let i = 0; i < (spell.hits ?? 1); i++) await this.spellShot(spell, caster.sprite, t.sprite, 160);
+          if (spell.autoHit) for (let i = 0; i < (spell.hits ?? 1)+(spell.hitsPerSlot??0)*Math.max(0,e.slotLevel-spell.level); i++) await this.spellShot(spell, caster.sprite, t.sprite, 160);
           else await this.impact(spell.id, spell.heal ? "heal" : spell.damage?.type ?? spell.effect ?? "buff", t.sprite, color);
         }
         return;
       }
+      case "concentration":
+        if (!e.kept) {this.guardianAuras.get(e.creatureId)?.destroy();this.guardianAuras.delete(e.creatureId);}
+        return;
+      case "effect_ended":
+        if (e.effectId==="spirit-guardians") {this.guardianAuras.get(e.targetId)?.destroy();this.guardianAuras.delete(e.targetId);}
+        return;
       case "action":
         this.float(this.tokens.get(e.creatureId)!.sprite, e.action[0]!.toUpperCase() + e.action.slice(1), "#9fd3ff", -30);
         await this.wait(300);
@@ -446,6 +501,11 @@ export class BattleScene extends Phaser.Scene {
       case "effect_applied":
         if (e.effectId === "sapped") this.float(this.tokens.get(e.targetId)!.sprite, "Sapped", "#d8b0ff", -30);
         return;
+      case "extra_damage": {
+        const target=this.tokens.get(e.targetId);
+        if (target && this.effectFor([e.source],"impact")) await this.impact(e.source,"radiant",target.sprite,SPELL_COLORS.radiant!,.6);
+        return;
+      }
       case "death_save":
         this.float(this.tokens.get(e.creatureId)!.sprite, `Death save ${e.roll.natural}`, e.roll.natural >= 10 ? "#cfe8ff" : "#ff9a8a", -24);
         await this.wait(500);
@@ -478,12 +538,17 @@ export class BattleScene extends Phaser.Scene {
     return undefined;
   }
 
-  private async spellShot(spell: { id: string; damage?: { type: string } }, a: Phaser.GameObjects.Sprite, d: Phaser.GameObjects.Sprite, ms?: number): Promise<void> {
+  private async spellShot(spell: Pick<SpellDef,"id"|"damage"|"attack">, a: Phaser.GameObjects.Sprite, d: Phaser.GameObjects.Sprite, ms?: number, hit=true): Promise<void> {
     const kinds = [spell.id, spell.damage?.type ?? "force"];
     const art = this.effectFor(kinds, "projectile");
     const color = SPELL_COLORS[spell.damage?.type ?? "force"] ?? 0xc28cff;
     const duration = ms ?? Math.min(450, Math.hypot(d.x - a.x, d.y - a.y) * 1.2);
     const angle = Math.atan2(d.y - a.y, d.x - a.x);
+    if (spell.attack==="melee") {
+      if (Math.hypot(d.x-a.x,d.y-a.y)<TILE*1.5) await this.lunge(a,d);
+      if (hit) await this.impact(spell.id,spell.damage?.type??"force",d,color,.6);
+      return;
+    }
     if (art) {
       const shot = this.add.sprite(a.x, a.y - 60, art.key).setDepth(4000).setRotation(angle).play(`${art.key}:play`);
       await this.tween({ targets: shot, x: d.x, y: d.y - 60, duration });
@@ -495,7 +560,7 @@ export class BattleScene extends Phaser.Scene {
       shot.destroy();
       glow.destroy();
     }
-    await this.impact(spell.id, spell.damage?.type ?? "force", d, color, 0.6);
+    if (hit) await this.impact(spell.id, spell.damage?.type ?? "force", d, color, 0.6);
   }
 
   private async impact(spellId: string, kind: string, d: Phaser.GameObjects.Sprite, color: number, scale = 1): Promise<void> {
@@ -511,20 +576,25 @@ export class BattleScene extends Phaser.Scene {
     ring.destroy();
   }
 
-  private async areaFlash(spellId: string, type: string | undefined, area: Point[], color: number): Promise<void> {
-    const xs = area.map((p) => p.x);
-    const ys = area.map((p) => p.y);
-    const cx = ((Math.min(...xs) + Math.max(...xs) + 1) / 2) * TILE;
-    const cy = ((Math.min(...ys) + Math.max(...ys) + 1) / 2) * TILE;
+  private async areaFlash(spellId: string, type: string | undefined, area: Point[], color: number, definition?: SpellDef["area"],origin?: Point,aim?: Point): Promise<void> {
+    const placement=areaArtPlacement(area,TILE,definition,origin,aim);
+    if (!placement) return;
     const art = this.effectFor([spellId, type ?? "force"], "area");
     const g = this.add.graphics().setDepth(4400);
     for (const p of area) g.fillStyle(color, 0.45).fillRect(p.x * TILE, p.y * TILE, TILE, TILE);
     const done = this.tween({ targets: g, alpha: 0, duration: 650 });
     if (art) {
-      const fx = this.add.sprite(cx, cy, art.key).setDepth(4500).play(`${art.key}:play`);
-      fx.setDisplaySize((Math.max(...xs) - Math.min(...xs) + 1) * TILE, (Math.max(...ys) - Math.min(...ys) + 1) * TILE);
+      const fx = this.add.sprite(placement.x, placement.y, art.key).setDepth(4500)
+        .setRotation(placement.rotation).setFlipX(placement.flipX)
+        .setDisplaySize(placement.width,placement.height).play(`${art.key}:play`);
+      // Never paint through walls or over squares the rules did not affect.
+      const clip=this.make.graphics({x:0,y:0},false);
+      for (const p of area) clip.fillStyle(0xffffff).fillRect(p.x*TILE,p.y*TILE,TILE,TILE);
+      fx.setMask(clip.createGeometryMask());
       await new Promise<void>((resolve) => fx.once("animationcomplete", () => resolve()));
+      fx.clearMask(true);
       fx.destroy();
+      clip.destroy();
     }
     await done;
     g.destroy();

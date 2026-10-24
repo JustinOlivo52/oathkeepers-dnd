@@ -1,0 +1,1564 @@
+{
+  "passed": true,
+  "scope": "Actual app spell panel plus production BattleScene playback of deterministic engine fixtures",
+  "cases": [
+    {
+      "id": "fire-bolt",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-fire-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-fire",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "ray-of-frost",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-cold-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-cold",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "shocking-grasp",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-lightning",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "acid-splash",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-acid-splash",
+          "rotation": 0,
+          "flipX": false,
+          "masked": true,
+          "width": 288,
+          "height": 288,
+          "x": 912,
+          "y": 624
+        }
+      ]
+    },
+    {
+      "id": "chill-touch",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-necrotic",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "poison-spray",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-poison-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-poison",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "eldritch-blast",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-eldritch-blast-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "sacred-flame",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-sacred-flame",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "produce-flame",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-fire-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-fire",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "vicious-mockery",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-vicious-mockery",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "chromatic-orb",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-cold-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-cold",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "magic-missile",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "burning-hands",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-burning-hands",
+          "rotation": 0,
+          "flipX": true,
+          "masked": true,
+          "width": 288,
+          "height": 288,
+          "x": 1008,
+          "y": 624
+        }
+      ]
+    },
+    {
+      "id": "thunderwave",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-thunderwave",
+          "rotation": 0,
+          "flipX": false,
+          "masked": true,
+          "width": 288,
+          "height": 288,
+          "x": 1008,
+          "y": 624
+        }
+      ]
+    },
+    {
+      "id": "guiding-bolt",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-radiant-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-guiding-bolt",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "inflict-wounds",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-necrotic",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "cure-wounds",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-heal",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "healing-word",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-heal",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "bless",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-bless",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "shield-of-faith",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-shield-of-faith",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "entangle",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-entangle",
+          "rotation": 0,
+          "flipX": false,
+          "masked": true,
+          "width": 384,
+          "height": 384,
+          "x": 960,
+          "y": 672
+        }
+      ]
+    },
+    {
+      "id": "command",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-command",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "heroism",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-heroism",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "divine-favor",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-divine-favor",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-divine-favor",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ],
+      "weaponRiderReviewed": true
+    },
+    {
+      "id": "thunderous-smite",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-thunderous-smite",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-thunderous-smite",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ],
+      "weaponRiderReviewed": true
+    },
+    {
+      "id": "searing-smite",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-searing-smite",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-searing-smite",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ],
+      "weaponRiderReviewed": true
+    },
+    {
+      "id": "wrathful-smite",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-wrathful-smite",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-wrathful-smite",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ],
+      "weaponRiderReviewed": true
+    },
+    {
+      "id": "aid",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-aid",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "lesser-restoration",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-lesser-restoration",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "scorching-ray",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-scorching-ray-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-fire",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-scorching-ray-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-fire",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-scorching-ray-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-fire",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "shatter",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-shatter",
+          "rotation": 0,
+          "flipX": false,
+          "masked": true,
+          "width": 480,
+          "height": 480,
+          "x": 912,
+          "y": 624
+        }
+      ]
+    },
+    {
+      "id": "hold-person",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-hold",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "misty-step",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-teleport",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-teleport",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 1008,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "spiritual-weapon",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-spiritual-weapon",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "fireball",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-fireball",
+          "rotation": 0,
+          "flipX": false,
+          "masked": true,
+          "width": 864,
+          "height": 864,
+          "x": 912,
+          "y": 624
+        }
+      ]
+    },
+    {
+      "id": "lightning-bolt",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-lightning-bolt",
+          "rotation": 0,
+          "flipX": false,
+          "masked": true,
+          "width": 1248,
+          "height": 96,
+          "x": 1488,
+          "y": 624
+        }
+      ]
+    },
+    {
+      "id": "mass-healing-word",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-heal",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "revivify",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-revivify",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ]
+    },
+    {
+      "id": "spirit-guardians",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-spirit-guardians",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 672,
+          "height": 672,
+          "x": 816,
+          "y": 624
+        },
+        {
+          "key": "vfx-radiant",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-bless",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ],
+      "guardianMoveDamageAndCleanup": true
+    },
+    {
+      "id": "vampiric-touch",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-vampiric-touch",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-heal",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 816,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "lightning-bolt",
+      "direction": "north",
+      "art": [
+        {
+          "key": "vfx-lightning-bolt",
+          "rotation": -1.5707963267948966,
+          "flipX": false,
+          "masked": true,
+          "width": 576,
+          "height": 96.00000000000003,
+          "x": 816,
+          "y": 288
+        }
+      ]
+    },
+    {
+      "id": "lightning-bolt",
+      "direction": "diagonal",
+      "art": [
+        {
+          "key": "vfx-lightning-bolt",
+          "rotation": -0.7853981633974492,
+          "flipX": false,
+          "masked": true,
+          "width": 814.5870119269028,
+          "height": 135.7645019878172,
+          "x": 1152,
+          "y": 287.99999999999994
+        }
+      ]
+    },
+    {
+      "id": "burning-hands",
+      "direction": "north",
+      "art": [
+        {
+          "key": "vfx-burning-hands",
+          "rotation": -1.5707963267948966,
+          "flipX": true,
+          "masked": true,
+          "width": 288,
+          "height": 288,
+          "x": 816,
+          "y": 432
+        }
+      ]
+    },
+    {
+      "id": "burning-hands",
+      "direction": "diagonal",
+      "art": [
+        {
+          "key": "vfx-burning-hands",
+          "rotation": -0.7853981633974492,
+          "flipX": true,
+          "masked": true,
+          "width": 271.5290039756343,
+          "height": 407.29350596345137,
+          "x": 960,
+          "y": 480
+        }
+      ]
+    },
+    {
+      "id": "magic-missile",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-fire",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-fire-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-fire",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-cold",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-cold-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-cold",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-lightning",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-lightning-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-lightning",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-acid",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-acid-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-acid",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-poison",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-poison-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-poison",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-necrotic",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-necrotic-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-necrotic",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-radiant",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-radiant-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-radiant",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-force",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-force-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-thunder",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-thunder-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-thunder",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "review-psychic",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-psychic-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-psychic",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "fire-bolt",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-fire-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        }
+      ]
+    },
+    {
+      "id": "lightning-bolt",
+      "direction": "north",
+      "art": [
+        {
+          "key": "vfx-lightning-bolt",
+          "rotation": -1.5707963267948966,
+          "flipX": false,
+          "masked": true,
+          "width": 576,
+          "height": 96.00000000000003,
+          "x": 816,
+          "y": 288
+        }
+      ]
+    },
+    {
+      "id": "burning-hands",
+      "direction": "diagonal",
+      "art": [
+        {
+          "key": "vfx-burning-hands",
+          "rotation": -0.7853981633974492,
+          "flipX": true,
+          "masked": true,
+          "width": 271.5290039756343,
+          "height": 407.29350596345137,
+          "x": 960,
+          "y": 480
+        }
+      ]
+    },
+    {
+      "id": "spirit-guardians",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-spirit-guardians",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 672,
+          "height": 672,
+          "x": 816,
+          "y": 624
+        },
+        {
+          "key": "vfx-radiant",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-bless",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 192,
+          "height": 192,
+          "x": 816,
+          "y": 696.88
+        }
+      ],
+      "guardianMoveDamageAndCleanup": true
+    },
+    {
+      "id": "vampiric-touch",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-vampiric-touch",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-heal",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 816,
+          "y": 600.88
+        }
+      ]
+    },
+    {
+      "id": "magic-missile",
+      "direction": "east",
+      "art": [
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        },
+        {
+          "key": "vfx-magic-missile-projectile",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 64,
+          "height": 64,
+          "x": 816,
+          "y": 590.88
+        },
+        {
+          "key": "vfx-force",
+          "rotation": 0,
+          "flipX": false,
+          "masked": false,
+          "width": 115.19999999999999,
+          "height": 115.19999999999999,
+          "x": 912,
+          "y": 600.88
+        }
+      ]
+    }
+  ],
+  "covered": [
+    "vfx-acid",
+    "vfx-acid-projectile",
+    "vfx-acid-splash",
+    "vfx-aid",
+    "vfx-bless",
+    "vfx-burning-hands",
+    "vfx-cold",
+    "vfx-cold-projectile",
+    "vfx-command",
+    "vfx-divine-favor",
+    "vfx-eldritch-blast-projectile",
+    "vfx-entangle",
+    "vfx-fire",
+    "vfx-fire-projectile",
+    "vfx-fireball",
+    "vfx-force",
+    "vfx-force-projectile",
+    "vfx-guiding-bolt",
+    "vfx-heal",
+    "vfx-heroism",
+    "vfx-hold",
+    "vfx-lesser-restoration",
+    "vfx-lightning",
+    "vfx-lightning-bolt",
+    "vfx-lightning-projectile",
+    "vfx-magic-missile-projectile",
+    "vfx-necrotic",
+    "vfx-necrotic-projectile",
+    "vfx-poison",
+    "vfx-poison-projectile",
+    "vfx-psychic",
+    "vfx-psychic-projectile",
+    "vfx-radiant",
+    "vfx-radiant-projectile",
+    "vfx-revivify",
+    "vfx-sacred-flame",
+    "vfx-scorching-ray-projectile",
+    "vfx-searing-smite",
+    "vfx-shatter",
+    "vfx-shield-of-faith",
+    "vfx-spirit-guardians",
+    "vfx-spiritual-weapon",
+    "vfx-teleport",
+    "vfx-thunder",
+    "vfx-thunder-projectile",
+    "vfx-thunderous-smite",
+    "vfx-thunderwave",
+    "vfx-vampiric-touch",
+    "vfx-vicious-mockery",
+    "vfx-wrathful-smite"
+  ],
+  "errors": [],
+  "iconCount": 40,
+  "pageErrors": [],
+  "failedAssets": []
+}

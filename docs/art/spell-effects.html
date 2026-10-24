@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oathkeepers spell animation review</title>
+<style>
+*{box-sizing:border-box}body{font:15px system-ui;margin:0;padding:20px;background:#181b20;color:#eee}
+header{max-width:1100px;margin:auto}h1{font-size:24px}button,select,input{font:inherit;margin:5px;padding:8px}
+#grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;max-width:1400px;margin:20px auto}
+article{padding:12px;border:1px solid #666;border-radius:10px;min-width:0}h2{font-size:14px;overflow-wrap:anywhere}
+canvas{display:block;max-width:100%;width:192px;height:auto;margin:8px auto;background:#30353c;border:1px solid #777}
+small{display:block;text-align:center}label{display:inline-block}input[type=range]{max-width:130px}
+</style>
+<header><h1>Spell animation review</h1>
+<p>Saved source artwork exported as runtime sheets. This viewer checks the art; full battle integration remains pending.</p>
+<label>Background <select id="background"><option value="#30353c">Dark stone</option><option value="#eeeeee">Light</option><option value="#45613c">Forest green</option></select></label>
+<button id="pause" type="button">Pause</button><label>Frame <input id="phase" type="range" min="0" max="7" value="3"></label>
+<p id="status" role="status">Loading…</p></header><main id="grid"></main>
+<script>
+const state=window.vfxReview={loaded:0,errors:[],draws:{},phase:3,paused:false,background:'#30353c',entries:[]};
+const status=document.querySelector('#status'),grid=document.querySelector('#grid');
+const items=[];let previous=-1;
+function draw(item,phase){
+ const {vfx:v,id}=item.entry;const frame=phase%v.frames;const ctx=item.canvas.getContext('2d');
+ ctx.clearRect(0,0,v.frameWidth,v.frameHeight);
+ ctx.drawImage(item.image,frame*v.frameWidth,0,v.frameWidth,v.frameHeight,0,0,v.frameWidth,v.frameHeight);
+ state.draws[id]??=[];if(!state.draws[id].includes(frame))state.draws[id].push(frame);
+ item.label.textContent=`${v.role} · frame ${frame+1}/${v.frames} · ${v.fps} fps`;
+}
+state.setFrame=phase=>{state.phase=phase;state.paused=true;items.forEach(item=>draw(item,phase));document.querySelector('#pause').textContent='Play'};
+state.setBackground=color=>{state.background=color;items.forEach(item=>item.canvas.style.background=color)};
+document.querySelector('#phase').oninput=e=>state.setFrame(Number(e.target.value));
+document.querySelector('#background').onchange=e=>state.setBackground(e.target.value);
+document.querySelector('#pause').onclick=e=>{state.paused=!state.paused;e.target.textContent=state.paused?'Play':'Pause'};
+function tick(time){
+ const phase=Math.floor(time/62.5);
+ if(!state.paused&&phase!==previous){
+  for(const item of items){const v=item.entry.vfx;
+   if(v.role==='projectile')draw(item,Math.floor(time/(1000/v.fps))%v.frames);
+   else{const f=Math.floor(time/(1000/v.fps))%(v.frames+8);if(f<v.frames)draw(item,f);else item.canvas.getContext('2d').clearRect(0,0,v.frameWidth,v.frameHeight)}
+  }previous=phase;
+ }requestAnimationFrame(tick);
+}
+(async()=>{
+ const response=await fetch('../../packages/content/data/art-catalog.json');if(!response.ok)throw Error('Catalog failed');
+ state.entries=(await response.json()).filter(e=>e.kind==='vfx'&&e.vfx);
+ await Promise.all(state.entries.map(async entry=>{
+  const article=document.createElement('article'),title=document.createElement('h2'),canvas=document.createElement('canvas'),label=document.createElement('small');
+  title.textContent=entry.id;canvas.width=entry.vfx.frameWidth;canvas.height=entry.vfx.frameHeight;canvas.style.width=Math.min(192,canvas.width)+'px';canvas.setAttribute('aria-label',entry.title+' animation');
+  article.append(title,canvas,label);grid.append(article);
+  const image=new Image();image.src='../../packages/web/public/assets/'+entry.vfx.file;
+  try{await image.decode();if(image.naturalWidth!==entry.vfx.frameWidth*entry.vfx.frames||image.naturalHeight!==entry.vfx.frameHeight)throw Error('Dimensions');
+   const item={entry,canvas,image,label};items.push(item);state.loaded++;draw(item,3);
+  }catch(error){state.errors.push(entry.id+': '+error.message)}
+ }));
+ status.textContent=`${state.loaded}/${state.entries.length} animations loaded · ${state.errors.length} errors`;
+ requestAnimationFrame(tick);
+})().catch(error=>{state.errors.push(error.message);status.textContent=error.message});
+</script></html>

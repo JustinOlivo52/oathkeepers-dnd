@@ -1,0 +1,465 @@
+{
+  "passed": true,
+  "expected": 50,
+  "loaded": 50,
+  "errors": [],
+  "framesDrawn": {
+    "vfx-fire-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-fire": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-cold-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-lightning-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-acid-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-lightning": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-cold": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-necrotic-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-poison-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-acid": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-necrotic": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-poison": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-radiant-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-force-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-psychic-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-force": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-thunder-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-radiant": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-psychic": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-thunder": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-heal": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-shield-of-faith": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-bless": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-teleport": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-hold": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-acid-splash": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-entangle": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-shatter": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-fireball": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-burning-hands": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-thunderwave": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-lightning-bolt": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-command": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-heroism": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-divine-favor": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-thunderous-smite": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-spirit-guardians": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-searing-smite": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-revivify": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-aid": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-vampiric-touch": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-magic-missile-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-lesser-restoration": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-wrathful-smite": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-eldritch-blast-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-scorching-ray-projectile": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "vfx-spiritual-weapon": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-sacred-flame": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-vicious-mockery": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "vfx-guiding-bolt": [
+      3,
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "phaser": {
+    "textures": 50,
+    "animated": 50,
+    "loadErrors": []
+  },
+  "mobileOverflow": false,
+  "pageErrors": [],
+  "failedRequests": [],
+  "scope": "Standalone animation viewer and Phaser texture/playback smoke; not live battle acceptance"
+}
