@@ -1,0 +1,465 @@
+{
+  "classes": [
+    [
+      "barbarian",
+      "man",
+      "burly dark-skinned man, wild black hair, bare arms, hide armor and fur, broad greataxe",
+      "overhead axe chop"
+    ],
+    [
+      "bard",
+      "woman",
+      "auburn-haired woman, fitted leather, bright teal cloak, rapier, lute strapped on back",
+      "rapier thrust"
+    ],
+    [
+      "cleric",
+      "woman",
+      "brown-skinned woman with braided hair, chain mail, round shield bearing simple geometric sun disk, mace",
+      "mace swing"
+    ],
+    [
+      "druid",
+      "man",
+      "bearded man with brown curls, leather with bark-like trim, leaves, wooden shield, crooked staff",
+      "raised casting hand with attached green glow"
+    ],
+    [
+      "fighter",
+      "woman",
+      "short-haired woman, chainmail, russet surcoat, shield and longsword",
+      "longsword slash"
+    ],
+    [
+      "monk",
+      "man",
+      "bald medium-brown-skinned man, simple wrapped cloth and burgundy sash, bare hands, no armor",
+      "palm strike followed by recovery"
+    ],
+    [
+      "paladin",
+      "man",
+      "grey-haired man, heavy steel plate armor, ivory tabard with original diamond motif, two-handed greatsword",
+      "two-handed swing with faint gold glint"
+    ],
+    [
+      "ranger",
+      "woman",
+      "tan-skinned woman, studded leather, hooded green-brown cloak, longbow, shortsword at hip",
+      "longbow draw and arrow release"
+    ],
+    [
+      "rogue",
+      "man",
+      "lean man, black hooded leather, two daggers, belt pouches",
+      "quick low dagger stab"
+    ],
+    [
+      "sorcerer",
+      "woman",
+      "dark-skinned woman, silver curls, unarmored burgundy travel clothes with embroidered draconic scale motif",
+      "two-handed casting thrust with attached orange spark"
+    ],
+    [
+      "warlock",
+      "woman",
+      "pale woman with dark bob hair, dark plum robes, strange gem focus, purple-black accents",
+      "outstretched hand and attached dark violet bolt start"
+    ],
+    [
+      "wizard",
+      "man",
+      "older tan-skinned man, long blue robes, grey beard, quarterstaff, spellbook at hip",
+      "staff raised with small attached blue spark"
+    ]
+  ],
+  "species": [
+    [
+      "dragonborn",
+      "draconic heads and scales, no human faces; red martial, bronze expert, blue arcane, green divine",
+      [
+        "man",
+        "woman",
+        "woman",
+        "man"
+      ]
+    ],
+    [
+      "dwarf",
+      "stocky broad adults, braided hair or beards",
+      [
+        "woman",
+        "man",
+        "man",
+        "woman"
+      ]
+    ],
+    [
+      "elf",
+      "pointed ears and fine features; expert is dark-skinned",
+      [
+        "man",
+        "woman",
+        "man",
+        "woman"
+      ]
+    ],
+    [
+      "gnome",
+      "small adults with large expressive eyes and wild hair",
+      [
+        "woman",
+        "man",
+        "woman",
+        "man"
+      ]
+    ],
+    [
+      "goliath",
+      "broad adults, grey stone skin and natural geometric markings",
+      [
+        "man",
+        "woman",
+        "man",
+        "woman"
+      ]
+    ],
+    [
+      "halfling",
+      "small adults with round friendly faces and curly hair, clearly adults",
+      [
+        "woman",
+        "man",
+        "man",
+        "woman"
+      ]
+    ],
+    [
+      "human",
+      "varied skin tones, ages and hair, realistic humans",
+      [
+        "man",
+        "woman",
+        "woman",
+        "man"
+      ]
+    ],
+    [
+      "orc",
+      "grey-green skin, visible short tusks, strong jaws",
+      [
+        "woman",
+        "man",
+        "woman",
+        "man"
+      ]
+    ],
+    [
+      "tiefling",
+      "original horned humanoids, solid-color eyes; red martial, purple expert, ash arcane, copper divine",
+      [
+        "man",
+        "woman",
+        "man",
+        "woman"
+      ]
+    ]
+  ],
+  "jobs": [
+    {
+      "id": "class-barbarian",
+      "kind": "class",
+      "classId": "barbarian",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE burly dark-skinned man, wild black hair, bare arms, hide armor and fur, broad greataxe. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (overhead axe chop); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, man presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-bard",
+      "kind": "class",
+      "classId": "bard",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE auburn-haired woman, fitted leather, bright teal cloak, rapier, lute strapped on back. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (rapier thrust); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, woman presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-cleric",
+      "kind": "class",
+      "classId": "cleric",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE brown-skinned woman with braided hair, chain mail, round shield bearing simple geometric sun disk, mace. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (mace swing); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, woman presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-druid",
+      "kind": "class",
+      "classId": "druid",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE bearded man with brown curls, leather with bark-like trim, leaves, wooden shield, crooked staff. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (raised casting hand with attached green glow); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, man presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-fighter",
+      "kind": "class",
+      "classId": "fighter",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE short-haired woman, chainmail, russet surcoat, shield and longsword. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (longsword slash); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, woman presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-monk",
+      "kind": "class",
+      "classId": "monk",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE bald medium-brown-skinned man, simple wrapped cloth and burgundy sash, bare hands, no armor. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (palm strike followed by recovery); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, man presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-paladin",
+      "kind": "class",
+      "classId": "paladin",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE grey-haired man, heavy steel plate armor, ivory tabard with original diamond motif, two-handed greatsword. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (two-handed swing with faint gold glint); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, man presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-ranger",
+      "kind": "class",
+      "classId": "ranger",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE tan-skinned woman, studded leather, hooded green-brown cloak, longbow, shortsword at hip. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (longbow draw and arrow release); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, woman presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-rogue",
+      "kind": "class",
+      "classId": "rogue",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE lean man, black hooded leather, two daggers, belt pouches. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (quick low dagger stab); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, man presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-sorcerer",
+      "kind": "class",
+      "classId": "sorcerer",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE dark-skinned woman, silver curls, unarmored burgundy travel clothes with embroidered draconic scale motif. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (two-handed casting thrust with attached orange spark); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, woman presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-warlock",
+      "kind": "class",
+      "classId": "warlock",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE pale woman with dark bob hair, dark plum robes, strange gem focus, purple-black accents. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (outstretched hand and attached dark violet bolt start); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, woman presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "class-wizard",
+      "kind": "class",
+      "classId": "wizard",
+      "prompt": "Create production game animation sprite atlas, transparent background, detailed 2D fantasy miniatures with crisp dark outlines and warm torchlit highlights like classic painted tactical RPG sprites. Original art, no text, no logos, no real religious symbols. EXACT grid FOUR columns and SIX rows of equal square cells, no drawn grid. Twenty-two isolated full-body poses of ONE older tan-skinned man, long blue robes, grey beard, quarterstaff, spellbook at hip. All facing RIGHT in side three-quarter tactical view. Each pose fully inside its cell with at least 12% empty margin; no shadows beyond feet, no detached effects. TOP THREE ROWS: normal adult human-sized version, 11 poses read left-to-right, row0: relaxed idle, breathing idle, walk left foot forward, walk passing; row1: walk right foot forward, walk passing alternate, attack windup, attack strike (staff raised with small attached blue spark); row2: clearly different attack recovery, recoiling from hit, lying defeated on ground, EMPTY. BOTTOM THREE ROWS: a separately REDRAWN halfling/gnome-proportioned SMALL adult version of exactly same costume, man presentation, recognizable same design, short legs and compact stocky torso, proportionally smaller weapon, NOT merely scaled normal body. Repeat identical 11-pose order in rows3-5, bottom right cell EMPTY. SMALL version drawn at about 2/3 the height of normal version. Every pose has the entire weapon, feet, head inside its cell and clear space from every neighbor. Maintain same face, costume, equipment and rendering across all poses. Draw all four walk phases with visibly alternating feet; distinct anticipation/strike/recovery. Image should be tall with overall width:height ratio 2:3 so every grid cell is square."
+    },
+    {
+      "id": "players-0",
+      "kind": "portraits",
+      "species": [
+        [
+          "dragonborn",
+          "draconic heads and scales, no human faces; red martial, bronze expert, blue arcane, green divine",
+          [
+            "man",
+            "woman",
+            "woman",
+            "man"
+          ]
+        ],
+        [
+          "dwarf",
+          "stocky broad adults, braided hair or beards",
+          [
+            "woman",
+            "man",
+            "man",
+            "woman"
+          ]
+        ],
+        [
+          "elf",
+          "pointed ears and fine features; expert is dark-skinned",
+          [
+            "man",
+            "woman",
+            "man",
+            "woman"
+          ]
+        ]
+      ],
+      "prompt": "Original detailed painterly 2D fantasy portrait atlas for Oathkeepers, crisp dark outlines, warm torchlight palette, earthy shadows, no text or labels or logos, no official characters, no real-world religious symbols. EXACT FOUR COLUMNS and THREE ROWS of equal square portrait cells, no gutters. Twelve independent chest-up three-quarter portraits, whole heads and ears/horns inside each cell, backgrounds softly painted and independent. Each row a different species. Columns always: MARTIAL in chainmail with sword hilt; EXPERT in hooded leather with bow; ARCANE in robes with magical glow; DIVINE with natural leaf/wood or original sun-disk emblem and pale robe/armor. Row assignments top to bottom: ROW 1: dragonborn, draconic heads and scales, no human faces; red martial, bronze expert, blue arcane, green divine. Presentations left-to-right man, woman, woman, man. ROW 2: dwarf, stocky broad adults, braided hair or beards. Presentations left-to-right woman, man, man, woman. ROW 3: elf, pointed ears and fine features; expert is dark-skinned. Presentations left-to-right man, woman, man, woman. Each of the twelve has a distinct face, age and costume. Adult adventurers only. Portrait fills its own cell, no borders and no overlap. Image aspect ratio 4:3."
+    },
+    {
+      "id": "players-1",
+      "kind": "portraits",
+      "species": [
+        [
+          "gnome",
+          "small adults with large expressive eyes and wild hair",
+          [
+            "woman",
+            "man",
+            "woman",
+            "man"
+          ]
+        ],
+        [
+          "goliath",
+          "broad adults, grey stone skin and natural geometric markings",
+          [
+            "man",
+            "woman",
+            "man",
+            "woman"
+          ]
+        ],
+        [
+          "halfling",
+          "small adults with round friendly faces and curly hair, clearly adults",
+          [
+            "woman",
+            "man",
+            "man",
+            "woman"
+          ]
+        ]
+      ],
+      "prompt": "Original detailed painterly 2D fantasy portrait atlas for Oathkeepers, crisp dark outlines, warm torchlight palette, earthy shadows, no text or labels or logos, no official characters, no real-world religious symbols. EXACT FOUR COLUMNS and THREE ROWS of equal square portrait cells, no gutters. Twelve independent chest-up three-quarter portraits, whole heads and ears/horns inside each cell, backgrounds softly painted and independent. Each row a different species. Columns always: MARTIAL in chainmail with sword hilt; EXPERT in hooded leather with bow; ARCANE in robes with magical glow; DIVINE with natural leaf/wood or original sun-disk emblem and pale robe/armor. Row assignments top to bottom: ROW 1: gnome, small adults with large expressive eyes and wild hair. Presentations left-to-right woman, man, woman, man. ROW 2: goliath, broad adults, grey stone skin and natural geometric markings. Presentations left-to-right man, woman, man, woman. ROW 3: halfling, small adults with round friendly faces and curly hair, clearly adults. Presentations left-to-right woman, man, man, woman. Each of the twelve has a distinct face, age and costume. Adult adventurers only. Portrait fills its own cell, no borders and no overlap. Image aspect ratio 4:3."
+    },
+    {
+      "id": "players-2",
+      "kind": "portraits",
+      "species": [
+        [
+          "human",
+          "varied skin tones, ages and hair, realistic humans",
+          [
+            "man",
+            "woman",
+            "woman",
+            "man"
+          ]
+        ],
+        [
+          "orc",
+          "grey-green skin, visible short tusks, strong jaws",
+          [
+            "woman",
+            "man",
+            "woman",
+            "man"
+          ]
+        ],
+        [
+          "tiefling",
+          "original horned humanoids, solid-color eyes; red martial, purple expert, ash arcane, copper divine",
+          [
+            "man",
+            "woman",
+            "man",
+            "woman"
+          ]
+        ]
+      ],
+      "prompt": "Original detailed painterly 2D fantasy portrait atlas for Oathkeepers, crisp dark outlines, warm torchlight palette, earthy shadows, no text or labels or logos, no official characters, no real-world religious symbols. EXACT FOUR COLUMNS and THREE ROWS of equal square portrait cells, no gutters. Twelve independent chest-up three-quarter portraits, whole heads and ears/horns inside each cell, backgrounds softly painted and independent. Each row a different species. Columns always: MARTIAL in chainmail with sword hilt; EXPERT in hooded leather with bow; ARCANE in robes with magical glow; DIVINE with natural leaf/wood or original sun-disk emblem and pale robe/armor. Row assignments top to bottom: ROW 1: human, varied skin tones, ages and hair, realistic humans. Presentations left-to-right man, woman, woman, man. ROW 2: orc, grey-green skin, visible short tusks, strong jaws. Presentations left-to-right woman, man, woman, man. ROW 3: tiefling, original horned humanoids, solid-color eyes; red martial, purple expert, ash arcane, copper divine. Presentations left-to-right man, woman, man, woman. Each of the twelve has a distinct face, age and costume. Adult adventurers only. Portrait fills its own cell, no borders and no overlap. Image aspect ratio 4:3."
+    },
+    {
+      "id": "cards-0",
+      "kind": "cards",
+      "items": [
+        {
+          "id": "class-barbarian",
+          "description": "burly dark-skinned man, wild black hair, bare arms, hide armor and fur, broad greataxe, overhead axe chop in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-bard",
+          "description": "auburn-haired woman, fitted leather, bright teal cloak, rapier, lute strapped on back, rapier thrust in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-cleric",
+          "description": "brown-skinned woman with braided hair, chain mail, round shield bearing simple geometric sun disk, mace, mace swing in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-druid",
+          "description": "bearded man with brown curls, leather with bark-like trim, leaves, wooden shield, crooked staff, raised casting hand with attached green glow in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-fighter",
+          "description": "short-haired woman, chainmail, russet surcoat, shield and longsword, longsword slash in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-monk",
+          "description": "bald medium-brown-skinned man, simple wrapped cloth and burgundy sash, bare hands, no armor, palm strike followed by recovery in a suitable frontier fantasy setting"
+        }
+      ],
+      "prompt": "Create an atlas of original illustrated fantasy builder cards for Oathkeepers. Detailed painted 2D fantasy, dark outlines, warm gold light, earthy muted colors. NO lettering, no labels or logos, no official D&D characters/art, no real-world religious symbols. EXACT TWO COLUMNS by THREE ROWS of rectangular landscape cards, each cell aspect ratio 3:2, overall image SQUARE. No gutters or frame lines. Each scene fills exactly its own cell with no overlap. In EACH cell leave the LEFT THIRD calm low-detail dark sky, wall or soft shadow for UI text; position the main figure on the RIGHT TWO THIRDS. Reading order left-to-right top-to-bottom: Cell 1: burly dark-skinned man, wild black hair, bare arms, hide armor and fur, broad greataxe, overhead axe chop in a suitable frontier fantasy setting. Cell 2: auburn-haired woman, fitted leather, bright teal cloak, rapier, lute strapped on back, rapier thrust in a suitable frontier fantasy setting. Cell 3: brown-skinned woman with braided hair, chain mail, round shield bearing simple geometric sun disk, mace, mace swing in a suitable frontier fantasy setting. Cell 4: bearded man with brown curls, leather with bark-like trim, leaves, wooden shield, crooked staff, raised casting hand with attached green glow in a suitable frontier fantasy setting. Cell 5: short-haired woman, chainmail, russet surcoat, shield and longsword, longsword slash in a suitable frontier fantasy setting. Cell 6: bald medium-brown-skinned man, simple wrapped cloth and burgundy sash, bare hands, no armor, palm strike followed by recovery in a suitable frontier fantasy setting.  Each figure original and distinct, with complete face and main equipment visible, settings visually coherent with a timber-and-stone frontier town called Thornwatch."
+    },
+    {
+      "id": "cards-1",
+      "kind": "cards",
+      "items": [
+        {
+          "id": "class-paladin",
+          "description": "grey-haired man, heavy steel plate armor, ivory tabard with original diamond motif, two-handed greatsword, two-handed swing with faint gold glint in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-ranger",
+          "description": "tan-skinned woman, studded leather, hooded green-brown cloak, longbow, shortsword at hip, longbow draw and arrow release in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-rogue",
+          "description": "lean man, black hooded leather, two daggers, belt pouches, quick low dagger stab in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-sorcerer",
+          "description": "dark-skinned woman, silver curls, unarmored burgundy travel clothes with embroidered draconic scale motif, two-handed casting thrust with attached orange spark in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-warlock",
+          "description": "pale woman with dark bob hair, dark plum robes, strange gem focus, purple-black accents, outstretched hand and attached dark violet bolt start in a suitable frontier fantasy setting"
+        },
+        {
+          "id": "class-wizard",
+          "description": "older tan-skinned man, long blue robes, grey beard, quarterstaff, spellbook at hip, staff raised with small attached blue spark in a suitable frontier fantasy setting"
+        }
+      ],
+      "prompt": "Create an atlas of original illustrated fantasy builder cards for Oathkeepers. Detailed painted 2D fantasy, dark outlines, warm gold light, earthy muted colors. NO lettering, no labels or logos, no official D&D characters/art, no real-world religious symbols. EXACT TWO COLUMNS by THREE ROWS of rectangular landscape cards, each cell aspect ratio 3:2, overall image SQUARE. No gutters or frame lines. Each scene fills exactly its own cell with no overlap. In EACH cell leave the LEFT THIRD calm low-detail dark sky, wall or soft shadow for UI text; position the main figure on the RIGHT TWO THIRDS. Reading order left-to-right top-to-bottom: Cell 1: grey-haired man, heavy steel plate armor, ivory tabard with original diamond motif, two-handed greatsword, two-handed swing with faint gold glint in a suitable frontier fantasy setting. Cell 2: tan-skinned woman, studded leather, hooded green-brown cloak, longbow, shortsword at hip, longbow draw and arrow release in a suitable frontier fantasy setting. Cell 3: lean man, black hooded leather, two daggers, belt pouches, quick low dagger stab in a suitable frontier fantasy setting. Cell 4: dark-skinned woman, silver curls, unarmored burgundy travel clothes with embroidered draconic scale motif, two-handed casting thrust with attached orange spark in a suitable frontier fantasy setting. Cell 5: pale woman with dark bob hair, dark plum robes, strange gem focus, purple-black accents, outstretched hand and attached dark violet bolt start in a suitable frontier fantasy setting. Cell 6: older tan-skinned man, long blue robes, grey beard, quarterstaff, spellbook at hip, staff raised with small attached blue spark in a suitable frontier fantasy setting.  Each figure original and distinct, with complete face and main equipment visible, settings visually coherent with a timber-and-stone frontier town called Thornwatch."
+    },
+    {
+      "id": "cards-2",
+      "kind": "cards",
+      "items": [
+        {
+          "id": "species-dragonborn",
+          "description": "one or two adult dragonborn people (draconic heads and scales, no human faces; red martial, bronze expert, blue arcane, green divine), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-dwarf",
+          "description": "one or two adult dwarf people (stocky broad adults, braided hair or beards), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-elf",
+          "description": "one or two adult elf people (pointed ears and fine features; expert is dark-skinned), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-gnome",
+          "description": "one or two adult gnome people (small adults with large expressive eyes and wild hair), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-goliath",
+          "description": "one or two adult goliath people (broad adults, grey stone skin and natural geometric markings), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-halfling",
+          "description": "one or two adult halfling people (small adults with round friendly faces and curly hair, clearly adults), everyday frontier settlement or wilderness scene"
+        }
+      ],
+      "prompt": "Create an atlas of original illustrated fantasy builder cards for Oathkeepers. Detailed painted 2D fantasy, dark outlines, warm gold light, earthy muted colors. NO lettering, no labels or logos, no official D&D characters/art, no real-world religious symbols. EXACT TWO COLUMNS by THREE ROWS of rectangular landscape cards, each cell aspect ratio 3:2, overall image SQUARE. No gutters or frame lines. Each scene fills exactly its own cell with no overlap. In EACH cell leave the LEFT THIRD calm low-detail dark sky, wall or soft shadow for UI text; position the main figure on the RIGHT TWO THIRDS. Reading order left-to-right top-to-bottom: Cell 1: one or two adult dragonborn people (draconic heads and scales, no human faces; red martial, bronze expert, blue arcane, green divine), everyday frontier settlement or wilderness scene. Cell 2: one or two adult dwarf people (stocky broad adults, braided hair or beards), everyday frontier settlement or wilderness scene. Cell 3: one or two adult elf people (pointed ears and fine features; expert is dark-skinned), everyday frontier settlement or wilderness scene. Cell 4: one or two adult gnome people (small adults with large expressive eyes and wild hair), everyday frontier settlement or wilderness scene. Cell 5: one or two adult goliath people (broad adults, grey stone skin and natural geometric markings), everyday frontier settlement or wilderness scene. Cell 6: one or two adult halfling people (small adults with round friendly faces and curly hair, clearly adults), everyday frontier settlement or wilderness scene.  Each figure original and distinct, with complete face and main equipment visible, settings visually coherent with a timber-and-stone frontier town called Thornwatch."
+    },
+    {
+      "id": "cards-3",
+      "kind": "cards",
+      "items": [
+        {
+          "id": "species-human",
+          "description": "one or two adult human people (varied skin tones, ages and hair, realistic humans), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-orc",
+          "description": "one or two adult orc people (grey-green skin, visible short tusks, strong jaws), everyday frontier settlement or wilderness scene"
+        },
+        {
+          "id": "species-tiefling",
+          "description": "one or two adult tiefling people (original horned humanoids, solid-color eyes; red martial, purple expert, ash arcane, copper divine), everyday frontier settlement or wilderness scene"
+        }
+      ],
+      "prompt": "Create an atlas of original illustrated fantasy builder cards for Oathkeepers. Detailed painted 2D fantasy, dark outlines, warm gold light, earthy muted colors. NO lettering, no labels or logos, no official D&D characters/art, no real-world religious symbols. EXACT TWO COLUMNS by THREE ROWS of rectangular landscape cards, each cell aspect ratio 3:2, overall image SQUARE. No gutters or frame lines. Each scene fills exactly its own cell with no overlap. In EACH cell leave the LEFT THIRD calm low-detail dark sky, wall or soft shadow for UI text; position the main figure on the RIGHT TWO THIRDS. Reading order left-to-right top-to-bottom: Cell 1: one or two adult human people (varied skin tones, ages and hair, realistic humans), everyday frontier settlement or wilderness scene. Cell 2: one or two adult orc people (grey-green skin, visible short tusks, strong jaws), everyday frontier settlement or wilderness scene. Cell 3: one or two adult tiefling people (original horned humanoids, solid-color eyes; red martial, purple expert, ash arcane, copper divine), everyday frontier settlement or wilderness scene. Any unused cells: calm empty painted background only. Each figure original and distinct, with complete face and main equipment visible, settings visually coherent with a timber-and-stone frontier town called Thornwatch."
+    }
+  ]
+}

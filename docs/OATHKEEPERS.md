@@ -892,11 +892,11 @@ No live image-generation API, provider credential, spending approval, catalog im
 
 ## Artwork remaining and Claude handoff
 
-Updated 2026-10-24. This is the current artwork checklist; older trial/pilot notes below are historical. Use the linked briefs for visual designs, tags and export instructions. This update inventories work; it does not generate art, merge branches or promote readiness.
+Updated 2026-10-24. This is the current artwork checklist; older trial/pilot notes below are historical. Use the linked briefs for visual designs, tags and export instructions. This review separates delivered files, missing production and Claude integration. New companion portraits are being delivered on `art/library-batch-2`; no gameplay readiness is promoted.
 
 ### Review evidence and current inventory
 
-Reviewed the recursive file trees and catalogs on `master` (`d4c530f`) and `art/library-batch-2` (`100e39e`), all four active briefs, batch 2 notes, current spell data, character files and frontend art lookups. Visually inspected the pilot and batch 2 monster contact sheets. This was a static artwork/inventory review, not a new gameplay or animation playtest.
+Rechecked `master` (`f2b4e59`) and `art/library-batch-2` (`7b8180c`) against actual runtime files, all four active briefs and the catalog. Inspected the monster contact sheet, all existing expansion portraits/scenes and cave/crypt tiles/props. Static checks cover every delivered catalog reference, image dimensions/budgets and all 143 expansion monster frames. This is not a gameplay or animation playtest.
 
 | Collection | On master now | Already produced on batch 2, not on master | Still to produce |
 |---|---|---|---|
@@ -904,15 +904,15 @@ Reviewed the recursive file trees and catalogs on `master` (`d4c530f`) and `art/
 | Library 1 pilot | Five monster sheets + five matching portraits, three NPC portraits, two scenes, forest tiles and board: 17 catalog entries | — | Fixes below |
 | Library 2 monsters | None of the 13 expansion monsters | All 13 sheets + 13 portraits, catalog art ready; mechanics/integration pending | Review and integrate existing work |
 | Library 2 NPCs | Three pilot NPCs above | All 17 remaining portraits, catalog art ready; integration pending | Review and integrate existing work |
-| Library 2 scenes | Two pilot scenes above | None | 14 backdrops |
-| Cave and crypt | None | None | Two tilesets, two props sheets, two boards |
-| Named companions | Generic hero fallbacks | None | Five sheets + five portraits |
+| Library 2 scenes | Two pilot scenes above | All 14 backdrops, integration pending | Claude review/integration |
+| Cave and crypt | None | Two tilesets, two props sheets, two boards | Claude props wiring and gameplay review |
+| Named companions | Generic hero fallbacks | Five new portraits in this continuation | Five sheets; Claude portrait binding |
 | Class/species player art | Generic hero fallbacks | None | 24 sheets, 36 portraits, 21 cards |
 | Spell art | Code-drawn effects/text fallbacks | None | Effects below + icons for all 40 current spells |
 
-Master has 23 catalog entries. Batch 2 has 66: the same 23 plus 26 monster assets and 17 NPC portraits. All 43 additions have runtime files and pending integration. Their existence is not approval to enable new encounters. No open PR was found at review time.
+Master has 23 catalog entries. At the reviewed batch 2 commit, the catalog claimed 100 entries, but **16 entries pointed to absent runtime files**: all five companion sheets/portraits and all three optional beast sheets/portraits. Their generation sources were absent too. Catalog presence is not evidence that artwork exists. This continuation removes those unsupported entries, then restores only the five companion portraits after generating, exporting and reviewing them. Result: **89 valid catalog entries**, including 66 pending additions (26 monster assets, 17 NPC portraits, 14 scenes, four terrain/board entries and five companion portraits). The two props sheets are extra referenced files, not separate catalog entries.
 
-The batch 2 notes still say NPC production is pending, but its latest commit, files and catalog contain all 17 NPC portraits. Its contact sheet shows the 13 monster sets, not the NPC collection. Refresh those notes and review evidence before final handoff; do not regenerate the NPCs because the note is stale.
+Batch 2 notes and its original monster-only preview were stale. Updated notes, a complete static contact sheet (`docs/art/library-batch-2-complete.jpg`) and a machine-readable audit (`docs/art/library-batch-2-static-check.json`) now distinguish actual delivery from missing work. No new encounter mechanics or integration status is enabled. Existing first-five-monster browser evidence remains historical and does not cover the whole collection.
 
 ### 1. Finish existing-art fixes
 
@@ -935,7 +935,8 @@ Source: [Library 2 brief](art/CODEX_BRIEF_LIBRARY_2.md), branch [art/library-bat
 
 **17 NPC portraits already present:** npc-innkeeper-human, npc-town-guard, npc-blacksmith, npc-priest, npc-priestess-dark, npc-noble, npc-farmer, npc-scholar, npc-hunter, npc-thief, npc-bard, npc-elder, npc-child, npc-mage, npc-soldier-veteran, npc-cult-leader, npc-bandit-leader.
 
-- [ ] Refresh batch 2 notes and the contact sheet/viewer to include all 43 additions. Existing verification text covers the first five monsters; it is not evidence for the complete collection.
+- [x] Refresh batch 2 notes and provide a complete static contact sheet/audit for all 66 delivered additions.
+- [ ] Extend the interactive viewer/browser checks beyond the first 13 monster sets; existing browser verification covers only the first five monsters.
 - [ ] Review all 143 monster frames, 13 monster portraits and 17 NPC portraits; verify identity, anatomy, silhouettes, alpha, bounds, anchors, budgets and coherent animation.
 - [ ] Check the noted captain offhand-blade occlusion and compact/sliding gaits at actual battle scale.
 - [ ] Run export/measurement and project checks against current master before delivery; preserve art/mechanics/integration gates independently.
@@ -944,35 +945,37 @@ Source: [Library 2 brief](art/CODEX_BRIEF_LIBRARY_2.md), branch [art/library-bat
 
 Size clarification: Goblin Boss and Giant Rat use 192px canvases but rules-size Small/1×1. The four Large expansion beasts use 384px frames, (192,340) anchors and 2×2 footprints. Do not copy the brief's ambiguous “Medium” canvas label into `rulesSize`.
 
-### 3. Produce the missing environments
+### 3. Review and integrate the delivered environments
 
 Source: [Library 2 sections 3–4](art/CODEX_BRIEF_LIBRARY_2.md) and [original scene/tag tables](#art-history-batch-1-brief).
 
-**14 scenes**, `library/scenes/<id>.webp`, 1600×900, under 400 KB:
+**14 scenes already exported on batch 2**, `library/scenes/<id>.webp`, 1600×900, under 400 KB:
 
-- [ ] scene-thornwatch-gate-day
-- [ ] scene-thornwatch-square
-- [ ] scene-tavern-quiet
-- [ ] scene-temple
-- [ ] scene-smithy
-- [ ] scene-forest-night
-- [ ] scene-river-crossing
-- [ ] scene-farmstead
-- [ ] scene-goblin-camp
-- [ ] scene-abbey-exterior
-- [ ] scene-cave-entrance
-- [ ] scene-cave-depths
-- [ ] scene-crypt
-- [ ] scene-watchtower
+- [x] scene-thornwatch-gate-day (export exists; integration pending)
+- [x] scene-thornwatch-square (export exists; integration pending)
+- [x] scene-tavern-quiet (export exists; integration pending)
+- [x] scene-temple (export exists; integration pending)
+- [x] scene-smithy (export exists; integration pending)
+- [x] scene-forest-night (export exists; integration pending)
+- [x] scene-river-crossing (export exists; integration pending)
+- [x] scene-farmstead (export exists; integration pending)
+- [x] scene-goblin-camp (export exists; integration pending)
+- [x] scene-abbey-exterior (export exists; integration pending)
+- [x] scene-cave-entrance (export exists; integration pending)
+- [x] scene-cave-depths (export exists; integration pending)
+- [x] scene-crypt (export exists; integration pending)
+- [x] scene-watchtower (export exists; integration pending)
 
 Keep Thornwatch's timber palisade, squat stone keep and muddy frontier streets consistent. Reuse the existing forest-road-day and tavern-night exports.
 
-**Two complete terrain sets**, six runtime files:
+**Two terrain sets already exported**, six runtime files (gameplay acceptance pending):
 
-- [ ] `sprites/tiles-cave.png`, `sprites/props-cave.png`, `boards/board-cave.json`
-- [ ] `sprites/tiles-crypt.png`, `sprites/props-crypt.png`, `boards/board-crypt.json`
+- [x] `sprites/tiles-cave.png`, `sprites/props-cave.png`, `boards/board-cave.json`
+- [x] `sprites/tiles-crypt.png`, `sprites/props-crypt.png`, `boards/board-crypt.json`
 
 Each tileset: five 128px frames (three floors, wall, difficult terrain), continuous unbordered floors. Each props atlas: four 128px frames in 2×2. Each board: valid separated spawns, connected open ground, declared/validated 2×2 alternatives and decorative props. Catalog ids: `tiles-cave` / `board-cave`, `tiles-crypt` / `board-crypt`; props are referenced by the tileset rather than a new unsupported catalog kind.
+
+- [ ] Claude: verify mixed floor seams, wall/rubble readability, props placement and 1×1/2×2 movement in the actual cave and crypt encounters. Static terrain previews show clear materials; adjacent stone joints still need board-scale seam review.
 
 Claude integration gap: current `tilesetFor()` loads library tiles but does not pass a library props sheet to the renderer; the scene preloads only the abbey props. Rendering the new forest/cave/crypt decorations needs explicit runtime wiring and review.
 
@@ -989,7 +992,7 @@ Source: [Library 2 section 5](art/CODEX_BRIEF_LIBRARY_2.md). Five named designs,
 | pip-thistlewick | Small rock gnome wizard, pocketed robes, staff/goggles | Sheet + portrait |
 
 - [ ] For every row: `sprites/hero-<character-id>.png`, catalog `hero-<character-id>`, 11×192px frames, anchor (96,166).
-- [ ] For every row: `library/portraits/companion-<character-id>.webp`, catalog `portrait-<character-id>` of kind `npc`, 512px square, under 150 KB.
+- [x] For every row: `library/portraits/companion-<character-id>.webp`, catalog `portrait-<character-id>` of kind `npc`, 512px square, under 150 KB.
 - [ ] Show Wren and Pip visibly smaller within the common canvas; use rules-size Small/1×1.
 - [ ] Claude: verify portrait binding and the existing character-specific sprite lookup in real play.
 
@@ -1050,7 +1053,9 @@ Formats: transparent PNG, one row; projectile 4×64px (right-facing), impact 8×
 
 ### Delivery order and acceptance
 
-Recommended order: validate the 43 existing branch assets and refresh their evidence; fix forest/spider/ogre; deliver companions and missing environments; deliver class/species art; deliver reusable spell effects/icons and the expanded spell coverage; then optional beasts and the inventoried SRD expansion. Keep work on the separate branches named in each brief.
+**Remaining baseline production after this delivery: 160 new runtime files**: one forest props atlas, five companion sheets, 81 hero/class/species files, 27 baseline spell-effect sheets, 40 spell icons and six optional beast files. This excludes revisions to existing images, the expanded spell effects still needing design decisions, optional signature effects, Bram and the unenumerated full SRD roster. It is a scoped file count, not a full-game completion percentage.
+
+Recommended order: Claude reviews the 66 delivered branch entries; finish forest/spider/ogre fixes and the five companion sheets; integrate delivered environments; deliver class/species art; deliver reusable spell effects/icons and the expanded spell coverage; then optional beasts and the inventoried SRD expansion. Keep work on the separate branches named in each brief.
 
 For every delivered subset:
 
@@ -1060,7 +1065,7 @@ For every delivered subset:
 - [ ] `npm install`, `npm test`, `npm run typecheck`, `npm run build` pass for the delivered code/assets; push the branch.
 - [ ] Claude reviews real encounters/UI, stable saved identities, actual actions, props and footprints, then promotes only validated entries.
 
-Current master already has integrated pilot mechanics/art, including Large pilot creatures. Historical “all pilot integration pending” statements below describe the original handoff, not today's state. New branch assets still require their own validation. This documentation-only review changes no game code, asset files or readiness fields.
+Current master already has integrated pilot mechanics/art, including Large pilot creatures. Historical “all pilot integration pending” statements below describe the original handoff, not today's state. New branch assets still require their own validation. This continuation adds five companion portrait exports and removes invalid missing-file catalog entries. Game code, rules, stat blocks and existing integrated assets remain unchanged. All new art stays integration-pending.
 
 
 ## Art history: trial brief
