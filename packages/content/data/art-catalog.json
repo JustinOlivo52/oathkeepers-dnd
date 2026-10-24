@@ -1484,5 +1484,256 @@
       "hostile"
     ],
     "image": "library/portraits/npc-bandit-leader.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-abbey-exterior",
+    "kind": "scene",
+    "title": "Ruined abbey on a hill",
+    "tags": [
+      "abbey",
+      "ruins",
+      "hills",
+      "dusk",
+      "outdoor",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-abbey-exterior.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-cave-depths",
+    "kind": "scene",
+    "title": "Deep cave with a still pool",
+    "tags": [
+      "cave",
+      "underground",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-cave-depths.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-cave-entrance",
+    "kind": "scene",
+    "title": "Cave mouth in a rocky hillside",
+    "tags": [
+      "cave",
+      "hills",
+      "day",
+      "outdoor",
+      "tense"
+    ],
+    "image": "library/scenes/scene-cave-entrance.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-crypt",
+    "kind": "scene",
+    "title": "Burial vaults with stone coffins",
+    "tags": [
+      "crypt",
+      "underground",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-crypt.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-farmstead",
+    "kind": "scene",
+    "title": "Abandoned farmstead, broken fences",
+    "tags": [
+      "farm",
+      "day",
+      "rain",
+      "outdoor",
+      "somber"
+    ],
+    "image": "library/scenes/scene-farmstead.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-forest-night",
+    "kind": "scene",
+    "title": "Deep forest at night, moonlight",
+    "tags": [
+      "forest",
+      "night",
+      "fog",
+      "outdoor",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-forest-night.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-goblin-camp",
+    "kind": "scene",
+    "title": "Goblin camp in a ravine",
+    "tags": [
+      "camp",
+      "hills",
+      "dusk",
+      "outdoor",
+      "hostile"
+    ],
+    "image": "library/scenes/scene-goblin-camp.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-river-crossing",
+    "kind": "scene",
+    "title": "Old stone bridge over a river",
+    "tags": [
+      "river",
+      "road",
+      "dusk",
+      "outdoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-river-crossing.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-smithy",
+    "kind": "scene",
+    "title": "Blacksmith's forge",
+    "tags": [
+      "smithy",
+      "town",
+      "day",
+      "indoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-smithy.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-tavern-quiet",
+    "kind": "scene",
+    "title": "The Lantern tavern, empty and dim",
+    "tags": [
+      "tavern",
+      "town",
+      "night",
+      "indoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-tavern-quiet.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-temple",
+    "kind": "scene",
+    "title": "Small frontier temple interior",
+    "tags": [
+      "temple",
+      "town",
+      "day",
+      "indoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-temple.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-thornwatch-gate-day",
+    "kind": "scene",
+    "title": "Thornwatch's palisade gate, morning",
+    "tags": [
+      "town",
+      "gate",
+      "day",
+      "clear",
+      "outdoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-thornwatch-gate-day.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-thornwatch-square",
+    "kind": "scene",
+    "title": "Muddy town square with market stalls",
+    "tags": [
+      "town",
+      "market",
+      "day",
+      "outdoor",
+      "festive"
+    ],
+    "image": "library/scenes/scene-thornwatch-square.webp"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "scene-watchtower",
+    "kind": "scene",
+    "title": "Lonely watchtower on the frontier",
+    "tags": [
+      "watchtower",
+      "hills",
+      "dusk",
+      "storm",
+      "outdoor",
+      "tense"
+    ],
+    "image": "library/scenes/scene-watchtower.webp"
   }
 ]

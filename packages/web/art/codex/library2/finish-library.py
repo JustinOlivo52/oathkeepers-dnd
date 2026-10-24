@@ -34,3 +34,14 @@ def export_npcs():
     print('Exported 17 NPC portraits')
 
 if __name__=='__main__':export_npcs()
+
+def export_scenes():
+    doc=(REPO/'docs/OATHKEEPERS.md').read_text()
+    sources=sorted(SOURCE.glob('scene-*.png')); assert len(sources)==14,len(sources)
+    for source in sources:
+        name=source.stem
+        match=re.search(r'^\| '+re.escape(name)+r' \| ([^|]+)\| ([^|]+)\|',doc,re.M);assert match,name
+        title,tags=match.groups(); path=f'library/scenes/{name}.webp'
+        webp(Image.open(source),path,(1600,900),budget=400000,quality=85)
+        save_entry(dict(id=name,kind='scene',title=title.strip(),tags=[t.strip() for t in tags.strip().split(',')],image=path))
+    print('Exported 14 scenes')
