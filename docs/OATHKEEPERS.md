@@ -1,6 +1,6 @@
 # Oathkeepers project doc
 
-Everything about the project in one place: design, tech plan, deployment and art. Open Codex jobs stay in their own briefs in `docs/art/` (`CODEX_FIXES_LIBRARY_1.md`, `CODEX_BRIEF_LIBRARY_2.md`, `CODEX_BRIEF_SPELLS.md`).
+Everything about the project in one place: design, tech plan, deployment and art. Open Codex jobs stay in their own briefs in `docs/art/` (`CODEX_FIXES_LIBRARY_1.md`, `CODEX_BRIEF_LIBRARY_2.md`, `CODEX_BRIEF_HEROES.md`, `CODEX_BRIEF_SPELLS.md`). The current consolidated checklist is [Artwork remaining and Claude handoff](#artwork-remaining-and-claude-handoff).
 
 ## Contents
 
@@ -10,6 +10,7 @@ Everything about the project in one place: design, tech plan, deployment and art
 - [Art](#art)
 - [Art library spec](#art-library-spec)
 - [Art production plan](#art-production-plan)
+- [Artwork remaining and Claude handoff](#artwork-remaining-and-claude-handoff)
 - [Art history: trial brief](#art-history-trial-brief)
 - [Art history: trial handoff](#art-history-trial-handoff)
 - [Art history: trial notes](#art-history-trial-notes)
@@ -888,6 +889,179 @@ The goal can be full prebuilt coverage while releasing useful reviewed collectio
 Review this proposal before implementation. Keep existing saves and asset paths compatible. Add catalog validation and readiness gating before changing the DM's encounter-selection contract. Preserve the current rule: AI narrates and proposes; the engine validates and resolves.
 
 No live image-generation API, provider credential, spending approval, catalog implementation or mass art batch was created by this planning change.
+
+## Artwork remaining and Claude handoff
+
+Updated 2026-10-24. This is the current artwork checklist; older trial/pilot notes below are historical. Use the linked briefs for visual designs, tags and export instructions. This update inventories work; it does not generate art, merge branches or promote readiness.
+
+### Review evidence and current inventory
+
+Reviewed the recursive file trees and catalogs on `master` (`d4c530f`) and `art/library-batch-2` (`100e39e`), all four active briefs, batch 2 notes, current spell data, character files and frontend art lookups. Visually inspected the pilot and batch 2 monster contact sheets. This was a static artwork/inventory review, not a new gameplay or animation playtest.
+
+| Collection | On master now | Already produced on batch 2, not on master | Still to produce |
+|---|---|---|---|
+| Existing foundation | Four generic hero sheets, Goblin Warrior sheet, abbey tiles and props | — | Keep these as fallbacks |
+| Library 1 pilot | Five monster sheets + five matching portraits, three NPC portraits, two scenes, forest tiles and board: 17 catalog entries | — | Fixes below |
+| Library 2 monsters | None of the 13 expansion monsters | All 13 sheets + 13 portraits, catalog art ready; mechanics/integration pending | Review and integrate existing work |
+| Library 2 NPCs | Three pilot NPCs above | All 17 remaining portraits, catalog art ready; integration pending | Review and integrate existing work |
+| Library 2 scenes | Two pilot scenes above | None | 14 backdrops |
+| Cave and crypt | None | None | Two tilesets, two props sheets, two boards |
+| Named companions | Generic hero fallbacks | None | Five sheets + five portraits |
+| Class/species player art | Generic hero fallbacks | None | 24 sheets, 36 portraits, 21 cards |
+| Spell art | Code-drawn effects/text fallbacks | None | Effects below + icons for all 40 current spells |
+
+Master has 23 catalog entries. Batch 2 has 66: the same 23 plus 26 monster assets and 17 NPC portraits. All 43 additions have runtime files and pending integration. Their existence is not approval to enable new encounters. No open PR was found at review time.
+
+The batch 2 notes still say NPC production is pending, but its latest commit, files and catalog contain all 17 NPC portraits. Its contact sheet shows the 13 monster sets, not the NPC collection. Refresh those notes and review evidence before final handoff; do not regenerate the NPCs because the note is stale.
+
+### 1. Finish existing-art fixes
+
+Source: [Batch 1 fixes](art/CODEX_FIXES_LIBRARY_1.md). These fixes remain open: the forest tiles, spider and ogre exports have the same blob SHAs on master and batch 2, and `props-forest.png` is absent.
+
+- [ ] Remove baked dark borders from forest floor frames 0–2; keep their values close and preserve readable tree/bramble obstacles. Review mixed floor variants at board scale.
+- [ ] Produce `sprites/props-forest.png`: fallen log, stump, mossy boulder, fern; four 128px frames in a 2×2 atlas. Add the tileset `props` reference and board decorations; preserve valid 1×1 and 2×2 routes/spawns.
+- [ ] Separate near/far spider legs in walk/attack poses without changing frame layout or anchors.
+- [ ] Keep the ogre club visible in every walk pose and distinguish strike frame 7 from recovery frame 8.
+- [ ] Optional polish: stronger wolf/zombie idle variation and a sharper forest-road scene within the 400 KB budget.
+- [ ] Preserve source originals, measure changed sprites, supply before/after preview and fixes notes, and run the required checks.
+
+Static observations support the existing fixes: the forest board reads as bordered squares; spider legs merge at reduced scale; ogre strike/recovery poses are similar. Portraits and scenes share the established detailed fantasy palette. Contact sheets cannot establish motion quality or in-game acceptance. The pilot preview's “mechanics pending” labels are historical; its current catalog entries are integrated/ready.
+
+### 2. Review and deliver the produced batch 2 assets
+
+Source: [Library 2 brief](art/CODEX_BRIEF_LIBRARY_2.md), branch [art/library-batch-2](https://github.com/JustinOlivo52/oathkeepers-dnd/tree/art/library-batch-2). Reuse these exports and sources.
+
+**13 monster pairs already present:** goblin-boss, bugbear-warrior, bandit, bandit-captain, cultist, ghoul, wight, giant-rat, harpy, dire-wolf, worg, brown-bear, owlbear. Each has `sprites/monster-<id>.png` and `library/portraits/monster-<id>.webp`, catalog ids `monster-<id>` / `portrait-<id>`.
+
+**17 NPC portraits already present:** npc-innkeeper-human, npc-town-guard, npc-blacksmith, npc-priest, npc-priestess-dark, npc-noble, npc-farmer, npc-scholar, npc-hunter, npc-thief, npc-bard, npc-elder, npc-child, npc-mage, npc-soldier-veteran, npc-cult-leader, npc-bandit-leader.
+
+- [ ] Refresh batch 2 notes and the contact sheet/viewer to include all 43 additions. Existing verification text covers the first five monsters; it is not evidence for the complete collection.
+- [ ] Review all 143 monster frames, 13 monster portraits and 17 NPC portraits; verify identity, anatomy, silhouettes, alpha, bounds, anchors, budgets and coherent animation.
+- [ ] Check the noted captain offhand-blade occlusion and compact/sliding gaits at actual battle scale.
+- [ ] Run export/measurement and project checks against current master before delivery; preserve art/mechanics/integration gates independently.
+- [ ] Claude: implement exact supported creature rules, map real attacks/abilities, validate Large footprints and special movement, then playtest and promote individual entries. Harpy flight/abilities and any other unsupported behavior remain a mechanics task.
+- [ ] Claude: integrate NPC portraits with stable saved identity and strict selection. Prepare the branch for review/merge once its stated subset is validated.
+
+Size clarification: Goblin Boss and Giant Rat use 192px canvases but rules-size Small/1×1. The four Large expansion beasts use 384px frames, (192,340) anchors and 2×2 footprints. Do not copy the brief's ambiguous “Medium” canvas label into `rulesSize`.
+
+### 3. Produce the missing environments
+
+Source: [Library 2 sections 3–4](art/CODEX_BRIEF_LIBRARY_2.md) and [original scene/tag tables](#art-history-batch-1-brief).
+
+**14 scenes**, `library/scenes/<id>.webp`, 1600×900, under 400 KB:
+
+- [ ] scene-thornwatch-gate-day
+- [ ] scene-thornwatch-square
+- [ ] scene-tavern-quiet
+- [ ] scene-temple
+- [ ] scene-smithy
+- [ ] scene-forest-night
+- [ ] scene-river-crossing
+- [ ] scene-farmstead
+- [ ] scene-goblin-camp
+- [ ] scene-abbey-exterior
+- [ ] scene-cave-entrance
+- [ ] scene-cave-depths
+- [ ] scene-crypt
+- [ ] scene-watchtower
+
+Keep Thornwatch's timber palisade, squat stone keep and muddy frontier streets consistent. Reuse the existing forest-road-day and tavern-night exports.
+
+**Two complete terrain sets**, six runtime files:
+
+- [ ] `sprites/tiles-cave.png`, `sprites/props-cave.png`, `boards/board-cave.json`
+- [ ] `sprites/tiles-crypt.png`, `sprites/props-crypt.png`, `boards/board-crypt.json`
+
+Each tileset: five 128px frames (three floors, wall, difficult terrain), continuous unbordered floors. Each props atlas: four 128px frames in 2×2. Each board: valid separated spawns, connected open ground, declared/validated 2×2 alternatives and decorative props. Catalog ids: `tiles-cave` / `board-cave`, `tiles-crypt` / `board-crypt`; props are referenced by the tileset rather than a new unsupported catalog kind.
+
+Claude integration gap: current `tilesetFor()` loads library tiles but does not pass a library props sheet to the renderer; the scene preloads only the abbey props. Rendering the new forest/cave/crypt decorations needs explicit runtime wiring and review.
+
+### 4. Give companions their own art
+
+Source: [Library 2 section 5](art/CODEX_BRIEF_LIBRARY_2.md). Five named designs, ten files:
+
+| Character id | Design | Required exports |
+|---|---|---|
+| wren-ashdown | Small halfling rogue, hooded leather, shortsword/shortbow | Sheet + portrait |
+| brother-odric-vale | Stocky dwarf paladin, chain mail, shield/longsword, grey beard | Sheet + portrait |
+| tamsin-reed | Wood elf ranger, green-brown cloak, longbow attack | Sheet + portrait |
+| sister-maren-holt | Human cleric, chain mail, shield/mace, original sun emblem | Sheet + portrait |
+| pip-thistlewick | Small rock gnome wizard, pocketed robes, staff/goggles | Sheet + portrait |
+
+- [ ] For every row: `sprites/hero-<character-id>.png`, catalog `hero-<character-id>`, 11×192px frames, anchor (96,166).
+- [ ] For every row: `library/portraits/companion-<character-id>.webp`, catalog `portrait-<character-id>` of kind `npc`, 512px square, under 150 KB.
+- [ ] Show Wren and Pip visibly smaller within the common canvas; use rules-size Small/1×1.
+- [ ] Claude: verify portrait binding and the existing character-specific sprite lookup in real play.
+
+Additional coverage gap outside the five-companion brief: the repo also has the premade human fighter `bram-holloway`. If all six premades require unique appearances, add `hero-bram-holloway` and `portrait-bram-holloway` (same file patterns) after agreeing his design. These two files are additional scope, not part of the ten-file companion total.
+
+### 5. Complete class/species player artwork
+
+Source: [Heroes brief](art/CODEX_BRIEF_HEROES.md). All 81 runtime files remain absent from both reviewed branches.
+
+- [ ] **12 class sheets**: `sprites/hero-class-<class>.png`, catalog `hero-class-<class>`.
+- [ ] **12 Small class sheets**: `sprites/hero-class-<class>-small.png`, catalog matching the filename stem. Redraw body and gear about two thirds height; keep the same 192px canvas/anchor and Small/1×1 rules metadata.
+- [ ] **36 player portraits**: all nine species × four archetypes, `library/portraits/player-<species>-<archetype>.webp`, catalog `player-<species>-<archetype>`, kind `portrait`.
+- [ ] **12 class cards**: `library/cards/class-<class>.webp`, catalog `card-class-<class>`, with `classId`.
+- [ ] **Nine species cards**: `library/cards/species-<species>.webp`, catalog `card-species-<species>`, with `speciesId`.
+- [ ] Contact sheet `docs/art/heroes.png`, source/processing files and `CODEX_NOTES_HEROES.md`.
+
+Classes: barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard. Species: dragonborn, dwarf, elf, gnome, goliath, halfling, human, orc, tiefling. Archetypes: martial, expert, arcane, divine. Use the brief's exact designs and presentation matrix.
+
+Sheets use the standard 11-frame contract. Portraits are 512×512 WebP under 150 KB; cards 768×512 WebP under 150 KB with a calm left third for text. The builder already has card/portrait lookups and battle rendering already prefers named, then Small class, class, generic art. Claude should verify those hooks and readiness behavior rather than assume all UI wiring remains unimplemented.
+
+Layered custom bodies/equipment, species-specific battle bodies beyond the Small variants, alternate equipment attacks, north/south facings and smoother cycles remain later projects; the 81-file brief does not supply those.
+
+### 6. Complete spell art against the current spell roster
+
+Source: [Spell brief](art/CODEX_BRIEF_SPELLS.md), with this roster correction: `packages/content/data/spells.json` currently contains **40 spells**, not 24. No VFX sheets or spell icons exist in either reviewed tree/catalog.
+
+**Original reusable baseline: 27 effect sheets.**
+
+- [ ] Ten projectiles: `vfx-<type>-projectile`.
+- [ ] Ten impacts: `vfx-<type>`.
+- [ ] Five non-damage impacts: `vfx-heal`, `vfx-bless`, `vfx-shield-of-faith`, `vfx-hold`, `vfx-teleport`.
+- [ ] Two distinct area sheets: `vfx-shatter` and `vfx-acid-splash`.
+
+Types: fire, cold, lightning, acid, poison, necrotic, radiant, force, thunder, psychic. Keep the area ids above distinct from impact ids: catalog ids must be unique and the renderer checks both id and role.
+
+**40 icons**, `library/icons/icon-<spell-id>.png`, catalog id matching the filename stem. Each box covers every listed id:
+
+- [ ] fire-bolt, ray-of-frost, shocking-grasp, acid-splash, chill-touch, poison-spray, eldritch-blast, sacred-flame, produce-flame, vicious-mockery
+- [ ] magic-missile, burning-hands, thunderwave, guiding-bolt, inflict-wounds, cure-wounds, healing-word, bless, shield-of-faith, scorching-ray, shatter, hold-person, misty-step, spiritual-weapon
+- [ ] **16 additions missing from the old brief:** chromatic-orb, entangle, command, heroism, divine-favor, thunderous-smite, searing-smite, wrathful-smite, aid, lesser-restoration, fireball, lightning-bolt, mass-healing-word, revivify, spirit-guardians, vampiric-touch
+
+**Coverage still needed beyond the original two areas:** review current spell/event rendering with Claude before calling spell art complete.
+
+- [ ] Area art for burning-hands, thunderwave, entangle, fireball and lightning-bolt. Use spell-specific `vfx-<spell-id>` ids with role `area`; a line/cone must read as its actual shape, with renderer adaptation where needed.
+- [ ] Decide and author distinct non-damage impacts for command, heroism, divine-favor, the three smites, aid, lesser-restoration and revivify, or document an intentional shared effect per spell. Existing lookups accept spell-specific `vfx-<spell-id>` ids.
+- [ ] Review spirit-guardians' ongoing area/damage presentation and vampiric-touch's damage/heal presentation; generic radiant/necrotic impacts alone do not communicate their full behavior. Chromatic Orb's selectable damage type also needs correct runtime effect selection.
+- [ ] Optional seven signature sheets from the original brief: magic-missile-projectile, eldritch-blast-projectile, scorching-ray-projectile, sacred-flame, guiding-bolt, spiritual-weapon, vicious-mockery (each prefixed `vfx-`).
+- [ ] Preserve code fallbacks while subsets are delivered; provide `spell-effects.png`, updated notes and real battle playback evidence.
+
+Formats: transparent PNG, one row; projectile 4×64px (right-facing), impact 8×192px, area 8×384px; icons 64px square. Effects go in `sprites/vfx/<id>.png`. Leave clear edge margins even at peak intensity; “fills the frame” in the old brief must not cause clipping. Catalog `vfx.role` must match the event that uses it.
+
+### 7. Optional beasts and longer-term coverage
+
+- [ ] Optional batch 2 Wild Shape sets: **boar, panther, giant-badger**, each a sheet + matching portrait (six files). Keep mechanics pending until exact SRD entries are implemented; eligibility comes from the rules, not the artwork.
+- [ ] Remaining calibration families from the production plan: giant bat, gray ooze and one explicitly chosen SRD dragon entry. Their sheets, portraits, flight/deformation/breath animations and mechanics need individual briefs; they are absent from the reviewed branches.
+- [ ] Enumerate and version-pin the full SRD monster roster, including beasts, swarms, NPC and summoned forms, then map stat blocks to unique visual designs and existing exports. There is no verified full-roster count or completion percentage yet.
+- [ ] Expand environments, special attacks/movement, conditions and customization by reviewed briefs after that inventory. Persistent condition indicators, extra facings and weapon-specific cycles have no finished production specification yet.
+
+### Delivery order and acceptance
+
+Recommended order: validate the 43 existing branch assets and refresh their evidence; fix forest/spider/ogre; deliver companions and missing environments; deliver class/species art; deliver reusable spell effects/icons and the expanded spell coverage; then optional beasts and the inventoried SRD expansion. Keep work on the separate branches named in each brief.
+
+For every delivered subset:
+
+- [ ] Runtime files, catalog ids/paths, dimensions, tags, anchors, footprints and budgets checked together.
+- [ ] Raw generations and reproducible processing retained. Run `measure-sprites.py` after sprite changes.
+- [ ] Preview and notes identify exactly what exists, what is skipped, visual defects and what Claude must integrate.
+- [ ] `npm install`, `npm test`, `npm run typecheck`, `npm run build` pass for the delivered code/assets; push the branch.
+- [ ] Claude reviews real encounters/UI, stable saved identities, actual actions, props and footprints, then promotes only validated entries.
+
+Current master already has integrated pilot mechanics/art, including Large pilot creatures. Historical “all pilot integration pending” statements below describe the original handoff, not today's state. New branch assets still require their own validation. This documentation-only review changes no game code, asset files or readiness fields.
+
 
 ## Art history: trial brief
 
