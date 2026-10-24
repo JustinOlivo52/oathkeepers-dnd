@@ -21,11 +21,20 @@ ITEMS = [
 ]
 
 
-def main(items=ITEMS, checkpoint=1):
+def main(items=ITEMS, checkpoint=1, source_overrides=None):
     source_bytes = SOURCE.read_bytes()
     source = Image.open(SOURCE).convert('RGBA')
     assert source.size == (1122, 1402), 'Source changed; review crop boxes first'
     assert hashlib.sha256(source_bytes).hexdigest() == SOURCE_SHA256, 'Source changed; review first'
+    # Preflight every additional atlas before writing any files.
+    alternate_sources = {}
+    for spell, (path, expected_hash, expected_size) in (source_overrides or {}).items():
+        path = Path(path)
+        actual_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        assert actual_hash == expected_hash, f'{path}: source changed; review first'
+        atlas = Image.open(path).convert('RGBA')
+        assert atlas.size == expected_size, f'{path}: source dimensions changed'
+        alternate_sources[spell] = (atlas, str(path.relative_to(REPO)), actual_hash)
     OUTPUT.mkdir(parents=True, exist_ok=True)
     DOCS.mkdir(parents=True, exist_ok=True)
     catalog_path = REPO / 'packages/content/data/art-catalog.json'
@@ -37,7 +46,10 @@ def main(items=ITEMS, checkpoint=1):
     draw = ImageDraw.Draw(preview)
     for index, (spell, title, box) in enumerate(items):
         # Crop to the reviewed painted card border, then retain transparent margins.
-        crop = source.crop(box)
+        atlas, source_path, source_hash = alternate_sources.get(
+            spell, (source, str(SOURCE.relative_to(REPO)), SOURCE_SHA256))
+        assert 0 <= box[0] < box[2] <= atlas.width and 0 <= box[1] < box[3] <= atlas.height, spell
+        crop = atlas.crop(box)
         crop.thumbnail((60, 60), Image.Resampling.LANCZOS)
         icon = Image.new('RGBA', (64, 64))
         icon.alpha_composite(crop, ((64-crop.width)//2, (64-crop.height)//2))
@@ -60,6 +72,8 @@ def main(items=ITEMS, checkpoint=1):
         report['icons'].append(dict(id=asset_id, image=relative, sourceCrop=list(box),
                                    width=64, height=64, bytes=path.stat().st_size,
                                    sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+        if source_overrides:
+            report['icons'][-1].update(source=source_path, sourceSha256=source_hash)
         x = (index % columns) * 160 + 48
         y = (index // columns) * 210
         preview.paste(icon, (x, y+30), icon)

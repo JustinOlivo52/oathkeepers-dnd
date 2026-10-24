@@ -49,27 +49,42 @@ Preview inspected at 64px and 20px. Integration remains pending live UI review.
 Validation: 270 tests passed, 1 skipped; TypeScript and production build passed
 (existing bundle-size advisory). All checkpoint 1 image hashes remain unchanged.
 
+## Checkpoint 3 — twenty more spell icons (2026-10-24)
+
+Continues the same branch and PR #4. Exports the next twenty manifest entries:
+Inflict Wounds, Cure Wounds, Healing Word, Bless, Shield of Faith, Scorching Ray,
+Shatter, Hold Person, Misty Step, Spiritual Weapon, Chromatic Orb, Entangle,
+Command, Heroism, Divine Favor, Thunderous Smite, Searing Smite, Wrathful Smite,
+Aid and Lesser Restoration. Six come from `icons-0.png`, fourteen from `icons-1.png`.
+No artwork was regenerated or replaced.
+
+Run `python3 packages/web/art/codex/completion/export-icons-checkpoint-3.py`.
+Both saved atlases are validated against their reviewed dimensions and SHA-256
+hashes before writing exports. Each report entry identifies its source atlas,
+crop box, output hash, size and byte count. All twenty icons are 64×64 RGBA with
+transparent edge margins and under 20 KB. Preview inspected at 64px and 20px.
+All fourteen previous icon output hashes remain unchanged. Live UI review remains
+pending. Preview/report: `docs/art/spell-icons-checkpoint-3.{png,json}`.
+Validation: 270 tests passed, 1 skipped; TypeScript and production build passed
+(existing bundle-size advisory). Bounds, RGBA format, output hashes and catalog
+uniqueness verified across all 34 icons.
+
 ## Resume here
 
-Batch size: **10 icons at a time** (or the remaining count if fewer than ten).
-Current total: **14/40 icons exported; 0/50 VFX sheets exported**.
+Batch size: **20 at a time**, or the remaining count if fewer than twenty.
+Current total: **34/40 icons exported; 0/50 VFX sheets exported**.
 
-Next ten, in manifest order:
+Six icons remain, all in the saved `icons-1.png` atlas:
 
-- Inflict Wounds
-- Cure Wounds
-- Healing Word
-- Bless
-- Shield of Faith
-- Scorching Ray
-- Shatter
-- Hold Person
-- Misty Step
-- Spiritual Weapon
+- Fireball
+- Lightning Bolt
+- Mass Healing Word
+- Revivify
+- Spirit Guardians
+- Vampiric Touch
 
-The first six are the remaining cards of `icons-0.png`; the final four are the
-first row of `icons-1.png`. Inspect that atlas and review actual crop boxes before
-exporting. All icon and VFX sources are already saved: do not regenerate them.
+Review their actual crop boxes before exporting. All icon and VFX sources are
+already saved: do not regenerate them. Keep every checkpoint's preview and report.
 
 After icons, export the 50 effect definitions from the 13 saved `effects-*.png`
 atlases with the required projectile/impact/area sizes and frame counts. Review

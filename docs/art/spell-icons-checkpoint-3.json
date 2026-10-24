@@ -1,0 +1,326 @@
+{
+  "source": "packages/web/art/codex/source/completion/icons-0.png",
+  "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88",
+  "icons": [
+    {
+      "id": "icon-inflict-wounds",
+      "image": "library/icons/icon-inflict-wounds.png",
+      "sourceCrop": [
+        570,
+        792,
+        821,
+        1043
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 10154,
+      "sha256": "893e72fbacbe067f90b5bb76f0d88f808a77d70404b90bc81680c9e0c2e496fd",
+      "source": "packages/web/art/codex/source/completion/icons-0.png",
+      "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88"
+    },
+    {
+      "id": "icon-cure-wounds",
+      "image": "library/icons/icon-cure-wounds.png",
+      "sourceCrop": [
+        844,
+        792,
+        1093,
+        1043
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9838,
+      "sha256": "e730e3357f73b116775d8e161f24e81c434bd220a3935d0fe072101451b91d07",
+      "source": "packages/web/art/codex/source/completion/icons-0.png",
+      "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88"
+    },
+    {
+      "id": "icon-healing-word",
+      "image": "library/icons/icon-healing-word.png",
+      "sourceCrop": [
+        31,
+        1056,
+        279,
+        1312
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8790,
+      "sha256": "d3f522f9a4836080ec8979021d27a14fec55a5646be333fe3e663aa01e8e3fbe",
+      "source": "packages/web/art/codex/source/completion/icons-0.png",
+      "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88"
+    },
+    {
+      "id": "icon-bless",
+      "image": "library/icons/icon-bless.png",
+      "sourceCrop": [
+        303,
+        1056,
+        551,
+        1313
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 7560,
+      "sha256": "1803ae3de2338ac4db1b2bd2e21f4dbab42ef7dafb2875526250afb97bc3fb73",
+      "source": "packages/web/art/codex/source/completion/icons-0.png",
+      "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88"
+    },
+    {
+      "id": "icon-shield-of-faith",
+      "image": "library/icons/icon-shield-of-faith.png",
+      "sourceCrop": [
+        570,
+        1056,
+        822,
+        1313
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9655,
+      "sha256": "e02f5f3ec83e5c4a4e8e3de78ad1190515dd9e53d3ff7cabb4b08dd18c0335e0",
+      "source": "packages/web/art/codex/source/completion/icons-0.png",
+      "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88"
+    },
+    {
+      "id": "icon-scorching-ray",
+      "image": "library/icons/icon-scorching-ray.png",
+      "sourceCrop": [
+        845,
+        1057,
+        1093,
+        1315
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8163,
+      "sha256": "cece83eae7f00f07a06af7b4847bde3aa965af12590cddb124b28f6878f6c6ff",
+      "source": "packages/web/art/codex/source/completion/icons-0.png",
+      "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88"
+    },
+    {
+      "id": "icon-shatter",
+      "image": "library/icons/icon-shatter.png",
+      "sourceCrop": [
+        34,
+        9,
+        286,
+        255
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9883,
+      "sha256": "77eadf33d93819f53d2a67da90eac82497b613d8288270f875f39da85f8d41c5",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-hold-person",
+      "image": "library/icons/icon-hold-person.png",
+      "sourceCrop": [
+        303,
+        9,
+        553,
+        255
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 10148,
+      "sha256": "bfe4c86603d8abb9eab8df058e1a419bfaba069321247aa9a90dec590d913f66",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-misty-step",
+      "image": "library/icons/icon-misty-step.png",
+      "sourceCrop": [
+        571,
+        9,
+        820,
+        255
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9576,
+      "sha256": "c664c5d2eed851c698cb0947500b2e1ddecd81cb9e53bf4b06a50952282108d5",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-spiritual-weapon",
+      "image": "library/icons/icon-spiritual-weapon.png",
+      "sourceCrop": [
+        837,
+        9,
+        1088,
+        255
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9762,
+      "sha256": "bed80e305655053614aff40fd86d7af33aab20febb86f08f3fb1b9f3fe4cd275",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-chromatic-orb",
+      "image": "library/icons/icon-chromatic-orb.png",
+      "sourceCrop": [
+        34,
+        270,
+        285,
+        515
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 10019,
+      "sha256": "483da5fc6e4be5222754e03269ffeee1f1583ee25a8cc7e6162c750fbaed3993",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-entangle",
+      "image": "library/icons/icon-entangle.png",
+      "sourceCrop": [
+        303,
+        270,
+        553,
+        515
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 10226,
+      "sha256": "aa70b2be51f54c393545262c02db48037bc9a12353b9c505d91011ebf6c5bbd1",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-command",
+      "image": "library/icons/icon-command.png",
+      "sourceCrop": [
+        571,
+        269,
+        820,
+        515
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8850,
+      "sha256": "1a6af8ad517f5e993e539e70466b208f26a4b029b6abb92c5f61bf415a96c776",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-heroism",
+      "image": "library/icons/icon-heroism.png",
+      "sourceCrop": [
+        837,
+        269,
+        1088,
+        515
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9495,
+      "sha256": "fafeed3aa445ed26394bf8646efe23831bab20012d7ce6fe028866df9a60ee0a",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-divine-favor",
+      "image": "library/icons/icon-divine-favor.png",
+      "sourceCrop": [
+        33,
+        530,
+        285,
+        785
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9958,
+      "sha256": "6caef6392feb2b51f8935a2716527a5a41acd0a3cf935a241fd6c50fadc87ac7",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-thunderous-smite",
+      "image": "library/icons/icon-thunderous-smite.png",
+      "sourceCrop": [
+        303,
+        530,
+        553,
+        785
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 10578,
+      "sha256": "3c01aa5ef36bae72edd007cf3972b9a462472ec17c403c43e12b155848c44666",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-searing-smite",
+      "image": "library/icons/icon-searing-smite.png",
+      "sourceCrop": [
+        570,
+        530,
+        819,
+        785
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9499,
+      "sha256": "5ce5b8531b129ba4161873e8758e5e0697165f8e39983026ec529ba457b5927a",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-wrathful-smite",
+      "image": "library/icons/icon-wrathful-smite.png",
+      "sourceCrop": [
+        837,
+        530,
+        1088,
+        785
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9905,
+      "sha256": "c35c7a00deb05a96d6b24da473a89d6b7b465bc53448aef0b3b9d915327a8ae4",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-aid",
+      "image": "library/icons/icon-aid.png",
+      "sourceCrop": [
+        33,
+        798,
+        285,
+        1056
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 8928,
+      "sha256": "64376752c704a96a49e0696198fbc16540fe84d29b27eab58b008f81a70050d2",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-lesser-restoration",
+      "image": "library/icons/icon-lesser-restoration.png",
+      "sourceCrop": [
+        303,
+        798,
+        553,
+        1056
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 10039,
+      "sha256": "f492dacd29945e6e352ec6a0da1f94312c91ff760b0d989dc59107cdffe2103c",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    }
+  ]
+}
