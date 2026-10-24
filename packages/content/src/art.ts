@@ -168,6 +168,8 @@ export function pickArt(catalog: ArtEntry[], query: ArtQuery, rng: Rng): ArtEntr
   let pool = catalog.filter((e) => e.kind === query.kind && (query.readiness === "art-ready" ? e.artStatus === "ready" : isEncounterReady(e)));
   if (query.monsterId) pool = pool.filter((e) => e.monsterId === query.monsterId);
   if (query.assetId) pool = pool.filter((e) => e.id === query.assetId);
+  // Portraits tagged "hero" belong to the premade party; they're never handed out as a random NPC.
+  else if (query.kind === "npc") pool = pool.filter((e) => !(e.tags as string[]).includes("hero"));
   pool = pool.filter((e) => [...required].every((tag) => (e.tags as string[]).includes(tag)));
   if (query.readiness !== "art-ready") pool = pool.filter((e) => !e.sprite || Math.max(e.sprite.footprint.width, e.sprite.footprint.height) <= (query.maxFootprint ?? 1));
   if (!pool.length) return undefined;

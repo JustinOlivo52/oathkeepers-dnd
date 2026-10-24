@@ -1,0 +1,50 @@
+{
+  "id": "dire-wolf",
+  "name": "Dire Wolf",
+  "size": "large",
+  "type": "beast",
+  "cr": 1,
+  "xp": 200,
+  "proficiencyBonus": 2,
+  "ac": 14,
+  "hp": {
+    "average": 22,
+    "formula": "3d10+6"
+  },
+  "speedFt": 50,
+  "initiativeBonus": 2,
+  "abilities": {
+    "str": 17,
+    "dex": 15,
+    "con": 15,
+    "int": 3,
+    "wis": 12,
+    "cha": 7
+  },
+  "skillBonuses": {
+    "perception": 5,
+    "stealth": 4
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 15
+  },
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "kind": "melee",
+      "attackBonus": 5,
+      "damage": "1d10+3",
+      "damageType": "piercing",
+      "reachFt": 5,
+      "onHit": {
+        "condition": "prone",
+        "maxSize": "huge"
+      }
+    }
+  ],
+  "features": [
+    "pack-tactics"
+  ]
+}

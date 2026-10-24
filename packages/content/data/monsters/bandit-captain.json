@@ -1,0 +1,62 @@
+{
+  "id": "bandit-captain",
+  "name": "Bandit Captain",
+  "size": "medium",
+  "type": "humanoid",
+  "cr": 2,
+  "xp": 450,
+  "proficiencyBonus": 2,
+  "ac": 15,
+  "hp": {
+    "average": 52,
+    "formula": "8d8+16"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 3,
+  "abilities": {
+    "str": 15,
+    "dex": 16,
+    "con": 14,
+    "int": 14,
+    "wis": 11,
+    "cha": 14
+  },
+  "saveProficiencies": [
+    "str",
+    "dex",
+    "wis"
+  ],
+  "skillBonuses": {
+    "athletics": 4,
+    "deception": 4
+  },
+  "senses": {
+    "passivePerception": 10
+  },
+  "attacks": [
+    {
+      "id": "scimitar",
+      "name": "Scimitar",
+      "kind": "melee",
+      "attackBonus": 5,
+      "damage": "1d6+3",
+      "damageType": "slashing",
+      "reachFt": 5
+    },
+    {
+      "id": "pistol",
+      "name": "Pistol",
+      "kind": "ranged",
+      "attackBonus": 5,
+      "damage": "1d10+3",
+      "damageType": "piercing",
+      "rangeFt": [
+        30,
+        90
+      ]
+    }
+  ],
+  "features": [
+    "extra-attack"
+  ]
+}

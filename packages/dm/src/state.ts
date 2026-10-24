@@ -68,7 +68,8 @@ export type StoryEvent =
   | { type: "notice"; text: string }
   | { type: "table"; text: string };
 
-export type Battlefield = "abbey" | "forest" | "dungeon";
+export const BATTLEFIELDS = ["abbey", "forest", "dungeon", "cave", "crypt"] as const;
+export type Battlefield = (typeof BATTLEFIELDS)[number];
 
 /** Waiting on the player: a roll to click, or a battle to fight. */
 export type Pending =

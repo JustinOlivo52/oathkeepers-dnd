@@ -205,7 +205,7 @@ describe("art", () => {
   it("shows a matching scene and keeps an NPC's portrait the same later", async () => {
     const { director, state, provider } = setup([
       turn([], [
-        call("a", "show_art", { kind: "scene", tags: ["tavern", "night"], npc_name: null, caption: "The Lantern" }),
+        call("a", "show_art", { kind: "scene", tags: ["tavern", "night", "festive"], npc_name: null, caption: "The Lantern" }),
         call("b", "update_npc", { name: "Hilde", description: "Dwarf innkeeper", attitude: "friendly", notes: "" }),
         call("c", "show_art", { kind: "npc", tags: ["innkeeper", "dwarf", "woman"], npc_name: "Hilde", caption: "Hilde" }),
       ]),

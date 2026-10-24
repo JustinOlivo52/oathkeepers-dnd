@@ -1,0 +1,72 @@
+{
+  "id": "wight",
+  "name": "Wight",
+  "size": "medium",
+  "type": "undead",
+  "cr": 3,
+  "xp": 700,
+  "proficiencyBonus": 2,
+  "ac": 14,
+  "hp": {
+    "average": 82,
+    "formula": "11d8+33"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 2,
+  "abilities": {
+    "str": 15,
+    "dex": 14,
+    "con": 16,
+    "int": 10,
+    "wis": 13,
+    "cha": 15
+  },
+  "skillBonuses": {
+    "perception": 3,
+    "stealth": 4
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 13
+  },
+  "resistances": [
+    "necrotic"
+  ],
+  "immunities": [
+    "poison"
+  ],
+  "attacks": [
+    {
+      "id": "longsword",
+      "name": "Longsword",
+      "kind": "melee",
+      "attackBonus": 4,
+      "damage": "1d8+2",
+      "damageType": "slashing",
+      "reachFt": 5,
+      "extraDamage": {
+        "dice": "1d8",
+        "type": "necrotic"
+      }
+    },
+    {
+      "id": "longbow",
+      "name": "Longbow",
+      "kind": "ranged",
+      "attackBonus": 4,
+      "damage": "1d8+2",
+      "damageType": "piercing",
+      "rangeFt": [
+        150,
+        600
+      ],
+      "extraDamage": {
+        "dice": "1d8",
+        "type": "necrotic"
+      }
+    }
+  ],
+  "features": [
+    "extra-attack"
+  ]
+}

@@ -38,6 +38,8 @@ export interface TilesetInfo {
   named: { floor: number[]; wall: number; rubble: number };
   /** The abbey's hand-placed braziers and columns along walls. */
   abbeyProps: boolean;
+  /** A library board's decorations: a 2x2 sheet of 128px props and where each goes. */
+  props?: { file: string; at: { x: number; y: number; prop: number }[] };
 }
 
 export interface Overlay {
@@ -119,6 +121,7 @@ export class BattleScene extends Phaser.Scene {
   preload(): void {
     this.load.on("loaderror", () => this.callbacks.onLoadError?.());
     if (this.tileset.abbeyProps) this.load.spritesheet("props", `${BASE}assets/sprites/props.png`, { frameWidth: 128, frameHeight: 128 });
+    if (this.tileset.props) this.load.spritesheet("board-props", `${BASE}assets/${this.tileset.props.file}`, { frameWidth: 128, frameHeight: 128 });
     this.load.spritesheet(this.tileset.key, `${BASE}assets/${this.tileset.file}`, { frameWidth: this.tileset.frameSize, frameHeight: this.tileset.frameSize });
     for (const sheet of this.sheets()) {
       this.load.spritesheet(sheet.key, `${BASE}assets/${sheet.file}`, { frameWidth: sheet.frameWidth, frameHeight: sheet.frameHeight });
@@ -267,6 +270,11 @@ export class BattleScene extends Phaser.Scene {
           grid.lineStyle(1, 0xa5aea1, 0.10).strokeRect(x * TILE, y * TILE, TILE, TILE);
         }
       }
+    // Board decorations (rocks, bones, urns): scenery only, they don't block movement.
+    for (const p of this.tileset.props?.at ?? []) {
+      this.add.image(p.x * TILE + TILE / 2, p.y * TILE + TILE * 0.9, "board-props", p.prop)
+        .setOrigin(0.5, 0.95).setScale((TILE / 128) * 0.8).setDepth(900 + p.y * TILE);
+    }
   }
 
   private addToken(c: Creature): void {

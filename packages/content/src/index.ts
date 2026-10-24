@@ -26,6 +26,22 @@ import zombie from "../data/monsters/zombie.json";
 import wolf from "../data/monsters/wolf.json";
 import giantSpider from "../data/monsters/giant-spider.json";
 import ogre from "../data/monsters/ogre.json";
+import goblinBoss from "../data/monsters/goblin-boss.json";
+import bandit from "../data/monsters/bandit.json";
+import banditCaptain from "../data/monsters/bandit-captain.json";
+import cultist from "../data/monsters/cultist.json";
+import bugbearWarrior from "../data/monsters/bugbear-warrior.json";
+import ghoul from "../data/monsters/ghoul.json";
+import wight from "../data/monsters/wight.json";
+import giantRat from "../data/monsters/giant-rat.json";
+import harpy from "../data/monsters/harpy.json";
+import direWolf from "../data/monsters/dire-wolf.json";
+import worg from "../data/monsters/worg.json";
+import brownBear from "../data/monsters/brown-bear.json";
+import owlbear from "../data/monsters/owlbear.json";
+import boar from "../data/monsters/boar.json";
+import panther from "../data/monsters/panther.json";
+import giantBadger from "../data/monsters/giant-badger.json";
 import bram from "../data/characters/bram-holloway.json";
 import wren from "../data/characters/wren-ashdown.json";
 import odric from "../data/characters/brother-odric-vale.json";
@@ -68,7 +84,7 @@ function validate<T extends z.ZodType>(schema: T, data: unknown, file: string): 
   return result.data;
 }
 
-const monsterFiles = { "goblin-warrior": goblinWarrior, skeleton, zombie, wolf, "giant-spider": giantSpider, ogre };
+const monsterFiles = { "goblin-warrior": goblinWarrior, skeleton, zombie, wolf, "giant-spider": giantSpider, ogre, "goblin-boss": goblinBoss, bandit, "bandit-captain": banditCaptain, cultist, "bugbear-warrior": bugbearWarrior, ghoul, wight, "giant-rat": giantRat, harpy, "dire-wolf": direWolf, worg, "brown-bear": brownBear, owlbear, boar, panther, "giant-badger": giantBadger };
 const characterFiles = { "bram-holloway": bram, "wren-ashdown": wren, "brother-odric-vale": odric, "tamsin-reed": tamsin, "sister-maren-holt": maren, "pip-thistlewick": pip };
 const classFiles = { barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard };
 

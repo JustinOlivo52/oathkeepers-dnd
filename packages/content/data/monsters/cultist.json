@@ -1,0 +1,47 @@
+{
+  "id": "cultist",
+  "name": "Cultist",
+  "size": "medium",
+  "type": "humanoid",
+  "cr": 0.125,
+  "xp": 25,
+  "proficiencyBonus": 2,
+  "ac": 12,
+  "hp": {
+    "average": 9,
+    "formula": "2d8"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 1,
+  "abilities": {
+    "str": 11,
+    "dex": 12,
+    "con": 10,
+    "int": 10,
+    "wis": 11,
+    "cha": 10
+  },
+  "skillBonuses": {
+    "deception": 2,
+    "religion": 2
+  },
+  "senses": {
+    "passivePerception": 10
+  },
+  "attacks": [
+    {
+      "id": "ritual-sickle",
+      "name": "Ritual Sickle",
+      "kind": "melee",
+      "attackBonus": 3,
+      "damage": "1d4+1",
+      "damageType": "slashing",
+      "reachFt": 5,
+      "extraDamage": {
+        "dice": "1",
+        "type": "necrotic"
+      }
+    }
+  ],
+  "features": []
+}

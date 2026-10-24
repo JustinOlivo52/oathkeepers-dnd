@@ -6,6 +6,9 @@ import type { Content } from "./index.js";
 import type { CharacterData } from "./schemas.js";
 
 /** A battle map with where each side starts. `tiles` names the tileset to draw it with ("abbey" for the built-in look). */
+/** The DM's battlefield names and the board each one plays on ("generated" is a new random dungeon). */
+export const BATTLEFIELD_BOARDS: Record<string, string> = { abbey: "abbey", forest: "board-forest-road", dungeon: "generated", cave: "board-cave", crypt: "board-crypt" };
+
 export interface Battlefield {
   map: GridMap;
   partySpawns: Point[];

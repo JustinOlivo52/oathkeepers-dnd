@@ -18,7 +18,7 @@ function buildBattle(client: RemoteClient, view: RemoteBattleView, playerId: str
     refresh: () => client.battle(0),
   });
   const classOf = new Map(Object.entries(view.classes));
-  return { combat, map: combat.map!, tileset: tilesetFor(view.tiles), controller, classOf, ...spritesFor(combat, classOf) };
+  return { combat, map: combat.map!, tileset: tilesetFor(view.tiles, view.battlefield), controller, classOf, ...spritesFor(combat, classOf) };
 }
 
 /**

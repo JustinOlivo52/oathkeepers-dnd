@@ -1,6 +1,6 @@
 import "./adventure.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MAX_LEVEL, type CharacterData } from "@oathkeepers/content";
+import { BATTLEFIELD_BOARDS, MAX_LEVEL, type CharacterData } from "@oathkeepers/content";
 import { POTION_ITEM, XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
 
 /** Matches Director.MAX_COMPANIONS (kept here so the web bundle doesn't pull in the director for one number). */
@@ -395,7 +395,7 @@ function Adventure(props: {
           setup={{
             character: hero,
             enemies: pending.enemies,
-            battlefield: { abbey: "abbey", forest: "board-forest-road", dungeon: "generated" }[pending.battlefield] ?? "generated",
+            battlefield: BATTLEFIELD_BOARDS[pending.battlefield] ?? "generated",
             seed: Math.floor(Math.random() * 1_000_000),
             id: 1,
             startingHp: me.hp,

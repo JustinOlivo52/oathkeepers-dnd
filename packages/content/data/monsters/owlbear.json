@@ -1,0 +1,45 @@
+{
+  "id": "owlbear",
+  "name": "Owlbear",
+  "size": "large",
+  "type": "monstrosity",
+  "cr": 3,
+  "xp": 700,
+  "proficiencyBonus": 2,
+  "ac": 13,
+  "hp": {
+    "average": 59,
+    "formula": "7d10+21"
+  },
+  "speedFt": 40,
+  "initiativeBonus": 1,
+  "abilities": {
+    "str": 20,
+    "dex": 12,
+    "con": 17,
+    "int": 3,
+    "wis": 12,
+    "cha": 7
+  },
+  "skillBonuses": {
+    "perception": 5
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 15
+  },
+  "attacks": [
+    {
+      "id": "rend",
+      "name": "Rend",
+      "kind": "melee",
+      "attackBonus": 7,
+      "damage": "2d8+5",
+      "damageType": "slashing",
+      "reachFt": 5
+    }
+  ],
+  "features": [
+    "extra-attack"
+  ]
+}

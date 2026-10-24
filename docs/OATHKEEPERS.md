@@ -892,6 +892,8 @@ No live image-generation API, provider credential, spending approval, catalog im
 
 ## Artwork remaining and Claude handoff
 
+**Integrated 2026-10-24 (Claude):** every delivered asset is now `integrationStatus: "ready"` and in play: 30 hero sheets (class sheets, small variants, companions), 36 player portraits, 21 builder cards, 39 NPC portraits (the six premade-party portraits are bound to their characters and excluded from random NPC picks), 14 scenes, cave and crypt tilesets, boards and props (DM battlefields `cave` and `crypt`), and 16 monsters with SRD 5.2 stat blocks (13 enemies plus boar, panther and giant badger, which are also Druid Wild Shape forms). Rules not modeled yet: harpy flight and Luring Song, bugbear grapple, ghoul paralysis, wight Life Drain and sunlight sensitivity, goblin boss Redirect Attack. Open art work: the batch 1 fixes below.
+
 **Spell production checkpoint, 2026-10-24:** [PR #4](https://github.com/JustinOlivo52/oathkeepers-dnd/pull/4)
 now preserves **all 40 spell icons and all 50 spell animation sheets (348 frames)**,
 exported from the saved originals. The older spell-production counts and unchecked

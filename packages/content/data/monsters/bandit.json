@@ -1,0 +1,51 @@
+{
+  "id": "bandit",
+  "name": "Bandit",
+  "size": "medium",
+  "type": "humanoid",
+  "cr": 0.125,
+  "xp": 25,
+  "proficiencyBonus": 2,
+  "ac": 12,
+  "hp": {
+    "average": 11,
+    "formula": "2d8+2"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 1,
+  "abilities": {
+    "str": 11,
+    "dex": 12,
+    "con": 12,
+    "int": 10,
+    "wis": 10,
+    "cha": 10
+  },
+  "senses": {
+    "passivePerception": 10
+  },
+  "attacks": [
+    {
+      "id": "scimitar",
+      "name": "Scimitar",
+      "kind": "melee",
+      "attackBonus": 3,
+      "damage": "1d6+1",
+      "damageType": "slashing",
+      "reachFt": 5
+    },
+    {
+      "id": "light-crossbow",
+      "name": "Light Crossbow",
+      "kind": "ranged",
+      "attackBonus": 3,
+      "damage": "1d8+1",
+      "damageType": "piercing",
+      "rangeFt": [
+        80,
+        320
+      ]
+    }
+  ],
+  "features": []
+}

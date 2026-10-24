@@ -6,9 +6,11 @@ const url = (image: string) => `${import.meta.env.BASE_URL}assets/${image}`;
 /** Player portraits ready to pick in the builder. */
 export const PLAYER_PORTRAITS = content.art.filter((e) => e.kind === "portrait" && e.image && e.artStatus === "ready");
 
-/** The character's picked portrait, if it exists. */
-export function portraitUrl(c: Pick<CharacterData, "portrait">): string | undefined {
-  const art = c.portrait ? PLAYER_PORTRAITS.find((e) => e.id === c.portrait) : undefined;
+/** The character's picked portrait, or the premade characters' own (`portrait-<id>`), if it exists. */
+export function portraitUrl(c: Pick<CharacterData, "portrait" | "id">): string | undefined {
+  const art =
+    (c.portrait ? PLAYER_PORTRAITS.find((e) => e.id === c.portrait) : undefined) ??
+    content.art.find((e) => e.id === `portrait-${c.id}` && e.image && e.artStatus === "ready");
   return art?.image ? url(art.image) : undefined;
 }
 

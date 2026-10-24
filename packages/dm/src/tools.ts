@@ -2,6 +2,7 @@ import { z } from "zod";
 import { ABILITIES, SKILLS, type Skill } from "@oathkeepers/engine";
 import { ALL_ART_TAGS, type ArtTag } from "@oathkeepers/content";
 import type { ToolSpec } from "./provider.js";
+import { BATTLEFIELDS } from "./state.js";
 
 const SKILL_NAMES = Object.keys(SKILLS) as [Skill, ...Skill[]];
 
@@ -27,7 +28,7 @@ export const TOOL_INPUTS = {
   }),
   start_combat: z.object({
     enemies: z.array(z.object({ monster_id: z.string(), count: z.number().int().min(1).max(8) })).min(1),
-    battlefield: z.enum(["abbey", "forest", "dungeon"]),
+    battlefield: z.enum(BATTLEFIELDS),
     description: z.string(),
   }),
   grant_xp: z.object({ amount: z.number().int().min(1).max(5000), reason: z.string() }),
@@ -102,8 +103,9 @@ export function toolSpecs(monsterIds: string[]): ToolSpec[] {
         },
         battlefield: {
           type: "string",
-          enum: ["abbey", "forest", "dungeon"],
-          description: "abbey: open ruined abbey. forest: woodland road with tree cover. dungeon: rooms and corridors (caves, crypts, buildings).",
+          enum: [...BATTLEFIELDS],
+          description:
+            "abbey: open ruined abbey. forest: woodland road with tree cover. cave: limestone caverns. crypt: tombs and burial halls. dungeon: generated rooms and corridors (any other building or ruin).",
         },
         description: str("One sentence setting the scene for the battle."),
       }),

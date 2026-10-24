@@ -1,0 +1,41 @@
+{
+  "id": "harpy",
+  "name": "Harpy",
+  "size": "medium",
+  "type": "monstrosity",
+  "cr": 1,
+  "xp": 200,
+  "proficiencyBonus": 2,
+  "ac": 11,
+  "hp": {
+    "average": 38,
+    "formula": "7d8+7"
+  },
+  "speedFt": 40,
+  "initiativeBonus": 1,
+  "abilities": {
+    "str": 12,
+    "dex": 13,
+    "con": 12,
+    "int": 7,
+    "wis": 10,
+    "cha": 13
+  },
+  "senses": {
+    "passivePerception": 10
+  },
+  "attacks": [
+    {
+      "id": "claw",
+      "name": "Claw",
+      "kind": "melee",
+      "attackBonus": 3,
+      "damage": "2d4+1",
+      "damageType": "slashing",
+      "reachFt": 5
+    }
+  ],
+  "features": [
+    "extra-attack"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "boar",
+  "name": "Boar",
+  "size": "medium",
+  "type": "beast",
+  "cr": 0.25,
+  "xp": 50,
+  "proficiencyBonus": 2,
+  "ac": 11,
+  "hp": {
+    "average": 13,
+    "formula": "2d8+4"
+  },
+  "speedFt": 40,
+  "initiativeBonus": 0,
+  "abilities": {
+    "str": 13,
+    "dex": 11,
+    "con": 14,
+    "int": 2,
+    "wis": 9,
+    "cha": 5
+  },
+  "senses": {
+    "passivePerception": 9
+  },
+  "attacks": [
+    {
+      "id": "gore",
+      "name": "Gore",
+      "kind": "melee",
+      "attackBonus": 3,
+      "damage": "1d6+1",
+      "damageType": "piercing",
+      "reachFt": 5
+    }
+  ],
+  "features": []
+}

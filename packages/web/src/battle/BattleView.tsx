@@ -75,7 +75,7 @@ function createBattle({ character, enemies, seed, battlefield, startingHp, potio
   return {
     combat,
     map: field.map,
-    tileset: tilesetFor(field.tiles),
+    tileset: tilesetFor(field.tiles, battlefield),
     controller: new BattleController(combat, new Set([character.id])),
     sheetFor,
     formSheets,

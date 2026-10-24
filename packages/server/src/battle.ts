@@ -12,7 +12,7 @@ import {
   type LoggedEvent,
   type Rng,
 } from "@oathkeepers/engine";
-import { battleOutcome, BoardSchema, createEncounter, type BattleOutcome, type BoardData, type Content } from "@oathkeepers/content";
+import { BATTLEFIELD_BOARDS, battleOutcome, BoardSchema, createEncounter, type BattleOutcome, type BoardData, type Content } from "@oathkeepers/content";
 import type { AdventureState, Pending } from "@oathkeepers/dm";
 
 /** Hand-made battle boards, read from the web app's public folder. */
@@ -53,7 +53,7 @@ export interface BattleView {
   over: boolean;
 }
 
-const BATTLEFIELDS: Record<string, string> = { abbey: "abbey", forest: "board-forest-road", dungeon: "generated" };
+
 
 /**
  * The one real copy of a battle, on the server. Players send actions for their own creatures; the computer plays
@@ -78,7 +78,7 @@ export class ServerBattle {
   static start(content: Content, boards: Map<string, BoardData>, state: AdventureState, pending: Extract<Pending, { type: "combat" }>, rng: Rng): ServerBattle {
     const away = new Set((state.members ?? []).filter((m) => m.away).map((m) => m.characterId));
     const party = state.party.filter((c) => !away.has(c.id));
-    const battlefield = BATTLEFIELDS[pending.battlefield] ?? "generated";
+    const battlefield = BATTLEFIELD_BOARDS[pending.battlefield] ?? "generated";
     const { combat, field } = createEncounter(
       content,
       boards,

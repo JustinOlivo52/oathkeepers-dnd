@@ -1,0 +1,58 @@
+{
+  "id": "goblin-boss",
+  "name": "Goblin Boss",
+  "size": "small",
+  "type": "fey",
+  "cr": 1,
+  "xp": 200,
+  "proficiencyBonus": 2,
+  "ac": 17,
+  "hp": {
+    "average": 21,
+    "formula": "6d6"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 2,
+  "abilities": {
+    "str": 10,
+    "dex": 15,
+    "con": 10,
+    "int": 10,
+    "wis": 8,
+    "cha": 10
+  },
+  "skillBonuses": {
+    "stealth": 6
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 9
+  },
+  "attacks": [
+    {
+      "id": "scimitar",
+      "name": "Scimitar",
+      "kind": "melee",
+      "attackBonus": 4,
+      "damage": "1d6+2",
+      "damageType": "slashing",
+      "reachFt": 5
+    },
+    {
+      "id": "shortbow",
+      "name": "Shortbow",
+      "kind": "ranged",
+      "attackBonus": 4,
+      "damage": "1d6+2",
+      "damageType": "piercing",
+      "rangeFt": [
+        80,
+        320
+      ]
+    }
+  ],
+  "features": [
+    "extra-attack",
+    "nimble-escape"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "giant-rat",
+  "name": "Giant Rat",
+  "size": "small",
+  "type": "beast",
+  "cr": 0.125,
+  "xp": 25,
+  "proficiencyBonus": 2,
+  "ac": 13,
+  "hp": {
+    "average": 7,
+    "formula": "2d6"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 3,
+  "abilities": {
+    "str": 7,
+    "dex": 16,
+    "con": 11,
+    "int": 2,
+    "wis": 10,
+    "cha": 4
+  },
+  "skillBonuses": {
+    "perception": 2
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 12
+  },
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "kind": "melee",
+      "attackBonus": 5,
+      "damage": "1d4+3",
+      "damageType": "piercing",
+      "reachFt": 5
+    }
+  ],
+  "features": [
+    "pack-tactics"
+  ]
+}

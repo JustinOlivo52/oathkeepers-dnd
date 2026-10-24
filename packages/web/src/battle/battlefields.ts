@@ -16,10 +16,19 @@ export const boards = new Map<string, BoardData>(
 const NAMED = { floor: [0, 1, 2], wall: 3, rubble: 4 };
 const ABBEY_TILES: TilesetInfo = { key: "tiles", file: "sprites/tiles.png", frameSize: 128, named: NAMED, abbeyProps: true };
 
-/** How to draw a battlefield's tiles: the built-in abbey look, or a library tileset. */
-export function tilesetFor(tiles: string): TilesetInfo {
+/** How to draw a battlefield's tiles: the built-in abbey look, or a library tileset (with the board's props, if it has some). */
+export function tilesetFor(tiles: string, boardId?: string): TilesetInfo {
   const entry = content.art.find((e) => e.kind === "tileset" && e.id === tiles);
-  return entry?.tiles ? { key: entry.id, file: entry.tiles, frameSize: 128, named: NAMED, abbeyProps: false } : ABBEY_TILES;
+  if (!entry?.tiles) return ABBEY_TILES;
+  const placed = boardId ? boards.get(boardId)?.props ?? [] : [];
+  return {
+    key: entry.id,
+    file: entry.tiles,
+    frameSize: 128,
+    named: NAMED,
+    abbeyProps: false,
+    ...(entry.props && placed.length ? { props: { file: entry.props, at: placed } } : {}),
+  };
 }
 
 /** Battlefields players and the DM can choose. "generated" is a new random dungeon each time. */

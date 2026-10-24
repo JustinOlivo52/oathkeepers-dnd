@@ -1,0 +1,58 @@
+{
+  "id": "brown-bear",
+  "name": "Brown Bear",
+  "size": "large",
+  "type": "beast",
+  "cr": 1,
+  "xp": 200,
+  "proficiencyBonus": 2,
+  "ac": 11,
+  "hp": {
+    "average": 22,
+    "formula": "3d10+6"
+  },
+  "speedFt": 40,
+  "initiativeBonus": 1,
+  "abilities": {
+    "str": 17,
+    "dex": 12,
+    "con": 15,
+    "int": 2,
+    "wis": 13,
+    "cha": 7
+  },
+  "skillBonuses": {
+    "perception": 3
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 13
+  },
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "kind": "melee",
+      "attackBonus": 5,
+      "damage": "1d8+3",
+      "damageType": "piercing",
+      "reachFt": 5
+    },
+    {
+      "id": "claw",
+      "name": "Claw",
+      "kind": "melee",
+      "attackBonus": 5,
+      "damage": "1d4+3",
+      "damageType": "slashing",
+      "reachFt": 5,
+      "onHit": {
+        "condition": "prone",
+        "maxSize": "large"
+      }
+    }
+  ],
+  "features": [
+    "extra-attack"
+  ]
+}

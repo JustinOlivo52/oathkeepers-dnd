@@ -1,0 +1,47 @@
+{
+  "id": "worg",
+  "name": "Worg",
+  "size": "large",
+  "type": "fey",
+  "cr": 0.5,
+  "xp": 100,
+  "proficiencyBonus": 2,
+  "ac": 13,
+  "hp": {
+    "average": 26,
+    "formula": "4d10+4"
+  },
+  "speedFt": 50,
+  "initiativeBonus": 1,
+  "abilities": {
+    "str": 16,
+    "dex": 13,
+    "con": 13,
+    "int": 7,
+    "wis": 11,
+    "cha": 8
+  },
+  "skillBonuses": {
+    "perception": 4
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 14
+  },
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "kind": "melee",
+      "attackBonus": 5,
+      "damage": "1d10+3",
+      "damageType": "piercing",
+      "reachFt": 5,
+      "onHit": {
+        "condition": "prone",
+        "maxSize": "medium"
+      }
+    }
+  ],
+  "features": []
+}

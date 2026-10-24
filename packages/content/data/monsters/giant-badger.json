@@ -1,0 +1,43 @@
+{
+  "id": "giant-badger",
+  "name": "Giant Badger",
+  "size": "medium",
+  "type": "beast",
+  "cr": 0.25,
+  "xp": 50,
+  "proficiencyBonus": 2,
+  "ac": 13,
+  "hp": {
+    "average": 15,
+    "formula": "2d8+6"
+  },
+  "speedFt": 30,
+  "initiativeBonus": 0,
+  "abilities": {
+    "str": 13,
+    "dex": 10,
+    "con": 17,
+    "int": 2,
+    "wis": 12,
+    "cha": 5
+  },
+  "senses": {
+    "darkvisionFt": 60,
+    "passivePerception": 11
+  },
+  "resistances": [
+    "poison"
+  ],
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "kind": "melee",
+      "attackBonus": 3,
+      "damage": "2d4+1",
+      "damageType": "piercing",
+      "reachFt": 5
+    }
+  ],
+  "features": []
+}
