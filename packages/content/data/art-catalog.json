@@ -4318,5 +4318,77 @@
     "integrationStatus": "pending",
     "source": "codex-imagegen",
     "added": "2026-10-24"
+  },
+  {
+    "id": "icon-fireball",
+    "kind": "icon",
+    "title": "Fireball icon",
+    "tags": [],
+    "image": "library/icons/icon-fireball.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-lightning-bolt",
+    "kind": "icon",
+    "title": "Lightning Bolt icon",
+    "tags": [],
+    "image": "library/icons/icon-lightning-bolt.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-mass-healing-word",
+    "kind": "icon",
+    "title": "Mass Healing Word icon",
+    "tags": [],
+    "image": "library/icons/icon-mass-healing-word.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-revivify",
+    "kind": "icon",
+    "title": "Revivify icon",
+    "tags": [],
+    "image": "library/icons/icon-revivify.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-spirit-guardians",
+    "kind": "icon",
+    "title": "Spirit Guardians icon",
+    "tags": [],
+    "image": "library/icons/icon-spirit-guardians.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-vampiric-touch",
+    "kind": "icon",
+    "title": "Vampiric Touch icon",
+    "tags": [],
+    "image": "library/icons/icon-vampiric-touch.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
   }
 ]

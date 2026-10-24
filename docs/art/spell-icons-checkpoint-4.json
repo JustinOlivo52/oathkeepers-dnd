@@ -1,0 +1,102 @@
+{
+  "source": "packages/web/art/codex/source/completion/icons-0.png",
+  "sourceSha256": "783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88",
+  "icons": [
+    {
+      "id": "icon-fireball",
+      "image": "library/icons/icon-fireball.png",
+      "sourceCrop": [
+        570,
+        798,
+        819,
+        1056
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9343,
+      "sha256": "da7333abd99e74ce4c17ac13aff8b60d0359d7a2edc8c2b11e825259e25130a0",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-lightning-bolt",
+      "image": "library/icons/icon-lightning-bolt.png",
+      "sourceCrop": [
+        837,
+        798,
+        1088,
+        1056
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9771,
+      "sha256": "a4625aa20aae8ec41802f2f8f849d9b11333c59447d1503541126238c7dece58",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-mass-healing-word",
+      "image": "library/icons/icon-mass-healing-word.png",
+      "sourceCrop": [
+        33,
+        1069,
+        285,
+        1326
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9464,
+      "sha256": "0c2d5cf7821bdb6efe04f61e026c3f477654ae5247b0df8c64c8a128940b7339",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-revivify",
+      "image": "library/icons/icon-revivify.png",
+      "sourceCrop": [
+        303,
+        1069,
+        552,
+        1326
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9705,
+      "sha256": "2ca989acf35e351c59166d87d2e613b1850881cd22af0c8fa707f18a3da1cff3",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-spirit-guardians",
+      "image": "library/icons/icon-spirit-guardians.png",
+      "sourceCrop": [
+        569,
+        1070,
+        819,
+        1327
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9443,
+      "sha256": "24b1570838932a4a18f29abbcfaed9cc2fe402f28ed5b5ee4a525013b85ecfb7",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    },
+    {
+      "id": "icon-vampiric-touch",
+      "image": "library/icons/icon-vampiric-touch.png",
+      "sourceCrop": [
+        837,
+        1070,
+        1088,
+        1327
+      ],
+      "width": 64,
+      "height": 64,
+      "bytes": 9901,
+      "sha256": "11ecbf5a796c3b9f3fe789e7085a6d39c87d34767941cfcb42e38b93cd7af486",
+      "source": "packages/web/art/codex/source/completion/icons-1.png",
+      "sourceSha256": "7875e546065ec6aae320679229f84effe3c54ed3f212508a75a50db4ae626a6b"
+    }
+  ]
+}

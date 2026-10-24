@@ -69,24 +69,44 @@ Validation: 270 tests passed, 1 skipped; TypeScript and production build passed
 (existing bundle-size advisory). Bounds, RGBA format, output hashes and catalog
 uniqueness verified across all 34 icons.
 
+## Checkpoint 4 — finish all forty spell icons (2026-10-24)
+
+Continues the same branch and PR #4. Exports the final six icons from the saved
+`icons-1.png`: Fireball, Lightning Bolt, Mass Healing Word, Revivify, Spirit Guardians,
+and Vampiric Touch. No artwork regenerated. All previous 34 image hashes unchanged.
+
+Run `python3 packages/web/art/codex/completion/export-icons-checkpoint-4.py`.
+Uses the shared exporter with source hash/dimension guards and reviewed crop boxes.
+Preview/report: `docs/art/spell-icons-checkpoint-4.{png,json}`. All six exports are
+64×64 RGBA, under 20 KB each, with transparent edge margins. Preview inspected at
+64px and 20px. Catalog icon IDs exactly cover the current forty-spell roster,
+without duplicates, missing icons, or extra icons. Live UI acceptance remains pending.
+Validation: 270 tests passed, 1 skipped; TypeScript and production build passed
+(existing bundle-size advisory). All forty output hashes, bounds, formats and
+roster coverage verified.
+
 ## Resume here
 
 Batch size: **20 at a time**, or the remaining count if fewer than twenty.
-Current total: **34/40 icons exported; 0/50 VFX sheets exported**.
+Current total: **40/40 icons exported; 0/50 VFX sheets exported**.
 
-Six icons remain, all in the saved `icons-1.png` atlas:
+No spell icons remain to generate or export. Keep all checkpoint previews and
+reports, and the two original source atlases. The icon branch is saved in PR #4;
+its catalog entries remain integration-pending until live UI review.
 
-- Fireball
-- Lightning Bolt
-- Mass Healing Word
-- Revivify
-- Spirit Guardians
-- Vampiric Touch
+Next production checkpoint: begin the reusable damage-type spell-effect exports.
+The 50 effect definitions are in `packages/web/art/codex/completion/vfx-manifest.json`;
+all 13 original `effects-*.png` atlases already exist under `source/completion`.
+Reuse these sources. Inspect their actual row/cell layouts rather than assuming
+the generated grid is exact. Check `effects-1-clean.png` against `effects-1.png`;
+keep rejected sources out of runtime exports.
 
-Review their actual crop boxes before exporting. All icon and VFX sources are
-already saved: do not regenerate them. Keep every checkpoint's preview and report.
+Required formats from `CODEX_BRIEF_SPELLS.md`: projectile four 64px frames in one
+row, impact eight 192px frames, area eight 384px frames. The generated sources
+request eight phases per row, so choose/review projectile frames deliberately.
+Respect per-role catalog metadata, anchors, transparency, margins and frame
+counts. Preserve code fallbacks and readiness gates. Preview actual animation
+and battle playback before promoting integration. Save source hashes, export
+scripts, contact sheets, reports and resume notes after each batch.
 
-After icons, export the 50 effect definitions from the 13 saved `effects-*.png`
-atlases with the required projectile/impact/area sizes and frame counts. Review
-each subset in the real UI before promoting integration readiness. Leave all
-other artwork, monster rules and archived alternatives intact.
+Leave other artwork, monster rules and archived alternatives intact.
