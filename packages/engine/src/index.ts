@@ -10,3 +10,4 @@ export * from "./tactics.js";
 export * from "./grid.js";
 export * from "./mapgen.js";
 export * from "./spells.js";
+export * from "./actions.js";

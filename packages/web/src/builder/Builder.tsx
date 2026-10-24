@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   creationOptions,
   defaultSpells,
@@ -11,6 +11,12 @@ import {
   spellCounts,
   spellOptions,
   STANDARD_ARRAY,
+  describeKit,
+  formatGp,
+  startingLoadout,
+  STORY_FIELDS,
+  quickBuild,
+  suggestStory,
   validateDraft,
   type AbilityRoll,
   type CharacterData,
@@ -22,8 +28,44 @@ import {
 import { ABILITIES, abilityModifier, mathRng, type Ability, type Skill } from "@oathkeepers/engine";
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { loadDraft, saveDraft } from "../storage";
+import { artUrl, cardUrl, PLAYER_PORTRAITS } from "../art";
 import { ChipPicker } from "./ChipPicker";
 import { Sheet } from "./Sheet";
+
+const STORY_LABELS: Record<(typeof STORY_FIELDS)[number], { label: string; placeholder: string }> = {
+  appearance: { label: "Appearance", placeholder: "What people notice first" },
+  personality: { label: "Personality", placeholder: "How they act, talk, react" },
+  ideals: { label: "Ideals", placeholder: "What they believe in" },
+  bonds: { label: "Bonds", placeholder: "People, places or promises they care about" },
+  flaws: { label: "Flaws", placeholder: "A weakness the DM can tempt" },
+  backstory: { label: "Backstory", placeholder: "Where they come from and why they're on the frontier" },
+};
+
+/** Plain-language help shown in guided mode. */
+const STEP_HELP: Record<CreationStep, string> = {
+  class: "Your class is what you do, in a fight and out of it. New to D&D? Fighter is simple and tough, Rogue is sneaky and precise, Cleric heals and protects, Wizard casts powerful spells but is fragile.",
+  background: "Where your character came from before adventuring. It adds two skills, a feat and +3 to ability scores.",
+  species: "Your character's people. It sets your size, speed and a few special traits.",
+  abilities: "Six scores that say what you're good at. Put the highest in your class's main abilities (shown on the class card). Not sure? Quick build does it for you.",
+  skills: "What you're trained at outside combat. Pick ones that fit the character you imagine.",
+  features: "Class abilities that come with a choice. The first option is always a fine pick.",
+  equipment: "Your class's starting pack (Option A) is the easy choice. Taking gold lets you shop for your own gear.",
+  spells: "The spells you know. The suggested ones are solid for a first character.",
+  details: "Name, portrait and personality. The DM uses the story to make the adventure about you.",
+};
+
+/** Guided mode: one step at a time. */
+const GuideContext = createContext<{ guided: boolean; current: CreationStep }>({ guided: false, current: "class" });
+
+const GUIDED_KEY = "oathkeepers.builder-guided.v1";
+function readGuided(hasCharacters: boolean): boolean {
+  try {
+    const v = localStorage.getItem(GUIDED_KEY);
+    return v === null ? !hasCharacters : v === "1";
+  } catch {
+    return !hasCharacters;
+  }
+}
 
 const STEPS: { id: CreationStep; title: string }[] = [
   { id: "class", title: "1. Class" },
@@ -48,8 +90,29 @@ export function Builder(props: {
   onSave: (c: CharacterData) => void;
   onDelete: (id: string) => void;
   onTestFight: (c: CharacterData) => void;
+  /** Save and take the character into an adventure. */
+  onAdventure: (c: CharacterData) => void;
 }) {
   const [draft, setDraft] = useState<CharacterDraft>(loadDraft);
+  const [guided, setGuided] = useState(() => readGuided(props.savedCharacters.length > 0));
+  const [stepIndex, setStepIndex] = useState(0);
+  const setGuidedMode = (on: boolean) => {
+    setGuided(on);
+    try {
+      localStorage.setItem(GUIDED_KEY, on ? "1" : "0");
+    } catch {
+      // Storage blocked: the choice lasts for this visit.
+    }
+  };
+  const goTo = (i: number) => {
+    setStepIndex(Math.max(0, Math.min(STEPS.length - 1, i)));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const runQuickBuild = () => {
+    setDraft((d) => quickBuild(content, d, mathRng));
+    setRolls(null);
+    if (guided) goTo(STEPS.length - 1);
+  };
   const [rolls, setRolls] = useState<AbilityRoll[] | null>(null);
   const [savedMessage, setSavedMessage] = useState("");
   useEffect(() => saveDraft(draft), [draft]);
@@ -64,6 +127,7 @@ export function Builder(props: {
   const o = useMemo(() => creationOptions(content, draft), [draft]);
   const issues = useMemo(() => validateDraft(content, draft), [draft]);
   const finished = useMemo(() => (issues.length ? undefined : finalizeCharacter(content, draft)), [draft, issues]);
+  const loadout = useMemo(() => startingLoadout(content, draft), [draft]);
   const stepIssues = (step: CreationStep) => issues.filter((i) => i.step === step);
 
   const takenBy = (except: Skill[]): Skill[] =>
@@ -84,13 +148,42 @@ export function Builder(props: {
   return (
     <main className="builder">
       <div className="steps">
+        <div className="builder-toolbar">
+          <label className="check">
+            <input type="checkbox" checked={guided} onChange={(e) => setGuidedMode(e.target.checked)} />
+            Guided (one step at a time)
+          </label>
+          <button type="button" className="secondary" disabled={!draft.classId} title={draft.classId ? "Fill in every choice you haven't made" : "Pick a class first"} onClick={runQuickBuild}>
+            Quick build
+          </button>
+          {!draft.classId && <span className="muted small">Pick a class, then Quick build fills in the rest.</span>}
+        </div>
+        {guided && (
+          <ol className="step-dots" aria-label="Steps">
+            {STEPS.map((st, i) => (
+              <li key={st.id}>
+                <button
+                  type="button"
+                  className={`${i === stepIndex ? "on" : ""}${draft.classId && !stepIssues(st.id).length ? " done" : ""}`}
+                  aria-current={i === stepIndex ? "step" : undefined}
+                  onClick={() => goTo(i)}
+                  title={st.title}
+                >
+                  {i + 1}
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+        <GuideContext.Provider value={{ guided, current: STEPS[stepIndex]!.id }}>
         <Step id="class" issues={stepIssues("class")}>
           <div className="cards">
             {content.classes.map((c) => (
               <button
                 key={c.id}
                 type="button"
-                className={`card${draft.classId === c.id ? " on" : ""}`}
+                className={`card${draft.classId === c.id ? " on" : ""}${cardUrl("class", c.id) ? " art" : ""}`}
+                style={cardUrl("class", c.id) ? { backgroundImage: `url(${cardUrl("class", c.id)})` } : undefined}
                 onClick={() =>
                   update((d) => {
                     if (d.classId === c.id) return;
@@ -103,9 +196,11 @@ export function Builder(props: {
                       expertise: [],
                       fightingStyleId: undefined,
                       weaponMasteries: [],
+                      classKitId: undefined,
                       armorId: undefined,
                       shield: false,
                       weaponIds: [],
+                      packId: undefined,
                       spells: [],
                       invocations: [],
                       metamagic: [],
@@ -158,7 +253,7 @@ export function Builder(props: {
             </div>
           )}
           {o.cls?.subclasses.length === 1 && (
-            <p className="note">The SRD includes one subclass per class. Original subclasses are planned.</p>
+            <p className="note">SRD has one subclass per class. More planned.</p>
           )}
         </Step>
 
@@ -169,7 +264,7 @@ export function Builder(props: {
                 key={b.id}
                 type="button"
                 className={`card${draft.backgroundId === b.id ? " on" : ""}`}
-                onClick={() => update((d) => ((d.backgroundId = b.id), (d.boosts = {})))}
+                onClick={() => update((d) => ((d.backgroundId = b.id), (d.boosts = {}), (d.backgroundKitId = undefined)))}
               >
                 <strong>{b.name}</strong>
                 <span>{b.abilities.map((a) => a.toUpperCase()).join(", ")}</span>
@@ -186,7 +281,8 @@ export function Builder(props: {
               <button
                 key={s.id}
                 type="button"
-                className={`card${draft.speciesId === s.id ? " on" : ""}`}
+                className={`card${draft.speciesId === s.id ? " on" : ""}${cardUrl("species", s.id) ? " art" : ""}`}
+                style={cardUrl("species", s.id) ? { backgroundImage: `url(${cardUrl("species", s.id)})` } : undefined}
                 onClick={() =>
                   update((d) => {
                     if (d.speciesId === s.id) return;
@@ -496,40 +592,98 @@ export function Builder(props: {
           {!o.cls && <p className="note">Choose a class first.</p>}
           {o.cls && (
             <>
-              <div className="row">
-                <label>
-                  Armor
-                  <select value={draft.armorId ?? ""} onChange={(e) => update((d) => (d.armorId = e.target.value || undefined))}>
-                    <option value="">None</option>
-                    {o.armor.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name} ({a.category}, AC {a.baseAc}
-                        {a.category === "light" ? " + Dex" : a.category === "medium" ? " + Dex max 2" : ""})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {o.canUseShield && (
-                  <label className="check">
-                    <input type="checkbox" checked={draft.shield} onChange={(e) => update((d) => (d.shield = e.target.checked))} />
-                    Shield (+2 AC)
-                  </label>
-                )}
-              </div>
               <div className="group">
-                <h4>Weapons</h4>
-                <ChipPicker
-                  options={o.weapons.map((w) => w.id)}
-                  selected={draft.weaponIds}
-                  max={4}
-                  label={(id) => {
-                    const w = content.weapons.find((x) => x.id === id)!;
-                    return `${w.name} ${w.damage}`;
-                  }}
-                  onChange={(next) => update((d) => (d.weaponIds = next))}
-                />
+                <h4>From your class</h4>
+                <div className="kit-options">
+                  {o.classKits.map((k) => (
+                    <label key={k.id} className={`kit ${draft.classKitId === k.id ? "on" : ""}`}>
+                      <input type="radio" name="class-kit" checked={draft.classKitId === k.id} onChange={() => update((d) => (d.classKitId = k.id))} />
+                      <span>
+                        <strong>Option {k.id}</strong> {describeKit(content, k)}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-              <p className="note">Simplified for now: pick any gear you're trained with. Official starting packages and gold come later.</p>
+              {o.background && (
+                <div className="group">
+                  <h4>From your background</h4>
+                  <div className="kit-options">
+                    {o.backgroundKits.map((k) => (
+                      <label key={k.id} className={`kit ${draft.backgroundKitId === k.id ? "on" : ""}`}>
+                        <input type="radio" name="background-kit" checked={draft.backgroundKitId === k.id} onChange={() => update((d) => (d.backgroundKitId = k.id))} />
+                        <span>
+                          <strong>Option {k.id}</strong> {describeKit(content, k)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {loadout.buying && (
+                <div className="group shop">
+                  <h4>
+                    Buy your gear <span className="gold-left">{formatGp(Math.max(0, loadout.gold))} left</span>
+                  </h4>
+                  <div className="row">
+                    <label>
+                      Armor
+                      <select value={draft.armorId ?? ""} onChange={(e) => update((d) => (d.armorId = e.target.value || undefined))}>
+                        <option value="">None</option>
+                        {o.armor.map((a) => (
+                          <option key={a.id} value={a.id}>
+                            {a.name}: AC {a.baseAc}
+                            {a.category === "light" ? " + Dex" : a.category === "medium" ? " + Dex max 2" : ""} · {formatGp(a.costGp)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {o.canUseShield && (
+                      <label className="check">
+                        <input type="checkbox" checked={draft.shield} onChange={(e) => update((d) => (d.shield = e.target.checked))} />
+                        Shield (+2 AC) · {formatGp(content.armor.find((a) => a.id === "shield")!.costGp)}
+                      </label>
+                    )}
+                    <label>
+                      Adventuring pack
+                      <select value={draft.packId ?? ""} onChange={(e) => update((d) => (d.packId = e.target.value || undefined))}>
+                        <option value="">None</option>
+                        {content.startingEquipment.packs.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} · {formatGp(p.costGp)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                  <div className="group">
+                    <h4>Weapons</h4>
+                    <ChipPicker
+                      options={o.weapons.map((w) => w.id)}
+                      selected={draft.weaponIds}
+                      max={4}
+                      label={(id) => {
+                        const w = content.weapons.find((x) => x.id === id)!;
+                        return `${w.name} ${w.damage} · ${formatGp(w.costGp)}`;
+                      }}
+                      onChange={(next) => update((d) => (d.weaponIds = next))}
+                    />
+                  </div>
+                </div>
+              )}
+              {draft.classKitId && (
+                <p className="note">
+                  You start with{" "}
+                  {[
+                    loadout.armor && content.armor.find((a) => a.id === loadout.armor)?.name,
+                    loadout.shield && "Shield",
+                    ...loadout.weapons.map((id) => content.weapons.find((w) => w.id === id)?.name),
+                  ]
+                    .filter(Boolean)
+                    .join(", ") || "no armor or weapons"}
+                  {loadout.gear.length ? `, plus ${loadout.gear.length} item${loadout.gear.length > 1 ? "s" : ""} in your pack` : ""}, and {formatGp(Math.max(0, loadout.gold))} for the party purse.
+                </p>
+              )}
             </>
           )}
         </Step>
@@ -569,17 +723,59 @@ export function Builder(props: {
             <h4>Languages (Common, plus two)</h4>
             <ChipPicker options={o.languages} selected={draft.languages} max={2} label={(l) => l} onChange={(next) => update((d) => (d.languages = next))} />
           </div>
-          <label>
-            Notes and backstory
-            <textarea rows={3} value={draft.notes ?? ""} onChange={(e) => update((d) => (d.notes = e.target.value || undefined))} />
-          </label>
+          <div className="group">
+            <h4>Portrait</h4>
+            <PortraitPicker draft={draft} onPick={(id) => update((d) => (d.portraitId = d.portraitId === id ? undefined : id))} />
+          </div>
+          <div className="group story-fields">
+            <h4>Who they are</h4>
+            <p className="muted small">Optional. The DM reads this and weaves it into the story: old friends, enemies, temptations.</p>
+            {STORY_FIELDS.map((field) => (
+              <div key={field} className="story-field">
+                <span className="story-label">
+                  <label htmlFor={`story-${field}`}>{STORY_LABELS[field].label}</label>
+                  {field !== "backstory" && (
+                    <button type="button" className="ghost small" onClick={() => update((d) => (d.story = { ...d.story, [field]: suggestStory(field, mathRng, d.story?.[field]) }))}>
+                      Suggest
+                    </button>
+                  )}
+                </span>
+                <textarea
+                  id={`story-${field}`}
+                  rows={field === "backstory" ? 5 : 2}
+                  maxLength={field === "backstory" ? 1500 : 300}
+                  placeholder={STORY_LABELS[field].placeholder}
+                  value={draft.story?.[field] ?? ""}
+                  onChange={(e) => update((d) => (d.story = { ...d.story, [field]: e.target.value }))}
+                />
+              </div>
+            ))}
+          </div>
         </Step>
+        </GuideContext.Provider>
+        {guided && (
+          <div className="step-nav">
+            <button type="button" className="ghost" disabled={stepIndex === 0} onClick={() => goTo(stepIndex - 1)}>
+              Back
+            </button>
+            {stepIndex < STEPS.length - 1 ? (
+              <button type="button" className="primary" onClick={() => goTo(stepIndex + 1)}>
+                Next: {STEPS[stepIndex + 1]!.title.replace(/^\d+\. /, "")}
+              </button>
+            ) : (
+              <span className="muted small">{issues.length ? `${issues.length} thing${issues.length > 1 ? "s" : ""} left to choose` : "Ready! Save your character to finish."}</span>
+            )}
+          </div>
+        )}
       </div>
 
       <aside className="side">
         <Sheet draft={draft} character={finished} issueCount={issues.length} />
         <div className="actions">
-          <button className="primary" disabled={!finished} onClick={() => save(true)}>
+          <button className="primary" disabled={!finished} onClick={() => finished && props.onAdventure(finished)}>
+            Save and start adventure
+          </button>
+          <button className="secondary" disabled={!finished} onClick={() => save(true)}>
             Save and battle
           </button>
           <button className="secondary" disabled={!finished} onClick={() => save(false)}>
@@ -608,6 +804,9 @@ export function Builder(props: {
                   <span>
                     {c.name} · {content.classes.find((x) => x.id === c.class)?.name} {c.level}
                   </span>
+                  <button className="ghost small" onClick={() => props.onAdventure(c)}>
+                    Adventure
+                  </button>
                   <button className="ghost small" onClick={() => props.onTestFight(c)}>
                     Fight
                   </button>
@@ -625,7 +824,7 @@ export function Builder(props: {
 }
 
 /** Cantrips and prepared spells from the class list, with the counts the class allows at this level. */
-function SpellPicker(props: { cls: ClassData; level: number; always: string[]; classChoices: Record<string, string>; selected: string[]; onChange: (ids: string[]) => void }) {
+export function SpellPicker(props: { cls: ClassData; level: number; always: string[]; classChoices: Record<string, string>; selected: string[]; onChange: (ids: string[]) => void }) {
   const { cantrips, leveled } = spellOptions(content, props.cls, props.level, props.always);
   const counts = spellCounts(props.cls, props.level, props.classChoices);
   const name = (id: string) => content.spells.find((s) => s.id === id)?.name ?? id;
@@ -682,9 +881,35 @@ function SpellPicker(props: { cls: ClassData; level: number; always: string[]; c
   );
 }
 
+/** Portraits for the character's species first (or all of them), from the art library. */
+function PortraitPicker({ draft, onPick }: { draft: CharacterDraft; onPick: (id: string) => void }) {
+  const [all, setAll] = useState(false);
+  if (!PLAYER_PORTRAITS.length) return <p className="muted small">Portraits come with the next art batch. Until then your class art is used.</p>;
+  const mine = PLAYER_PORTRAITS.filter((p) => !draft.speciesId || p.tags.includes(draft.speciesId as never));
+  const shown = all || !mine.length ? PLAYER_PORTRAITS : mine;
+  return (
+    <>
+      <div className="portrait-grid" role="radiogroup" aria-label="Portrait">
+        {shown.map((p) => (
+          <button key={p.id} type="button" role="radio" aria-checked={draft.portraitId === p.id} className={`portrait-choice${draft.portraitId === p.id ? " on" : ""}`} onClick={() => onPick(p.id)} title={p.title}>
+            <img src={artUrl(p.image!)} alt={p.title} loading="lazy" />
+          </button>
+        ))}
+      </div>
+      {mine.length > 0 && mine.length < PLAYER_PORTRAITS.length && (
+        <button type="button" className="ghost small" onClick={() => setAll(!all)}>
+          {all ? "Only my species" : "Show all species"}
+        </button>
+      )}
+    </>
+  );
+}
+
 function Step(props: { id: CreationStep; issues: { message: string }[]; children: React.ReactNode }) {
+  const guide = useContext(GuideContext);
   const title = STEPS.find((s) => s.id === props.id)!.title;
   const done = props.issues.length === 0;
+  if (guide.guided && guide.current !== props.id) return null;
   return (
     <section className={`step${done ? " done" : ""}`}>
       <h2>
@@ -693,6 +918,7 @@ function Step(props: { id: CreationStep; issues: { message: string }[]; children
         </span>
         {title}
       </h2>
+      {guide.guided && <p className="step-help">{STEP_HELP[props.id]}</p>}
       {props.children}
       {!done && (
         <ul className="issues">

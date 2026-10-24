@@ -70,6 +70,16 @@
       "level": 3,
       "id": "subclass",
       "name": "Wizard Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 5,
+      "id": "memorize-spell",
+      "name": "Memorize Spell"
     }
   ],
   "resources": [

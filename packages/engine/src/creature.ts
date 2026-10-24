@@ -34,6 +34,8 @@ export interface Attack {
   attackBonus: number;
   /** Dice notation including modifiers, e.g. "1d8+5". */
   damage: string;
+  /** Savage Attacker feat: once per turn, roll this weapon's damage twice and use the higher. */
+  savage?: boolean;
   /** A spell attack rather than a weapon: weapon-only features (Sneak Attack, Smite...) don't apply. */
   spell?: boolean;
   /** Ability the attack uses: Rage boosts Strength attacks, Sneak Attack needs finesse or ranged. */
@@ -70,6 +72,8 @@ export interface ActiveEffect {
   dc?: number;
   /** Bardic Inspiration die, like "d6". */
   die?: string;
+  /** A number the effect needs: Heroism's temporary HP, a smite's extra slot levels. */
+  value?: number;
 }
 
 export interface Creature {
@@ -77,6 +81,8 @@ export interface Creature {
   name: string;
   side: Side;
   kind: "character" | "monster";
+  /** Small characters (halflings, gnomes) get the small battle sprite. */
+  small?: boolean;
   /** Character level, or challenge rating for monsters. */
   level: number;
   abilities: AbilityScores;
@@ -110,14 +116,34 @@ export interface Creature {
   dead: boolean;
   /** XP awarded for defeating this creature (monsters). */
   xp: number;
+  /** Bestiary id for monsters (several goblins share "goblin-warrior"); picks their art and XP. */
+  monsterId?: string;
   /** Monster type, e.g. "undead" or "fiend" (Divine Smite deals more to these). */
   creatureType?: string;
   /** Spells this creature can cast in battle. Slots are resources "spell-slot-1", "spell-slot-2"... */
   spells?: SpellDef[];
+  /** Druid: beasts it can Wild Shape into. */
+  forms?: BeastForm[];
+  /** Set while in Wild Shape: the beast's id and the druid's own stats to return to. */
+  wildShape?: { formId: string; saved: Pick<Creature, "ac" | "speedFt" | "attacks" | "features" | "footprint"> & { str: number; dex: number; con: number } };
   /** Square on the battle map, when fighting on a grid. For larger creatures, the top-left square. */
   position?: Point;
   /** Squares per side on the grid: 1 for Medium and smaller, 2 for Large, 3 Huge, 4 Gargantuan. */
   footprint?: number;
+}
+
+/** A beast's battle stats for Wild Shape: it takes these over, keeping its own HP, mind and class features. */
+export interface BeastForm {
+  id: string;
+  name: string;
+  ac: number;
+  speedFt: number;
+  str: number;
+  dex: number;
+  con: number;
+  attacks: Attack[];
+  features: string[];
+  footprint: number;
 }
 
 export function footprintOf(c: Creature): number {

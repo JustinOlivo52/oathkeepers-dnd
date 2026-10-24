@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "npm run build -w @oathkeepers/web",
+    "start": "node --import tsx packages/server/src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc",

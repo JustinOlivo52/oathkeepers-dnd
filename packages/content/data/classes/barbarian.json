@@ -34,7 +34,11 @@
   "unarmoredDefense": "con",
   "weaponMastery": {
     "count": 2,
-    "meleeOnly": true
+    "meleeOnly": true,
+    "byLevel": {
+      "4": 3,
+      "10": 4
+    }
   },
   "features": [
     {
@@ -71,6 +75,21 @@
       "level": 3,
       "id": "subclass",
       "name": "Barbarian Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 5,
+      "id": "extra-attack",
+      "name": "Extra Attack"
+    },
+    {
+      "level": 5,
+      "id": "fast-movement",
+      "name": "Fast Movement"
     }
   ],
   "resources": [

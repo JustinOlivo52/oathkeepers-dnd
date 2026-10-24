@@ -1,4 +1,4 @@
-import { abilityModifier, proficiencyBonus, type Attack, type Creature, type Resource, type Side } from "@oathkeepers/engine";
+import { abilityModifier, proficiencyBonus, type Attack, type BeastForm, type Creature, type Resource, type Side } from "@oathkeepers/engine";
 import { buildSpells, spellSlots } from "./spells.js";
 import type { Content } from "./index.js";
 import type { CharacterData, ClassData, MonsterData, WeaponData } from "./schemas.js";
@@ -56,10 +56,52 @@ export const IMPLEMENTED_FEATURES = new Set([
   "font-of-magic",
   "metamagic",
   "arcane-recovery",
+  // Step 2: Cleric, Monk, Wizard, Barbarian, Fighter
+  "disciple-of-life",
+  "preserve-life",
+  "divine-spark",
+  "turn-undead",
+  "unarmored-movement",
+  "uncanny-metabolism",
+  "deflect-attacks",
+  "open-hand-technique",
+  "potent-cantrip",
+  "danger-sense",
+  "primal-knowledge",
+  "tactical-mind",
+  "wild-shape",
+  "lands-aid",
+  // Levels 4 and 5
+  "ability-score-improvement",
+  "extra-attack",
+  "fast-movement",
+  "font-of-inspiration",
+  "sear-undead",
+  "wild-resurgence",
+  "tactical-shift",
+  "stunning-strike",
+  "cunning-strike",
+  "uncanny-dodge",
+  "sorcerous-restoration",
+]);
+
+/** Features that only matter in the story (the DM handles them); the sheet labels them instead of "coming soon". */
+export const STORY_FEATURES = new Set([
+  "thieves-cant",
+  "second-story-work",
+  "fast-hands",
+  "druidic",
+  "ritual-adept",
+  "evocation-savant",
+  "hunters-lore",
+  "wild-companion",
+  "slow-fall",
+  "faithful-steed",
+  "memorize-spell",
 ]);
 
 export function unimplementedFeatures(creature: Creature): string[] {
-  return creature.features.filter((f) => !IMPLEMENTED_FEATURES.has(f));
+  return creature.features.filter((f) => !IMPLEMENTED_FEATURES.has(f) && !STORY_FEATURES.has(f));
 }
 
 export type ArmorCategory = "light" | "medium" | "heavy" | "shield";
@@ -102,14 +144,17 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     // Invocations and Metamagic act like features in battle: "agonizing-blast", "metamagic-careful"...
     ...invocations,
     ...metamagic.map((m) => `metamagic-${m}`),
+    // Cleric Channel Divinity options (level 2).
+    ...(cls.id === "cleric" && data.level >= 2 ? ["divine-spark", "turn-undead"] : []),
   ];
   const has = (f: string) => features.includes(f);
   const hasFeat = (f: string) => data.feats.some((x) => x.id === f);
 
   // HP: max hit die at level 1, then the fixed average (half the die + 1) per level, plus Con each level.
   const bonusHpPerLevel = (species.hpPerLevel ?? 0) + (subclass?.hpPerLevel ?? 0);
-  const maxHp =
-    cls.hitDie + mod("con") + (data.level - 1) * (cls.hitDie / 2 + 1 + mod("con")) + bonusHpPerLevel * data.level;
+  // HP: the full hit die at level 1, then each level's roll (if rolled) or the fixed average, plus Con each level.
+  let maxHp = cls.hitDie + mod("con") + bonusHpPerLevel * data.level;
+  for (let level = 2; level <= data.level; level++) maxHp += Math.max(1, (data.hpRolls?.[String(level)] ?? cls.hitDie / 2 + 1) + mod("con"));
 
   const armor = data.equipment.armor ? lookup(content.armor, data.equipment.armor, "armor") : undefined;
   const dex = mod("dex");
@@ -134,6 +179,12 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
 
   let speedFt = lineage?.speedFt ?? species.speedFt;
   if (armor?.strengthRequirement && data.abilities.str < armor.strengthRequirement) speedFt -= 10;
+  // Barbarian Fast Movement: +10 ft without heavy armor.
+  if (features.includes("fast-movement") && armor?.category !== "heavy") speedFt += 10;
+  // Monk Unarmored Movement: faster without armor or a shield (2024 table).
+  if (features.includes("unarmored-movement") && !armor && !data.equipment.shield) {
+    speedFt += data.level >= 18 ? 30 : data.level >= 14 ? 25 : data.level >= 10 ? 20 : data.level >= 6 ? 15 : 10;
+  }
 
   const { weapon: proficientWith } = classProficiencies(cls, data.classChoices);
   // Pact of the Blade bonds the first melee weapon: proficient, and Charisma can drive it.
@@ -158,6 +209,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
       damageType: w.damageType,
       ability,
       ...(w.properties.includes("finesse") ? { finesse: true } : {}),
+      ...(hasFeat("savage-attacker") ? { savage: true } : {}),
       ...(w.kind === "melee" ? { reachFt: w.properties.includes("reach") ? 10 : 5 } : {}),
       ...(w.rangeFt ? { rangeFt: w.rangeFt } : {}),
       ...(hasMastery ? { mastery: w.mastery } : {}),
@@ -185,6 +237,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     name: data.name,
     side,
     kind: "character",
+    ...(data.size === "small" ? { small: true } : {}),
     level: data.level,
     abilities: { ...data.abilities },
     proficiencyBonus: pb,
@@ -207,6 +260,7 @@ export function buildCharacter(content: Content, data: CharacterData, side: Side
     features,
     resources: { ...classResources(cls, data.level), ...featureResources(cls, features, data.level, data), ...spellSlots(cls, data.level) },
     ...(cls.spellcasting ? { spells: buildSpells(content, data, cls) } : {}),
+    ...(features.includes("wild-shape") ? { forms: wildShapeForms(content, data.level) } : {}),
     effects: [],
     deathSaves: { successes: 0, failures: 0 },
     stable: false,
@@ -255,6 +309,7 @@ export function buildMonster(data: MonsterData, instanceId: string, name = data.
     stable: false,
     dead: false,
     xp: data.xp,
+    monsterId: data.id,
     creatureType: data.type,
   };
 }
@@ -271,9 +326,21 @@ function featureResources(cls: ClassData, features: string[], level: number, dat
     out["bardic-inspiration"] = { current: uses, max: uses, recharge: level >= 5 ? "short" : "long" };
   }
   if (features.includes("innate-sorcery")) out["innate-sorcery"] = long(2);
+  if (features.includes("uncanny-metabolism")) out["uncanny-metabolism"] = long(1);
   if (features.includes("magical-cunning")) out["magical-cunning"] = long(1);
   if (features.includes("favored-enemy")) out["favored-enemy"] = long(level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2);
   return out;
+}
+
+/** Beasts a druid of this level can Wild Shape into (2024: CR 1/4 at level 2, 1/2 at 4, 1 at 8; no flying forms yet). */
+export function wildShapeForms(content: Content, level: number): BeastForm[] {
+  const maxCr = level >= 8 ? 1 : level >= 4 ? 0.5 : 0.25;
+  return content.monsters
+    .filter((m) => m.type === "beast" && m.cr <= maxCr)
+    .map((m) => {
+      const beast = buildMonster(m, m.id);
+      return { id: m.id, name: m.name, ac: beast.ac, speedFt: beast.speedFt, str: m.abilities.str, dex: m.abilities.dex, con: m.abilities.con, attacks: beast.attacks, features: beast.features, footprint: beast.footprint ?? 1 };
+    });
 }
 
 function classResources(cls: ClassData, level: number): Record<string, Resource> {

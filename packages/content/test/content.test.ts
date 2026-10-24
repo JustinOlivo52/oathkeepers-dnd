@@ -52,8 +52,8 @@ describe("buildCharacter: level 3 Champion Fighter", () => {
     });
   });
 
-  it("reports features that are not implemented yet", () => {
-    expect(unimplementedFeatures(bram)).toEqual(["tactical-mind"]);
+  it("has every feature implemented", () => {
+    expect(unimplementedFeatures(bram)).toEqual([]);
   });
 });
 

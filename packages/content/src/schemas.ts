@@ -21,6 +21,8 @@ export const WeaponSchema = z.object({
   versatileDamage: dice.optional(),
   rangeFt: range.optional(),
   mastery: z.enum(WEAPON_MASTERIES),
+  /** Price in gold pieces (SRD 5.2). */
+  costGp: z.number().nonnegative(),
 });
 
 export const ArmorSchema = z.object({
@@ -30,6 +32,8 @@ export const ArmorSchema = z.object({
   baseAc: z.number().int(),
   strengthRequirement: z.number().int().optional(),
   stealthDisadvantage: z.boolean().optional(),
+  /** Price in gold pieces (SRD 5.2). */
+  costGp: z.number().nonnegative(),
 });
 
 const skillList = z.union([z.array(skill), z.literal("any")]);
@@ -54,7 +58,9 @@ export const ClassSchema = z.object({
   spellcasting: z.object({ ability, progression: z.enum(["full", "half", "pact"]) }).optional(),
   /** Ability added to 10 + Dex for AC while not wearing armor. */
   unarmoredDefense: ability.optional(),
-  weaponMastery: z.object({ count: z.number().int(), meleeOnly: z.boolean().optional() }).optional(),
+  weaponMastery: z
+    .object({ count: z.number().int(), meleeOnly: z.boolean().optional(), /** More masteries at these levels. */ byLevel: z.record(z.string().regex(/^\d+$/), z.number().int()).optional() })
+    .optional(),
   expertise: z.array(z.object({ level: z.number().int(), count: z.number().int(), from: z.array(skill).optional() })).optional(),
   /** Choices made at a level, like the Cleric's Divine Order. */
   choices: z
@@ -191,7 +197,7 @@ export const SpellSchema = z.object({
   target: z.enum(["enemy", "ally", "point", "self"]),
   targets: z.number().int().min(1).optional(),
   targetsPerSlot: z.number().int().min(1).optional(),
-  area: z.object({ shape: z.enum(["sphere", "cone", "cube"]), sizeFt: z.number().int().min(5) }).optional(),
+  area: z.object({ shape: z.enum(["sphere", "cone", "cube", "square", "line"]), sizeFt: z.number().int().min(5) }).optional(),
   attack: z.enum(["melee", "ranged"]).optional(),
   save: ability.optional(),
   halfOnSave: z.boolean().optional(),
@@ -209,9 +215,34 @@ export const SpellSchema = z.object({
   /** Damage types to choose from (Chromatic Orb); the caster picks the one the target resists least. */
   damageTypes: z.array(damageType).optional(),
   concentration: z.boolean().optional(),
-  effect: z.enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon"]).optional(),
+  effect: z
+    .enum(["slow", "no-reactions", "mockery", "guided", "bless", "shield-of-faith", "hold", "teleport", "spiritual-weapon", "restrain", "command", "heroism", "divine-favor", "smite", "aid", "restoration", "revivify", "spirit-guardians", "vampiric"])
+    .optional(),
+  /** Smite spells: extra damage and an effect on the caster's next melee weapon hit. */
+  smite: z
+    .object({ dice, type: damageType, perSlot: dice.optional(), rider: z.enum(["push-prone", "burning", "frightened"]), save: ability })
+    .optional(),
   onlyType: z.string().optional(),
   description: z.string(),
+});
+
+/** An item carried in the pack (not armor or a weapon): "Explorer's Pack", "Arrows" x20. */
+export const GearItemSchema = z.object({ name: z.string().min(1), quantity: z.number().int().min(1).default(1) });
+
+/** One starting equipment option from a class or background (SRD 5.2): a kit, or gold to buy your own. */
+export const StartingKitSchema = z.object({
+  id: z.string(),
+  armor: id.optional(),
+  shield: z.boolean().optional(),
+  weapons: z.array(z.object({ id, count: z.number().int().min(1).default(1) })).default([]),
+  gear: z.array(GearItemSchema).default([]),
+  gold: z.number().nonnegative(),
+});
+
+export const StartingEquipmentSchema = z.object({
+  packs: z.array(z.object({ id, name: z.string(), costGp: z.number().nonnegative() })),
+  classes: z.record(id, z.array(StartingKitSchema).min(2)),
+  backgrounds: z.record(id, z.array(StartingKitSchema).min(2)),
 });
 
 export const CharacterSchema = z.object({
@@ -233,10 +264,28 @@ export const CharacterSchema = z.object({
   fightingStyle: id.optional(),
   weaponMasteries: z.array(id),
   equipment: z.object({ armor: id.optional(), shield: z.boolean(), weapons: z.array(id) }),
+  /** Starting pack contents and gold, brought into each new adventure. Missing on older characters. */
+  gear: z.array(GearItemSchema).optional(),
+  gold: z.number().nonnegative().optional(),
   languages: z.array(z.string()).default(["Common"]),
   tools: z.array(z.string()).default([]),
   alignment: z.string().optional(),
   notes: z.string().optional(),
+  /** Art id of the portrait picked in the builder (kind "portrait"). */
+  portrait: z.string().optional(),
+  /** Who the character is, for the DM: woven into the story. */
+  story: z
+    .object({
+      appearance: z.string().max(300).optional(),
+      personality: z.string().max(300).optional(),
+      ideals: z.string().max(300).optional(),
+      bonds: z.string().max(300).optional(),
+      flaws: z.string().max(300).optional(),
+      backstory: z.string().max(1500).optional(),
+    })
+    .optional(),
+  /** HP gained from rolling at each level above 1, by level ("4": 7). Missing levels use the average. */
+  hpRolls: z.record(z.string().regex(/^\d+$/), z.number().int().min(1)).optional(),
   /** Cantrips and prepared spells. Missing: the class's default picks. */
   spells: z.array(id).optional(),
   /** Warlock Eldritch Invocations. */

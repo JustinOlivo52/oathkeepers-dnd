@@ -2,14 +2,26 @@ import {
   abilityCheck,
   EventLog,
   roll,
+  rollDie,
   savingThrow,
   SKILLS,
   type Rng,
 } from "@oathkeepers/engine";
-import { buildCharacter, isEncounterReady, pickArt, type CharacterData, type Content } from "@oathkeepers/content";
+import {
+  applyLevelUp,
+  buildCharacter,
+  defaultLevelUpChoice,
+  isEncounterReady,
+  levelUpOptions,
+  MAX_LEVEL,
+  pickArt,
+  type CharacterData,
+  type Content,
+  type LevelUpChoice,
+} from "@oathkeepers/content";
 import type { DmConversation, DmProvider, ProviderTurn, Summarizer, TextSink, ToolCall } from "./provider.js";
-import { memoryBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
-import { levelForXp, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
+import { memoryBlock, partyBlock, stateBlock, systemPrompt, transcript } from "./prompt.js";
+import { levelForXp, MAX_PLAYERS, XP_FOR_LEVEL, type AdventureState, type CheckRequest, type EnemyGroup, type StoryEvent } from "./state.js";
 import { TOOL_INPUTS, toolSpecs, type ToolName } from "./tools.js";
 
 /** Most model calls in a row for one player action before we stop and hand control back. */
@@ -67,7 +79,7 @@ export class Director {
     const characters: AdventureState["characters"] = {};
     for (const c of party) {
       const built = buildCharacter(content, c);
-      characters[c.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: 900, inventory: [{ name: POTION_ITEM, quantity: STARTING_POTIONS }] };
+      characters[c.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: 900, inventory: startingInventory(c) };
     }
     return {
       id,
@@ -75,7 +87,8 @@ export class Director {
       party,
       companions: companions.filter((c) => party.some((p) => p.id === c)),
       characters,
-      gold: 15,
+      // Characters from the builder bring their starting gold; older ones without it share the old 15 gp.
+      gold: party.some((c) => c.gold !== undefined) ? party.reduce((n, c) => n + (c.gold ?? 0), 0) : 15,
       scene: { name: "The road to the frontier", description: "" },
       npcs: {},
       quests: [],
@@ -116,7 +129,8 @@ export class Director {
       (s.session === 1
         ? "Begin the adventure. Set the opening scene for the party on the road to the frontier town, introduce a hook, and ask what they do."
         : `Begin session ${s.session}. Give a short "previously" recap in your own voice, then set the scene where the party left off and ask what they do.`);
-    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
+    const notes = this.takeNotes();
+    await this.run(() => this.conversation.sendUser(`${memoryBlock(s)}${partyBlock(s)}${notes}${stateBlock(s)}\n\n${instructions}`, this.sink), onText);
     return s.events.slice(start);
   }
 
@@ -130,7 +144,8 @@ export class Director {
     const start = this.state.events.length;
     this.state.events.push({ type: "player", characterId, text: clean });
     const name = this.state.party.find((c) => c.id === characterId)!.name;
-    await this.run(() => this.conversation.sendUser(`${stateBlock(this.state)}\n\n${name}: ${clean}`, this.sink), onText);
+    const notes = this.takeNotes();
+    await this.run(() => this.conversation.sendUser(`${notes}${stateBlock(this.state)}\n\n${name}: ${clean}`, this.sink), onText);
     return this.state.events.slice(start);
   }
 
@@ -360,8 +375,8 @@ export class Director {
       }
       case "grant_xp": {
         const i = input as { amount: number; reason: string };
-        for (const c of s.party) this.addXp(c.id, i.amount, i.reason);
-        return this.ok(call.id, `Each character gained ${i.amount} XP.`);
+        for (const c of s.party) this.addXp(c.id, this.isAway(c.id) ? Math.floor(i.amount / 2) : i.amount, i.reason);
+        return this.ok(call.id, `Each character gained ${i.amount} XP${s.party.some((c) => this.isAway(c.id)) ? " (half for anyone sitting out)" : ""}.`);
       }
       case "give_item": {
         const i = input as { character_id: string; name: string; quantity: number };
@@ -486,6 +501,15 @@ export class Director {
         c.hp = Math.min(c.maxHp, c.hp + Math.max(1, roll(this.rng, `1d${cls.hitDie}`).total + con));
       }
       if (c.hp > before) healed[data.id] = c.hp - before;
+      // Sorcerer: Sorcerous Restoration, once per long rest: half the sorcerer level in Sorcery Points back.
+      const points = built.resources["sorcery-points"];
+      if (built.features.includes("sorcerous-restoration") && points && c.resources && c.resources["sorcerous-restoration"] !== 0) {
+        const now = c.resources["sorcery-points"] ?? points.max;
+        if (now < points.max) {
+          c.resources["sorcery-points"] = Math.min(points.max, now + Math.floor(data.level / 2));
+          c.resources["sorcerous-restoration"] = 0;
+        }
+      }
       // Wizard: Arcane Recovery, once per long rest. Recover slots worth up to half the wizard level (no level 6+ slots), highest first.
       if (built.features.includes("arcane-recovery") && c.resources && c.resources["arcane-recovery"] !== 0) {
         let budget = Math.ceil(data.level / 2);
@@ -504,8 +528,8 @@ export class Director {
       for (const [id, r] of Object.entries(built.resources)) {
         if (!c.resources || c.resources[id] === undefined) continue;
         if (r.recharge === "short") delete c.resources[id];
-        // 2024 Second Wind: a short rest gives back one use.
-        else if (id === "second-wind") c.resources[id] = Math.min(r.max, c.resources[id]! + 1);
+        // 2024 Second Wind and Wild Shape: a short rest gives back one use.
+        else if (id === "second-wind" || id === "wild-shape") c.resources[id] = Math.min(r.max, c.resources[id]! + 1);
       }
     }
     return healed;
@@ -522,7 +546,22 @@ export class Director {
         : r.skill
           ? abilityCheck(this.rng, log, creature, { ...opts, skill: r.skill })
           : abilityCheck(this.rng, log, creature, { ...opts, ability: r.ability });
-    const { roll, success } = result;
+    const { roll } = result;
+    let success = result.success;
+    // Fighter: Tactical Mind. A failed ability check can spend a Second Wind use for +1d10; the use is kept if it still fails.
+    let tactical = "";
+    const state = this.state.characters[r.characterId]!;
+    const secondWind = state.resources?.["second-wind"] ?? creature.resources["second-wind"]?.current ?? 0;
+    if (r.kind !== "save" && !success && creature.features.includes("tactical-mind") && secondWind > 0 && roll.total + 10 >= r.dc) {
+      const bonus = rollDie(this.rng, 10);
+      if (roll.total + bonus >= r.dc) {
+        roll.total += bonus;
+        roll.modifier += bonus;
+        success = true;
+        state.resources = { ...state.resources, "second-wind": secondWind - 1 };
+        tactical = ` Tactical Mind added ${bonus} (one Second Wind use spent).`;
+      }
+    }
     this.state.events.push({
       type: "check_result",
       id: eventId,
@@ -536,7 +575,7 @@ export class Director {
     });
     this.ok(
       toolCallId,
-      `${data.name} rolled ${roll.total} (d20 ${roll.natural}${roll.mode !== "normal" ? ` with ${roll.mode}` : ""}, modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}) against DC ${r.dc}: ${success ? "SUCCESS" : "FAILURE"}${roll.natural === 20 ? " (natural 20)" : roll.natural === 1 ? " (natural 1)" : ""}.`,
+      `${data.name} rolled ${roll.total} (d20 ${roll.natural}${roll.mode !== "normal" ? ` with ${roll.mode}` : ""}, modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}) against DC ${r.dc}: ${success ? "SUCCESS" : "FAILURE"}${roll.natural === 20 ? " (natural 20)" : roll.natural === 1 ? " (natural 1)" : ""}.${tactical}`,
     );
   }
 
@@ -559,7 +598,8 @@ export class Director {
     const xpEach =
       outcome.winner === "party"
         ? Math.floor(
-            outcome.defeated.reduce((n, id) => n + (this.content.monsters.find((m) => m.id === id)?.xp ?? 0), 0) / s.party.length,
+            outcome.defeated.reduce((n, id) => n + (this.content.monsters.find((m) => m.id === id)?.xp ?? 0), 0) /
+              Math.max(1, s.party.filter((c) => c.id in outcome.hp).length),
           )
         : 0;
     const total = enemies.reduce((n, e) => n + e.count, 0);
@@ -568,7 +608,8 @@ export class Director {
         ? `The party won in ${outcome.rounds} rounds, defeating ${outcome.defeated.length} of ${total} enemies.`
         : `The party was defeated after ${outcome.rounds} rounds. They are unconscious but stable at 1 HP. Decide what happens: captured, robbed and left for dead, or rescued.`;
     s.events.push({ type: "combat_result", id: eventId, winner: outcome.winner, rounds: outcome.rounds, summary });
-    if (xpEach > 0) for (const c of s.party) this.addXp(c.id, xpEach, "battle");
+    // Those who fought get the full share; anyone sitting out gets half.
+    if (xpEach > 0) for (const c of s.party) this.addXp(c.id, c.id in outcome.hp ? xpEach : Math.floor(xpEach / 2), "battle");
     const hp = s.party.map((c) => `${c.name} ${s.characters[c.id]!.hp}/${s.characters[c.id]!.maxHp} HP`).join(", ");
     this.ok(toolCallId, `${summary} ${xpEach ? `Each character gained ${xpEach} XP. ` : ""}Party now: ${hp}. Narrate the aftermath.`);
   }
@@ -580,6 +621,98 @@ export class Director {
     this.state.events.push({ type: "xp", characterId, amount, total: c.xp, reason });
     const after = levelForXp(c.xp);
     if (after > before) this.state.events.push({ type: "level_up", characterId, level: after });
+    // AI companions level up on their own with sensible picks.
+    if ((this.state.companions ?? []).includes(characterId)) {
+      while (this.canLevelUp(characterId)) {
+        const data = this.state.party.find((p) => p.id === characterId)!;
+        this.levelUp(characterId, defaultLevelUpChoice(this.content, data));
+      }
+    }
+  }
+
+  // ---------- the table (multiplayer) ----------
+
+  /** A player joins at a natural break, bringing a character (or coming back to theirs). */
+  join(playerId: string, playerName: string, data: CharacterData): StoryEvent[] {
+    const s = this.state;
+    if (s.pending.some((p) => p.type === "combat")) throw new AdventureError("Join after the battle: new players arrive at a break in the action");
+    s.members ??= [];
+    const existing = s.members.find((m) => m.playerId === playerId);
+    if (existing) {
+      existing.away = false;
+      return this.tableNews(`${playerName} is back with ${s.party.find((c) => c.id === existing.characterId)?.name ?? "their character"}.`, `${playerName}'s character rejoins the scene. Bring them back in naturally.`);
+    }
+    if (s.members.length >= MAX_PLAYERS) throw new AdventureError(`This table already has ${MAX_PLAYERS} players`);
+    if (s.party.some((c) => c.id === data.id)) throw new AdventureError(`${data.name} is already in this party. Bring a different character`);
+    s.party.push(data);
+    const built = buildCharacter(this.content, data);
+    s.characters[data.id] = { hp: built.maxHp, maxHp: built.maxHp, xp: Math.max(XP_FOR_LEVEL[data.level] ?? 0, 900), inventory: startingInventory(data) };
+    s.gold += data.gold ?? 0;
+    s.members.push({ playerId, name: playerName, characterId: data.id, away: false });
+    return this.tableNews(
+      `${playerName} joins the table as ${data.name}.`,
+      `A new player joined: ${data.name} (id: ${data.id}), level ${data.level} ${data.species} ${data.class}, played by ${playerName}. Work them into the scene naturally and give them a moment to act.${partyBlock(s, [data]).replace("[The party]", "")}`.trimEnd(),
+    );
+  }
+
+  /** A player steps away: their character sits out (in a battle already under way, the computer runs it until the end). */
+  stepAway(playerId: string): StoryEvent[] {
+    const m = this.state.members?.find((x) => x.playerId === playerId);
+    if (!m) throw new AdventureError("You're not at this table");
+    if (m.playerId === this.state.owner) throw new AdventureError("The table's owner can't step away; end the session instead");
+    m.away = true;
+    const name = this.state.party.find((c) => c.id === m.characterId)?.name ?? "Their character";
+    return this.tableNews(`${m.name} stepped away. ${name} sits out for now.`, `${name}'s player stepped away. Have ${name} step back from the action for now (resting, scouting, minding the camp); don't narrate their choices.`);
+  }
+
+  /** Characters whose player is away sit out battles and get half XP. */
+  isAway(characterId: string): boolean {
+    return !!this.state.members?.some((m) => m.characterId === characterId && m.away);
+  }
+
+  private tableNews(text: string, note: string): StoryEvent[] {
+    const event: StoryEvent = { type: "table", text };
+    this.state.events.push(event);
+    (this.state.notes ??= []).push(note);
+    return [event];
+  }
+
+  /** Table news for the DM, once. */
+  private takeNotes(): string {
+    const notes = this.state.notes ?? [];
+    this.state.notes = [];
+    return notes.length ? `[Table]\n${notes.map((n) => `- ${n}`).join("\n")}\n\n` : "";
+  }
+
+  /** Enough XP for the next level, and not past the game's level cap yet. */
+  canLevelUp(characterId: string): boolean {
+    const data = this.state.party.find((p) => p.id === characterId);
+    const c = this.state.characters[characterId];
+    return !!data && !!c && data.level < MAX_LEVEL && levelForXp(c.xp) > data.level;
+  }
+
+  /** Go up one level with the player's choices. HP rises by the gain; the rest of the sheet is rebuilt from the new level. */
+  levelUp(characterId: string, choice: LevelUpChoice): StoryEvent[] {
+    if (!this.canLevelUp(characterId)) throw new AdventureError("Not enough XP to level up yet");
+    const i = this.state.party.findIndex((p) => p.id === characterId);
+    const data = this.state.party[i]!;
+    const options = levelUpOptions(this.content, data);
+    const hpRoll = choice.hp === "roll" ? rollDie(this.rng, options.hitDie) : undefined;
+    let next: CharacterData;
+    try {
+      next = applyLevelUp(this.content, data, choice, hpRoll);
+    } catch (e) {
+      throw new AdventureError(e instanceof Error ? e.message : String(e));
+    }
+    const c = this.state.characters[characterId]!;
+    const before = buildCharacter(this.content, data).maxHp;
+    const after = buildCharacter(this.content, next).maxHp;
+    this.state.party[i] = next;
+    c.maxHp = after;
+    c.hp = Math.min(after, c.hp + Math.max(0, after - before));
+    const event: StoryEvent = { type: "leveled", characterId, level: next.level, hpGain: after - before, features: options.newFeatures.map((f) => f.name) };
+    this.state.events.push(event);
+    return [event];
   }
 }
 
@@ -588,4 +721,9 @@ export function encounterMonsters(content: Content): string[] {
   return content.monsters
     .filter((m) => content.art.some((a) => a.kind === "monster" && a.monsterId === m.id && isEncounterReady(a)))
     .map((m) => m.id);
+}
+
+/** Potions for everyone, plus the pack from the character builder. */
+function startingInventory(c: CharacterData): { name: string; quantity: number }[] {
+  return [{ name: POTION_ITEM, quantity: STARTING_POTIONS }, ...(c.gear ?? []).map((g) => ({ name: g.name, quantity: g.quantity }))];
 }

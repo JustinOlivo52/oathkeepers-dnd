@@ -1,4 +1,4 @@
-import { buildCharacter, finalScores, IMPLEMENTED_FEATURES, type CharacterData, type CharacterDraft } from "@oathkeepers/content";
+import { buildCharacter, finalScores, formatGp, IMPLEMENTED_FEATURES, STORY_FEATURES, type CharacterData, type CharacterDraft } from "@oathkeepers/content";
 import { ABILITIES, abilityModifier, checkModifier, saveModifier, SKILLS, type Skill } from "@oathkeepers/engine";
 import { content, signed, skillLabel, titleCase } from "../content";
 
@@ -108,7 +108,11 @@ export function Sheet(props: { draft: CharacterDraft; character?: CharacterData;
           .map((f) => (
             <li key={f}>
               {featureNames.get(f) ?? titleCase(f)}
-              {!IMPLEMENTED_FEATURES.has(f) && <span className="tag">coming soon</span>}
+              {STORY_FEATURES.has(f) ? (
+                <span className="tag" title="Works in the story: tell the DM when you use it">story</span>
+              ) : (
+                !IMPLEMENTED_FEATURES.has(f) && <span className="tag">coming soon</span>
+              )}
             </li>
           ))}
         {character.feats.map((f) => (
@@ -134,6 +138,16 @@ export function Sheet(props: { draft: CharacterDraft; character?: CharacterData;
               </li>
             ))}
           </ul>
+        </>
+      )}
+
+      {(character.gear?.length || character.gold !== undefined) && (
+        <>
+          <h4>Pack</h4>
+          <p className="small">
+            {(character.gear ?? []).map((g) => (g.quantity > 1 ? `${g.name} ×${g.quantity}` : g.name)).join(", ") || "Nothing extra"}
+            {character.gold !== undefined && ` · ${formatGp(character.gold)}`}
+          </p>
         </>
       )}
 

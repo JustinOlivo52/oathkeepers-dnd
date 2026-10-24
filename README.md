@@ -1,16 +1,8 @@
 # Oathkeepers (working title)
 
-A browser D&D 5e (2024 rules) game with an AI Dungeon Master and tactical grid combat. Solo or online with up to 6 friends.
+Browser D&D 5e (2024 rules) with an AI Dungeon Master and tactical grid combat. Play solo, with AI companions, or online with up to 6 friends.
 
-- Design: [`docs/design.md`](docs/design.md)
-- Tech plan: [`docs/tech-plan.md`](docs/tech-plan.md)
-
-## Status
-
-- Phase 1 (rules engine): done. Fighter vs Goblin combat runs end to end in tests.
-- Phase 2 (character builder): done. Build a level 3 character of any SRD class in the browser.
-- Phase 3 (grid combat): done. Turn-based battles on generated dungeon maps with pixel art.
-- Phase 4 (AI Dungeon Master): part 1 done. Story mode with an AI DM (Claude) or a free demo DM.
+Project doc (design, tech plan, deployment, art): [`docs/OATHKEEPERS.md`](docs/OATHKEEPERS.md)
 
 ## Getting started
 
@@ -18,35 +10,70 @@ Requires Node.js 22+.
 
 ```sh
 npm install
-cp .env.example .env   # then add your ANTHROPIC_API_KEY (optional: leave empty for the demo DM)
-npm run check-setup    # checks Node, .env and your API key (one tiny real request)
-npm run dev            # game server + web app: open http://localhost:5173
-npm run eval:dm        # DM quality tests against Claude (needs your key, about $0.10 to $0.30)
-npm test            # run all tests
-npm run typecheck   # TypeScript checks
-npm run build       # production build (what Netlify runs)
-npm run demo        # watch a random fight in the terminal
-npm run demo -- 7 3 # seed 7, three goblins
-npm run balance -- 3 # win rate vs 3 goblins on generated maps
-npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (needs Python 3 + Pillow)
+cp .env.example .env   # set ANTHROPIC_API_KEY, or leave empty for the demo DM
+npm run check-setup    # checks Node, .env and the API key
+npm run dev            # server + web app on http://localhost:5173
 ```
 
-## Deploy (Netlify)
+Other scripts:
 
-`netlify.toml` is set up: build command `npm run build`, publish folder `packages/web/dist`, Node 22.
-Netlify hosts the web app only. Without the game server, Adventure mode uses the offline demo DM.
+```sh
+npm test             # all tests
+npm run typecheck    # tsc
+npm run build        # production build of the web app
+npm start            # production server: web build + API on one port
+npm run eval:dm      # DM prompt evals against the API (~$0.10-0.30)
+npm run demo         # random fight in the terminal (npm run demo -- 7 3: seed 7, 3 goblins)
+npm run balance -- 3 # win rate vs 3 goblins on generated maps
+npm run sprites -w @oathkeepers/web  # rebuild sprite sheets (Python 3 + Pillow)
+```
+
+## Deploy
+
+One Docker container runs everything (web build, API, DM, multiplayer). Render setup and env vars: [Deployment](docs/OATHKEEPERS.md#deployment).
+
+`netlify.toml` still builds a static copy with the offline demo DM only.
 
 ## Layout
 
 ```
 packages/
-  engine/   Rules: dice, checks, damage, death saves, combat, tactics
-  content/  Game data (classes, monsters, items, characters) + schemas and builders
-  dm/       AI Dungeon Master: provider layer, Director, tools, demo DM
-  server/   Game server: keeps API keys, runs the DM, saves adventures
-  web/      Browser client (React + Phaser): adventure, character builder, battles
-docs/       Design and tech plan
+  engine/   Rules: dice, checks, damage, conditions, spells, combat, grid, tactics
+  content/  Game data (classes, spells, monsters, items, characters), schemas, builders, level-up
+  dm/       AI DM: provider layer, Director, tools, memory, demo DM
+  server/   API, accounts, shared tables, server-run battles, saves
+  web/      React + Phaser client: adventure, character builder, battles
+docs/       Project doc and open art briefs
 ```
+
+## Roadmap
+
+Done:
+
+- [x] Rules engine: checks, attacks, damage, conditions, death saves, concentration
+- [x] Character builder: all 12 SRD classes, species, backgrounds, spells
+- [x] Grid combat with pixel art, generated dungeons and hand-made boards
+- [x] AI DM: story mode, skill checks, battles, NPCs, quests, session recaps, voice narration
+- [x] AI companions (up to 3) that fight and level with you
+- [x] Levels 1-5 for every class, with a level-up walkthrough
+- [x] Player accounts (name + PIN) with saved characters and adventures
+- [x] Multiplayer: invite codes, live tables, shared server-run battles, drop in/out at breaks
+- [x] Deployable: Docker image, Postgres saves, group code for signups, Render config
+- [x] Builder: guided mode, quick build, starting gear and gold, portraits, backstory for the DM
+
+Next:
+
+- [ ] Deploy to Render and playtest with friends
+- [ ] Tune the DM prompt from real playtests
+- [ ] Hero art: a sprite for every class, portraits for every species, builder cards (`docs/art/CODEX_BRIEF_HEROES.md`)
+- [ ] Art batch 2 (more monsters, NPCs, scenes, boards) and spell effects
+- [ ] Stat blocks for the new monsters
+
+Later:
+
+- [ ] Real sign-in to replace name + PIN
+- [ ] Levels 6+
+- [ ] Original subclasses
 
 ## Legal
 

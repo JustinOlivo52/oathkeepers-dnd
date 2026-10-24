@@ -1,5 +1,5 @@
 import { Combat, incapacitated, POTION, SPELL_SLOT } from "./combat.js";
-import { footprintOf, isConscious, type Attack, type Creature } from "./creature.js";
+import { footprintOf, hasCondition, isConscious, type Attack, type Creature } from "./creature.js";
 import { averageRoll } from "./dice.js";
 import { explore, footprintDistanceFt, footprintSquares, key, samePoint, straightPath, type Point } from "./grid.js";
 import { areaSquares, slotResource, type SpellDef } from "./spells.js";
@@ -24,13 +24,18 @@ export function takeAutoTurn(combat: Combat): void {
     }
     if (turn.bonusActions > 0 && (me.resources[POTION]?.current ?? 0) > 0 && me.hp <= me.maxHp / 3) combat.drinkPotion(me.id);
     openingMoves(combat, me);
+    // Held by Entangle: spend the action trying to break free.
+    if (hasCondition(me, "restrained") && turn.actions > 0 && me.effects.some((e) => e.id === "entangled")) combat.breakFree(me.id);
     if (me.features.includes("action-surge") && (me.resources["action-surge"]?.current ?? 0) > 0 && combat.round === 1) {
       combat.actionSurge(me.id);
     }
-    if (combat.map) gridTurn(combat, me);
+    // Turned undead flee and do nothing else.
+    if (combat.isTurned(me)) {
+      if (combat.map && turn.movementFt >= 5) retreat(combat, me);
+    } else if (combat.map) gridTurn(combat, me);
     else {
       const attack = me.attacks.find((a) => a.kind === "melee") ?? me.attacks[0];
-      while (attack && turn.actions > 0 && !combat.isOver) {
+      while (attack && (turn.actions > 0 || (turn.extraAttacks ?? 0) > 0) && !combat.isOver) {
         const target = combat.enemiesOf(me).filter(isConscious).sort((a, b) => a.hp - b.hp)[0];
         if (!target) break;
         combat.attack(me.id, target.id, attack.id);
@@ -52,13 +57,20 @@ function gridTurn(combat: Combat, me: Creature): void {
 
   if (me.spells?.length) castSpells(combat, me);
 
-  for (let guard = 0; guard < 8 && turn.actions > 0 && !combat.isOver && isConscious(me); guard++) {
+  const canAttack = () => turn.actions > 0 || (turn.extraAttacks ?? 0) > 0;
+  for (let guard = 0; guard < 10 && canAttack() && !combat.isOver && isConscious(me); guard++) {
     const option = bestAttackNow(combat, me);
     if (option) {
       const melee = option.attack.kind === "melee" && (combat.distanceBetween(me, option.target) ?? 0) <= (option.attack.reachFt ?? 5);
       if (melee && option.attack.ability === "str" && !turn.attacked && me.features.includes("reckless-attack")) combat.recklessAttack(me.id);
       if (!melee && !turn.moved && !turn.attacked && turn.bonusActions > 0 && me.features.includes("steady-aim")) combat.steadyAim(me.id);
-      combat.attack(me.id, option.target.id, option.attack.id, { smite: melee && wantsSmite(me, option.target) });
+      const focus = me.resources["focus-points"]?.current ?? 0;
+      const cunning = me.features.includes("cunning-strike") ? (footprintOf(option.target) <= 2 && !hasCondition(option.target, "prone") ? "trip" : "poison") : undefined;
+      combat.attack(me.id, option.target.id, option.attack.id, {
+        smite: melee && wantsSmite(me, option.target),
+        ...(melee && me.features.includes("stunning-strike") && focus >= 2 && option.target.hp >= 15 ? { stun: true } : {}),
+        ...(cunning ? { cunning } : {}),
+      });
       continue;
     }
     if (turn.movementFt >= 5 && approach(combat, me)) continue;
@@ -92,6 +104,30 @@ function openingMoves(combat: Combat, me: Creature): void {
     if ((!marked && left("favored-enemy")) || canMove) {
       const target = enemies.filter((e) => combat.canSee(me, e) && (combat.distanceBetween(me, e) ?? 0) <= 90).sort((a, b) => b.hp - a.hp)[0];
       if (target) combat.huntersMark(me.id, target.id);
+    }
+  }
+  // Druid: Land's Aid on a cluster of enemies, then Wild Shape once spells run dry or the fight is in its face.
+  if (turn.actions > 0 && me.features.includes("lands-aid") && left("wild-shape") && combat.map) {
+    for (const e of enemies) {
+      if (footprintDistanceFt(me.position!, footprintOf(me), e.position!, 1) > 60 || !combat.map.lineOfSight(me.position!, e.position!)) continue;
+      const covered = new Set(areaSquares(combat.map, "sphere", 10, e.position!, me.position!, footprintOf(me)).map(key));
+      const hit = enemies.filter((x) => footprintSquares(x.position!, footprintOf(x)).some((q) => covered.has(key(q)))).length;
+      if (hit >= 2) {
+        combat.landsAid(me.id, e.position!);
+        break;
+      }
+    }
+  }
+  if (turn.bonusActions > 0 && me.features.includes("wild-shape") && !me.wildShape && left("wild-shape") && me.forms?.length) {
+    const slotsLeft = [1, 2, 3].some((n) => left(slotResource(n)));
+    const pressed = combat.enemiesWithin(me, 5).length > 0 && me.hp > me.maxHp / 2;
+    if (!slotsLeft || pressed) {
+      const best = [...me.forms].sort((a, b) => b.attacks.reduce((n, x) => n + averageRoll(x.damage), 0) - a.attacks.reduce((n, x) => n + averageRoll(x.damage), 0))[0]!;
+      try {
+        combat.wildShape(me.id, best.id);
+      } catch {
+        // No room for that shape here.
+      }
     }
   }
   if (turn.actions > 0 && me.features.includes("sacred-weapon") && left("channel-divinity") && !me.effects.some((e) => e.id === "sacred-weapon")) combat.sacredWeapon(me.id);
@@ -196,6 +232,19 @@ function castSpells(combat: Combat, me: Creature): void {
   // Action: Cure Wounds on someone down within reach.
   const downed = allies.find((c) => c.hp === 0 && within(c, 5));
   if (downed && can("cure-wounds") && tryCast("cure-wounds", { targetIds: [downed.id] })) return;
+  // Cleric Channel Divinity: Preserve Life for two or more bloodied allies (or one who's down), Turn Undead for two or more undead.
+  const cd = (me.resources["channel-divinity"]?.current ?? 0) > 0;
+  if (cd && me.features.includes("preserve-life")) {
+    const bloodied = allies.filter((c) => c.hp <= c.maxHp / 2 && within(c, 30));
+    if (bloodied.length >= 2 || bloodied.some((c) => c.hp === 0)) {
+      combat.preserveLife(me.id);
+      return;
+    }
+  }
+  if (cd && me.features.includes("turn-undead") && enemies.filter((e) => e.creatureType === "undead" && within(e, 30) && !combat.isTurned(e)).length >= 2) {
+    combat.turnUndead(me.id);
+    return;
+  }
   // Action: control and buffs, early, if not already holding a spell.
   const holding = me.effects.some((e) => e.id === "concentrating");
   if (!holding) {
@@ -203,6 +252,17 @@ function castSpells(combat: Combat, me: Creature): void {
     if (humanoid && can("hold-person") && tryCast("hold-person", { targetIds: [humanoid.id] })) return;
     const friends = allies.filter((c) => isConscious(c) && within(c, 30)).slice(0, 3);
     if (combat.round <= 2 && friends.length >= 2 && can("bless") && tryCast("bless", { targetIds: friends.map((c) => c.id) })) return;
+    // Entangle where it catches two or more enemies and no allies.
+    const entangle = [...spells.values()].find((s) => s.effect === "restrain" && s.area && can(s.id));
+    if (entangle && combat.map) {
+      for (const e of enemies) {
+        if (footprintDistanceFt(me.position!, footprintOf(me), e.position!, 1) > entangle.rangeFt) continue;
+        const covered = new Set(areaSquares(combat.map, entangle.area!.shape, entangle.area!.sizeFt, e.position!, me.position!, footprintOf(me)).map(key));
+        const touches = (c: Creature) => footprintSquares(c.position!, footprintOf(c)).some((q) => covered.has(key(q)));
+        if (allies.some((a) => a.position && touches(a))) continue;
+        if (enemies.filter(touches).length >= 2 && tryCast(entangle.id, { point: e.position! })) return;
+      }
+    }
   }
   // Action: an area spell that catches two or more enemies and no allies.
   const map = combat.map;

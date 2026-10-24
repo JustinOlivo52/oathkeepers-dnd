@@ -1,15 +1,15 @@
 [
-  { "id": "padded", "name": "Padded Armor", "category": "light", "baseAc": 11, "stealthDisadvantage": true },
-  { "id": "leather", "name": "Leather Armor", "category": "light", "baseAc": 11 },
-  { "id": "studded-leather", "name": "Studded Leather Armor", "category": "light", "baseAc": 12 },
-  { "id": "hide", "name": "Hide Armor", "category": "medium", "baseAc": 12 },
-  { "id": "chain-shirt", "name": "Chain Shirt", "category": "medium", "baseAc": 13 },
-  { "id": "scale-mail", "name": "Scale Mail", "category": "medium", "baseAc": 14, "stealthDisadvantage": true },
-  { "id": "breastplate", "name": "Breastplate", "category": "medium", "baseAc": 14 },
-  { "id": "half-plate", "name": "Half Plate Armor", "category": "medium", "baseAc": 15, "stealthDisadvantage": true },
-  { "id": "ring-mail", "name": "Ring Mail", "category": "heavy", "baseAc": 14, "stealthDisadvantage": true },
-  { "id": "chain-mail", "name": "Chain Mail", "category": "heavy", "baseAc": 16, "strengthRequirement": 13, "stealthDisadvantage": true },
-  { "id": "splint", "name": "Splint Armor", "category": "heavy", "baseAc": 17, "strengthRequirement": 15, "stealthDisadvantage": true },
-  { "id": "plate", "name": "Plate Armor", "category": "heavy", "baseAc": 18, "strengthRequirement": 15, "stealthDisadvantage": true },
-  { "id": "shield", "name": "Shield", "category": "shield", "baseAc": 2 }
+  { "id": "padded", "name": "Padded Armor", "category": "light", "baseAc": 11, "stealthDisadvantage": true, "costGp": 5 },
+  { "id": "leather", "name": "Leather Armor", "category": "light", "baseAc": 11, "costGp": 10 },
+  { "id": "studded-leather", "name": "Studded Leather Armor", "category": "light", "baseAc": 12, "costGp": 45 },
+  { "id": "hide", "name": "Hide Armor", "category": "medium", "baseAc": 12, "costGp": 10 },
+  { "id": "chain-shirt", "name": "Chain Shirt", "category": "medium", "baseAc": 13, "costGp": 50 },
+  { "id": "scale-mail", "name": "Scale Mail", "category": "medium", "baseAc": 14, "stealthDisadvantage": true, "costGp": 50 },
+  { "id": "breastplate", "name": "Breastplate", "category": "medium", "baseAc": 14, "costGp": 400 },
+  { "id": "half-plate", "name": "Half Plate Armor", "category": "medium", "baseAc": 15, "stealthDisadvantage": true, "costGp": 750 },
+  { "id": "ring-mail", "name": "Ring Mail", "category": "heavy", "baseAc": 14, "stealthDisadvantage": true, "costGp": 30 },
+  { "id": "chain-mail", "name": "Chain Mail", "category": "heavy", "baseAc": 16, "strengthRequirement": 13, "stealthDisadvantage": true, "costGp": 75 },
+  { "id": "splint", "name": "Splint Armor", "category": "heavy", "baseAc": 17, "strengthRequirement": 15, "stealthDisadvantage": true, "costGp": 200 },
+  { "id": "plate", "name": "Plate Armor", "category": "heavy", "baseAc": 18, "strengthRequirement": 15, "stealthDisadvantage": true, "costGp": 1500 },
+  { "id": "shield", "name": "Shield", "category": "shield", "baseAc": 2, "costGp": 10 }
 ]

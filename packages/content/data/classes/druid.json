@@ -140,14 +140,26 @@
       "level": 3,
       "id": "subclass",
       "name": "Druid Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 5,
+      "id": "wild-resurgence",
+      "name": "Wild Resurgence"
     }
   ],
   "resources": [
     {
       "id": "wild-shape",
-      "recharge": "short",
+      "recharge": "long",
       "usesByLevel": {
-        "2": 2
+        "2": 2,
+        "6": 3,
+        "17": 4
       }
     }
   ],

@@ -35,8 +35,11 @@ export type GameEvent =
   | { type: "action"; creatureId: string; action: "dash" | "disengage" | "dodge"; bonus?: boolean }
   | { type: "extra_damage"; creatureId: string; targetId: string; source: string }
   | { type: "concentration"; creatureId: string; spell: string; kept: boolean }
+  | { type: "transform"; creatureId: string; formId?: string }
+  /** A die that changed another roll (Bless, Bardic Inspiration, Cutting Words...) or a reroll that wasn't kept. */
+  | { type: "bonus_roll"; creatureId: string; source: string; roll: DiceRoll }
   | { type: "spell_cast"; creatureId: string; spellId: string; slotLevel: number; targetIds: string[]; point?: Point; area?: Point[] }
-  | { type: "reaction"; creatureId: string; reaction: "opportunity-attack" | "cutting-words"; targetId: string }
+  | { type: "reaction"; creatureId: string; reaction: "opportunity-attack" | "cutting-words" | "deflect-attacks" | "uncanny-dodge"; targetId: string }
   | { type: "condition"; creatureId: string; condition: Condition; added: boolean }
   | { type: "effect_applied"; targetId: string; effectId: string; sourceId: string }
   | { type: "effect_ended"; targetId: string; effectId: string }
@@ -67,6 +70,11 @@ export class EventLog {
     const logged = { ...event, seq: this.events.length };
     this.events.push(logged);
     return logged;
+  }
+
+  /** Add events logged elsewhere (the server's copy of a battle), keeping their sequence numbers. */
+  append(events: LoggedEvent[]): void {
+    for (const e of events) if (e.seq === this.events.length) this.events.push(e);
   }
 
   ofType<T extends GameEvent["type"]>(type: T): Extract<LoggedEvent, { type: T }>[] {

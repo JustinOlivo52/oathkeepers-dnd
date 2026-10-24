@@ -1,6 +1,6 @@
 # Codex Brief: Art Library, Batch 2
 
-Batch 1 (the pilot) is merged, hooked into the game and playtested. Batch 2 is the rest of the original list: the expansion backlog in [`CODEX_BRIEF_LIBRARY_1.md`](CODEX_BRIEF_LIBRARY_1.md). Follow [`LIBRARY.md`](LIBRARY.md) for folders, formats, sizes, tags, readiness fields and content rules, and match the style of batch 1.
+Batch 1 (the pilot) is merged, hooked into the game and playtested. Batch 2 is the rest of the original list: the expansion backlog in [batch 1 brief](../OATHKEEPERS.md#art-history-batch-1-brief). Follow the [Art library spec](../OATHKEEPERS.md#art-library-spec) for folders, formats, sizes, tags, readiness fields and content rules, and match the style of batch 1.
 
 **Branch:** `art/library-batch-2`, from the latest `master`. If you're also working on [`CODEX_FIXES_LIBRARY_1.md`](CODEX_FIXES_LIBRARY_1.md), keep that on its own branch.
 
@@ -79,6 +79,18 @@ Also a 512x512 portrait for each at `library/portraits/companion-<id>.webp` (cat
 Catalog entries: kind `hero` with a `sprite` block like the other hero sheets; `artStatus: "ready"`, `mechanicsStatus: "not-required"`, `integrationStatus: "pending"`. The game already looks for `hero-<character id>` first, so no code changes are needed. Run `measure-sprites.py` afterwards.
 
 This section can go first if batch 2 is already under way: it's small and it fixes something players see in every fight.
+
+## 6. Wild Shape beasts (3, optional)
+
+Druids can now Wild Shape into any beast in the bestiary that has battle art, up to CR 1/4 at level 3. Today that's only the Wolf. Three more small beasts would give druids real choices. Same format as the section 1 monsters (11-frame battle sheet, Medium size, four-legged gait, bite or claw lunge for attacks), plus a portrait. `mechanicsStatus: "pending"`: Claude adds the stat blocks.
+
+| id | Notes |
+|---|---|
+| boar | Bristly wild boar, tusks |
+| panther | Sleek black panther |
+| giant-badger | Stocky, big claws |
+
+`giant-rat` from section 1 also becomes a form once it's in.
 
 ## Done means
 

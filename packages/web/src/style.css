@@ -207,3 +207,39 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .battle-log .damage, .battle-log .down, .battle-log .death { color: var(--bad); }
 .battle-log .heal { color: var(--good); }
 .battle-log .combat_end { font-weight: 700; }
+
+.player-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; margin-right: 16px; }
+.player-bar input { width: 140px; }
+.player-bar .sign-in-note { flex-basis: 100%; text-align: right; }
+
+/* Builder: story fields */
+.story-fields .story-field { display: grid; gap: 4px; margin-top: 10px; }
+.story-fields .story-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.story-fields textarea { width: 100%; }
+
+/* Builder: starting equipment */
+.kit-options { display: grid; gap: 8px; }
+.kit { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.kit.on { border-color: var(--accent); }
+.kit input { margin-top: 3px; }
+.shop h4 { display: flex; justify-content: space-between; align-items: baseline; }
+.gold-left { color: var(--accent); font-weight: 600; }
+
+/* Builder: art */
+.card.art { background-size: cover; background-position: center; min-height: 110px; justify-content: flex-end; text-shadow: 0 1px 3px #000; color: #fff; position: relative; }
+.card.art span { color: #e8e2d6; }
+.card.art::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(transparent 30%, rgba(0, 0, 0, 0.7)); }
+.card.art > * { position: relative; }
+.portrait-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-bottom: 6px; }
+.portrait-choice { padding: 0; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--panel-2); cursor: pointer; }
+.portrait-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portrait-choice.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+
+/* Builder: guided mode */
+.builder-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 12px; }
+.step-dots { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 12px; }
+.step-dots button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--panel-2); cursor: pointer; }
+.step-dots button.done { border-color: var(--good); }
+.step-dots button.on { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+.step-help { margin: 0 0 12px; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 4px; font-size: 14px; }
+.step-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }

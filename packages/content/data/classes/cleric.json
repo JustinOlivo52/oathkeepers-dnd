@@ -81,6 +81,16 @@
       "level": 3,
       "id": "subclass",
       "name": "Cleric Subclass"
+    },
+    {
+      "level": 4,
+      "id": "ability-score-improvement",
+      "name": "Ability Score Improvement"
+    },
+    {
+      "level": 5,
+      "id": "sear-undead",
+      "name": "Sear Undead"
     }
   ],
   "resources": [
@@ -119,6 +129,13 @@
           "spells": [
             "bless",
             "cure-wounds"
+          ]
+        },
+        {
+          "level": 5,
+          "spells": [
+            "mass-healing-word",
+            "revivify"
           ]
         }
       ]

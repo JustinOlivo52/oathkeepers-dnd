@@ -13,6 +13,10 @@
     "@oathkeepers/content": "*",
     "@oathkeepers/dm": "*",
     "@oathkeepers/engine": "*",
+    "pg": "^8.23.1",
     "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }

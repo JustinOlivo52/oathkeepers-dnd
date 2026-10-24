@@ -1,9 +1,9 @@
 import "./art.css";
-import { battlefieldOptions, loadBattlefield, placeCreatures, spriteFor } from "./battlefields";
+import { battlefieldOptions, boards, spriteFor, tilesetFor } from "./battlefields";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Phaser from "phaser";
-import { Combat, EventLog, isConscious, mathRng, POTION, type Creature, type TurnState } from "@oathkeepers/engine";
-import { buildCharacter, buildMonster, type CharacterData } from "@oathkeepers/content";
+import { Combat, isConscious, mathRng, POTION, type Creature, type TurnState } from "@oathkeepers/engine";
+import { battleOutcome, createEncounter, type BattleOutcome, type CharacterData, type PartyMemberSetup } from "@oathkeepers/content";
 import { content, signed } from "../content";
 import { BattleController, TARGETS_ALLY, type QuickAction, type TargetedFeature } from "./controller";
 import { BattleScene, type VfxInfo } from "./scene";
@@ -55,66 +55,33 @@ export interface BattleSetup {
   resources?: Record<string, number>;
 }
 
-export interface CompanionSetup {
-  character: CharacterData;
-  startingHp?: number;
-  potions?: number;
-  /** Uses left of limited features from earlier battles. Missing: full. */
-  resources?: Record<string, number>;
+/** A companion going into battle: same shape as any party member. */
+export type CompanionSetup = PartyMemberSetup;
+
+export type { BattleOutcome };
+
+/** Sprites for everyone in a battle: heroes by class family (or their own art), monsters by bestiary id, druids by shape. */
+export function spritesFor(combat: Combat, classOf: Map<string, string>) {
+  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", c.wildShape?.formId ?? c.monsterId, classOf.get(c.id));
+  const formSheets = [...combat.creatures.values()].flatMap((c) => (c.forms ?? []).map((f) => spriteFor(c, "martial", f.id)));
+  return { sheetFor, formSheets };
 }
 
-export interface BattleOutcome {
-  winner: "party" | "enemies";
-  rounds: number;
-  hp: Record<string, number>;
-  /** Monster ids of enemies killed, one per enemy. */
-  defeated: string[];
-  /** Potions of Healing each party member has left. */
-  potions: Record<string, number>;
-  /** Uses left of each party member's limited features. */
-  resources: Record<string, Record<string, number>>;
-}
-
-function buildPartyMember({ character, startingHp, potions = 0, resources = {} }: CompanionSetup): Creature {
-  const c = buildCharacter(content, character);
-  for (const [id, left] of Object.entries(resources)) if (c.resources[id]) c.resources[id]!.current = Math.max(0, Math.min(c.resources[id]!.max, left));
-  if (startingHp !== undefined) c.hp = Math.max(1, Math.min(c.maxHp, startingHp));
-  if (potions > 0) c.resources[POTION] = { current: potions, max: potions, recharge: "long" };
-  return c;
-}
-
-function createBattle({ character, enemies: groups, seed, battlefield, startingHp, potions, resources, companions = [] }: BattleSetup) {
-  const field = loadBattlefield(battlefield, seed);
-  const hero = buildPartyMember({ character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}), ...(resources ? { resources } : {}) });
-  const allies = companions.map(buildPartyMember);
-  const party = [hero, ...allies];
-  const taken = new Set<string>();
-  placeCreatures(field.map, party, field.partySpawns, [], taken);
-  const monsterOf = new Map<string, string>();
-  const list = groups.flatMap((g) => Array.from({ length: g.count }, () => g.monsterId));
-  const enemies = list.map((monsterId, i) => {
-    const data = content.monsters.find((m) => m.id === monsterId) ?? content.monsters[0]!;
-    const id = `${data.id}-${i + 1}`;
-    monsterOf.set(id, data.id);
-    const label = list.length > 1 ? `${data.name.replace(/ Warrior$/, "")} ${i + 1}` : data.name;
-    return buildMonster(data, id, label);
-  });
-  // Big creatures first, so they get the roomy spawn points.
-  placeCreatures(field.map, [...enemies].sort((a, b) => (b.footprint ?? 1) - (a.footprint ?? 1)), field.enemySpawns, field.largeEnemySpawns, taken);
-  const combat = new Combat([...party, ...enemies], mathRng, new EventLog(), field.map);
+function createBattle({ character, enemies, seed, battlefield, startingHp, potions, resources, companions = [] }: BattleSetup) {
+  const hero = { character, ...(startingHp !== undefined ? { startingHp } : {}), ...(potions !== undefined ? { potions } : {}), ...(resources ? { resources } : {}) };
+  const { combat, field } = createEncounter(content, boards, { party: [hero, ...companions], enemies, battlefield, seed }, mathRng);
   const classOf = new Map([character, ...companions.map((x) => x.character)].map((ch) => [ch.id, ch.class]));
-  const sheetFor = (c: Creature) => spriteFor(c, PALETTE_BY_CLASS[classOf.get(c.id) ?? ""] ?? "martial", monsterOf.get(c.id));
-  const outcome = (): BattleOutcome => ({
-    winner: combat.winner ?? "enemies",
-    rounds: combat.round,
-    hp: Object.fromEntries(party.map((c) => [c.id, c.hp])),
-    defeated: enemies.filter((e) => e.dead).map((e) => monsterOf.get(e.id)!),
-    potions: Object.fromEntries(party.map((c) => [c.id, c.resources[POTION]?.current ?? 0])),
-    resources: Object.fromEntries(
-      party.map((c) => [c.id, Object.fromEntries(Object.entries(c.resources).filter(([id]) => id !== POTION).map(([id, r]) => [id, r.current]))]),
-    ),
-  });
-  return { combat, map: field.map, tileset: field.tileset, controller: new BattleController(combat, new Set([hero.id])), sheetFor, outcome };
+  const { sheetFor, formSheets } = spritesFor(combat, classOf);
+  return {
+    combat,
+    map: field.map,
+    tileset: tilesetFor(field.tiles),
+    controller: new BattleController(combat, new Set([character.id])),
+    sheetFor,
+    formSheets,
+    classOf,
+    outcome: () => battleOutcome(combat),
+  };
 }
 
 interface FeatureButton {
@@ -126,10 +93,14 @@ interface FeatureButton {
   target?: TargetedFeature;
   toggle?: true;
   on?: boolean;
+  /** Wild Shape into this beast. */
+  wildShape?: string;
+  stunToggle?: true;
+  cunningToggle?: true;
 }
 
 /** Buttons for the class features this creature has, greyed out when they can't be used right now. */
-function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext = false): FeatureButton[] {
+function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext = false, stunNext = false, cunningNext?: string): FeatureButton[] {
   const has = (f: string) => me.features.includes(f);
   const uses = (r: string) => me.resources[r]?.current ?? 0;
   const bonus = turn.bonusActions > 0;
@@ -160,6 +131,30 @@ function featureButtons(me: Creature, turn: TurnState, combat: Combat, smiteNext
   if (has("favored-enemy")) {
     const marked = combat.markedBy(me.id);
     add({ id: "hm", label: `Hunter's Mark (${uses("favored-enemy")}${uses("spell-slot-1") ? ` +${uses("spell-slot-1")} slots` : ""})`, title: `Bonus Action: your hits on the target deal 1d6 force${marked ? `. Now marked: ${marked.name}` : ""}`, disabled: !bonus || (!uses("favored-enemy") && !uses("spell-slot-1") && !(marked && marked.dead)), target: "hunters-mark" });
+  }
+  if (me.conditions.includes("restrained") && me.effects.some((e) => e.id === "entangled")) {
+    add({ id: "free", label: "Break free", title: "Action: Strength (Athletics) check against the spell's DC", disabled: turn.actions < 1, action: "break-free" });
+  }
+  if (has("wild-shape")) {
+    if (me.wildShape) add({ id: "ws-leave", label: "Leave Wild Shape", title: "Bonus Action: return to your own form", disabled: !bonus, action: "leave-wild-shape" });
+    else
+      for (const f of me.forms ?? [])
+        add({ id: `ws-${f.id}`, label: `Wild Shape: ${f.name} (${uses("wild-shape")})`, title: `Bonus Action: become a ${f.name} (AC ${f.ac}, speed ${f.speedFt} ft). You keep your HP and gain ${me.level} temporary HP, but can't cast spells.`, disabled: !bonus || !uses("wild-shape"), wildShape: f.id });
+  }
+  if (has("lands-aid")) add({ id: "la", label: "Land's Aid", title: "Action and a Wild Shape use: a 10 ft burst within 60 ft, 2d6 necrotic to enemies (Con save for half), and the most hurt ally in it regains 2d6 HP", disabled: turn.actions < 1 || !uses("wild-shape"), target: "lands-aid" });
+  if (has("divine-spark")) add({ id: "spark", label: `Divine Spark (${uses("channel-divinity")})`, title: "Channel Divinity, Action: heal an ally or yourself 1d8 + Wis, or hit an enemy with radiant light (Con save for half), 30 ft", disabled: turn.actions < 1 || !uses("channel-divinity"), target: "divine-spark" });
+  if (has("preserve-life")) add({ id: "pl", label: "Preserve Life", title: `Channel Divinity, Action: share ${5 * me.level} HP among bloodied allies within 30 ft (each up to half their HP max)`, disabled: turn.actions < 1 || !uses("channel-divinity"), action: "preserve-life" });
+  if (has("turn-undead")) add({ id: "tu", label: "Turn Undead", title: "Channel Divinity, Action: undead within 30 ft make a Wisdom save or flee until they take damage", disabled: turn.actions < 1 || !uses("channel-divinity"), action: "turn-undead" });
+  const smite = me.effects.find((e) => e.id === "smite-ready");
+  if (smite) add({ id: "smite-ready", label: `${me.spells?.find((s) => s.id === smite.spell)?.name ?? "Smite"} ready`, title: "Your next melee weapon hit carries the smite", disabled: true, on: true });
+  if (has("stunning-strike")) {
+    add({ id: "stun", label: `Stunning Strike on hit: ${stunNext ? "on" : "off"} (${uses("focus-points")})`, title: "1 Focus Point, once per turn: a hit makes the target save (Con) or be stunned until your next turn", disabled: !uses("focus-points"), stunToggle: true, on: stunNext });
+  }
+  if (has("cunning-strike")) {
+    add({ id: "cunning", label: `Cunning Strike: ${cunningNext ?? "off"}`, title: "Trade a Sneak Attack die: poison (Con save), trip (Dex save or prone) or withdraw (move half speed without opportunity attacks). Click to cycle.", disabled: false, cunningToggle: true, on: !!cunningNext });
+  }
+  if (has("wild-resurgence") && me.resources["wild-shape"] && !uses("wild-shape")) {
+    add({ id: "resurge", label: "Wild Resurgence", title: "No action, once per turn: spend a spell slot to regain a Wild Shape use", disabled: ![1, 2, 3].some((n) => uses(`spell-slot-${n}`)), action: "wild-resurgence" });
   }
   if (has("bardic-inspiration")) add({ id: "bi", label: `Bardic Inspiration (${uses("bardic-inspiration")})`, title: "Bonus Action: an ally within 60 ft gets a die to add when an attack or save fails. Cutting Words uses the same dice, automatically, as a reaction.", disabled: !bonus || !uses("bardic-inspiration"), target: "bardic-inspiration" });
   if (has("innate-sorcery")) {
@@ -356,6 +351,30 @@ export function BattleView(props: { characters: CharacterData[]; selectedId: str
 /** One battle on the grid. With `onFinish`, the end banner hands the outcome back (to the DM) instead of offering a rematch. */
 export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onRestart?: () => void; onFinish?: (outcome: BattleOutcome) => void }) {
   const battle = useMemo(() => createBattle(setup), [setup]);
+  return (
+    <BattleBoard
+      battle={battle}
+      seedNote={setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
+      {...(onRestart ? { onRestart } : {})}
+      {...(onFinish ? { onFinish: () => onFinish(battle.outcome()) } : {})}
+    />
+  );
+}
+
+/** Everything a battle screen needs, however the battle is run (here, or on the server). */
+export interface BoardBattle {
+  combat: Combat;
+  map: Combat["map"] & object;
+  tileset: ReturnType<typeof tilesetFor>;
+  controller: BattleController;
+  sheetFor: (c: Creature) => ReturnType<typeof spriteFor>;
+  formSheets: ReturnType<typeof spriteFor>[];
+  /** Character id -> class, for the panel header. */
+  classOf?: Map<string, string>;
+}
+
+/** A battle on the grid. With `onFinish`, the end banner returns to the story instead of offering a rematch. */
+export function BattleBoard({ battle, seedNote = "", onRestart, onFinish }: { battle: BoardBattle; seedNote?: string; onRestart?: () => void; onFinish?: () => void }) {
   const { controller, combat, map } = battle;
   const host = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<BattleScene | null>(null);
@@ -369,7 +388,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
       onHover: (p) => controller.onHover(p),
       onClick: (p) => void controller.onClick(p),
       onLoadError: () => setBoardError("Artwork could not load. Reload the page to try again."),
-    }, SPELL_EFFECTS);
+    }, SPELL_EFFECTS, battle.formSheets);
     sceneRef.current = scene;
     const game = new Phaser.Game({
       type: Phaser.AUTO,
@@ -389,7 +408,8 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
     return () => { sceneRef.current = null; game.destroy(true); };
   }, [battle]);
 
-  const me = [...combat.creatures.values()].find((c) => controller.playerIds.has(c.id))!;
+  // In a shared battle someone may only be watching (their character sat this one out).
+  const me = [...combat.creatures.values()].find((c) => controller.playerIds.has(c.id)) ?? [...combat.creatures.values()].find((c) => c.side === "party")!;
   const turn = combat.turn;
   const myTurn = controller.canAct;
   const preview = controller.preview();
@@ -397,7 +417,8 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
   const mode = controller.mode;
   const confirmTarget = mode.kind === "confirm" ? combat.get(mode.targetId) : undefined;
   const confirmAttack = mode.kind === "confirm" ? me.attacks.find((a) => a.id === mode.attackId) : undefined;
-  const heroSheet = `hero-${PALETTE_BY_CLASS[setup.character.class] ?? "martial"}`;
+  const heroClass = battle.classOf?.get(me.id) ?? "fighter";
+  const heroSheet = `hero-${PALETTE_BY_CLASS[heroClass] ?? "martial"}`;
 
   return (
     <div className="battle-layout">
@@ -435,10 +456,10 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
           <div className={`banner ${combat.winner}`}>
             <strong>{combat.winner === "party" ? "Victory!" : "Defeat"}</strong>
             <span>
-              {combat.round} rounds.{setup.battlefield === "generated" ? ` Map seed ${setup.seed}.` : ""}
+              {combat.round} rounds.{seedNote}
             </span>
             {onFinish ? (
-              <button className="primary" onClick={() => onFinish(battle.outcome())}>
+              <button className="primary" onClick={onFinish}>
                 Return to the story
               </button>
             ) : (
@@ -453,13 +474,13 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
       <aside className="panel">
         <div className="me">
           <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${heroSheet}.png)` }} />
-          <div><p className="eyebrow">{setup.character.class} · Level {setup.character.level}</p><strong>{me.name}</strong><div className="hero-health"><meter min={0} max={me.maxHp} value={Math.max(0, me.hp)} aria-label={`${me.name} hit points`} /><span>{me.hp}/{me.maxHp} HP · AC {me.ac}</span></div></div>
+          <div><p className="eyebrow">{heroClass} · Level {me.level}</p><strong>{me.name}</strong><div className="hero-health"><meter min={0} max={me.maxHp} value={Math.max(0, me.hp)} aria-label={`${me.name} hit points`} /><span>{me.hp}/{me.maxHp} HP · AC {me.ac}</span></div></div>
         </div>
 
         {myTurn && turn ? (
           <>
             <p className="turn-info">
-              Your turn. Action {turn.actions > 0 ? "ready" : "used"}
+              Your turn. Action {turn.actions > 0 ? "ready" : turn.extraAttacks ? `used, ${turn.extraAttacks} more attack` : "used"}
               {turn.actions > 1 ? ` (${turn.actions})` : ""} · Bonus {turn.bonusActions > 0 ? "ready" : "used"} · Move {turn.movementFt} ft
             </p>
             <div className="action-bar">
@@ -467,7 +488,7 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
                 <button
                   key={a.id}
                   className={(mode.kind === "attack" || mode.kind === "confirm") && mode.attackId === a.id ? "on" : ""}
-                  disabled={turn.actions < 1}
+                  disabled={turn.actions < 1 && !turn.extraAttacks}
                   onClick={() => controller.selectAttack(a.id)}
                   title={`${signed(a.attackBonus)} to hit, ${a.damage} ${a.damageType}`}
                 >
@@ -483,13 +504,25 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
               <button disabled={turn.actions < 1} onClick={() => controller.act("dodge")}>
                 Dodge
               </button>
-              {featureButtons(me, turn, combat, controller.smiteNext).map((b) => (
+              {featureButtons(me, turn, combat, controller.smiteNext, controller.stunNext, controller.cunningNext).map((b) => (
                 <button
                   key={b.id}
                   className={`feature ${b.on ? "on" : ""}`}
                   disabled={b.disabled}
                   title={b.title}
-                  onClick={() => (b.target ? controller.selectFeature(b.target) : b.toggle ? controller.toggleSmite() : controller.act(b.action!))}
+                  onClick={() =>
+                    b.wildShape
+                      ? controller.wildShape(b.wildShape)
+                      : b.stunToggle
+                        ? controller.toggleStun()
+                        : b.cunningToggle
+                          ? controller.cycleCunning()
+                          : b.target
+                            ? controller.selectFeature(b.target)
+                            : b.toggle
+                              ? controller.toggleSmite()
+                              : controller.act(b.action!)
+                  }
                 >
                   {b.label}
                 </button>
@@ -539,7 +572,11 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
         )}
         {warning && <p className="warning">{warning}</p>}
         {controller.message && <p className="warning">{controller.message}</p>}
-        {mode.kind === "feature" && <p className="preview">{TARGETS_ALLY[mode.feature] ? "Click yourself or an ally." : "Click an enemy."} Click the button again to cancel.</p>}
+        {mode.kind === "feature" && (
+          <p className="preview">
+            {mode.feature === "lands-aid" ? "Point at where the 10 ft burst goes (it spares your allies)." : mode.feature === "divine-spark" ? "Click an ally to heal or an enemy to strike." : TARGETS_ALLY[mode.feature] ? "Click yourself or an ally." : "Click an enemy."} Click the button again to cancel.
+          </p>
+        )}
         {controller.lastRoll && <p className="roll">{controller.lastRoll}</p>}
 
         <details className="battle-journal"><summary>Battle journal <span>{controller.lines.length} events</span></summary><ol className="log battle-log">
@@ -549,11 +586,11 @@ export function Battle({ setup, onRestart, onFinish }: { setup: BattleSetup; onR
             </li>
           ))}
         </ol></details>
-        {!isConscious(me) && !combat.isOver && <p className="warning">You're down. Death saves roll at the start of your turns.</p>}
+        {!isConscious(me) && !combat.isOver && <p className="warning">You're down. Death saves roll at the start of your turn.</p>}
         <label className="note auto-end">
           <input type="checkbox" checked={controller.autoEnd} onChange={(e) => controller.setAutoEnd(e.target.checked)} /> End my turn automatically when I have nothing left to do
         </label>
-        <p className="note">Opportunity attacks you can make are taken automatically for now.</p>
+        <p className="note">Your opportunity attacks are automatic for now.</p>
       </aside>
     </div>
   );

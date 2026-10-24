@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCharacter, defaultSpells, loadContent, slotTable, spellIssues } from "../src/index.js";
+import { buildCharacter, defaultSpells, loadContent, slotTable, spellIssues, spellOptions } from "../src/index.js";
 
 const content = loadContent();
 const cls = (id: string) => content.classes.find((c) => c.id === id)!;
@@ -85,5 +85,31 @@ describe("class options", () => {
     const bard = buildCharacter(content, { ...premade("pip-thistlewick"), class: "bard", subclass: "college-of-lore", spells: undefined, abilities: { ...premade("pip-thistlewick").abilities, cha: 16 } });
     expect(bard.resources["bardic-inspiration"]).toMatchObject({ current: 3, recharge: "long" });
     expect(bard.features).toContain("cutting-words");
+  });
+});
+
+describe("step 2 class details", () => {
+  it("monks without armor move faster; clerics get Channel Divinity options", () => {
+    const monk = buildCharacter(content, { ...premade("wren-ashdown"), class: "monk", subclass: "warrior-of-the-open-hand", equipment: { shield: false, weapons: ["shortsword"] }, spells: undefined });
+    expect(monk.speedFt).toBe(30 + 10); // halfling 30 (2024) + Unarmored Movement
+    expect(monk.resources["uncanny-metabolism"]).toMatchObject({ current: 1 });
+    const maren = buildCharacter(content, premade("sister-maren-holt"));
+    expect(maren.features).toEqual(expect.arrayContaining(["divine-spark", "turn-undead", "preserve-life", "disciple-of-life"]));
+  });
+
+  it("rangers and paladins have more spells to choose from", () => {
+    const ranger = spellOptions(content, cls("ranger"), 3);
+    expect(ranger.leveled.map((s) => s.id)).toEqual(expect.arrayContaining(["cure-wounds", "entangle"]));
+    const paladin = spellOptions(content, cls("paladin"), 3, ["shield-of-faith"]);
+    expect(paladin.leveled.map((s) => s.id)).toEqual(expect.arrayContaining(["command", "heroism", "divine-favor", "thunderous-smite", "searing-smite", "wrathful-smite"]));
+  });
+});
+
+describe("druid", () => {
+  it("knows beast forms up to CR 1/4 at level 3", () => {
+    const druid = buildCharacter(content, { ...premade("sister-maren-holt"), class: "druid", subclass: "circle-of-the-land", classChoices: { "primal-order": "warden", land: "temperate" }, spells: undefined });
+    expect(druid.forms!.map((f) => f.id)).toEqual(["wolf"]);
+    expect(druid.resources["wild-shape"]).toMatchObject({ current: 2, recharge: "long" });
+    expect(druid.features).toEqual(expect.arrayContaining(["wild-shape", "lands-aid"]));
   });
 });

@@ -1,12 +1,17 @@
 import "./adventure.css";
-import { useEffect, useRef, useState } from "react";
-import type { CharacterData } from "@oathkeepers/content";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MAX_LEVEL, type CharacterData } from "@oathkeepers/content";
 import { POTION_ITEM, XP_FOR_LEVEL, levelForXp, type StoryEvent } from "@oathkeepers/dm";
 
 /** Matches Director.MAX_COMPANIONS (kept here so the web bundle doesn't pull in the director for one number). */
 const MAX_COMPANIONS = 3;
 import { ABILITY_LABELS, content, signed, skillLabel } from "../content";
 import { Battle, type BattleOutcome } from "../battle/BattleView";
+import { RemoteBattle } from "../battle/RemoteBattle";
+import type { BattleUpdate } from "../battle/controller";
+import { LevelUp } from "./LevelUp";
+import { portraitUrl } from "../art";
+import type { PlayerAccount } from "../player";
 import { narrator } from "./narrator";
 import { VoiceControls } from "./VoiceControls";
 import { findServer, LocalDemoClient, RemoteClient, ServerError, type AdventureSnapshot, type DmClient, type ServerInfo } from "./client";
@@ -39,10 +44,19 @@ function writeSaved(ref: SavedRef | null): void {
 }
 
 function clientFor(mode: "remote" | "local", provider: string): DmClient {
-  return mode === "local" ? new LocalDemoClient() : new RemoteClient(provider, provider === "claude" ? "Claude" : "Demo DM");
+  return mode === "local" ? new LocalDemoClient() : new RemoteClient(provider, provider === "claude" ? "AI DM" : "Demo DM");
 }
 
-export function AdventureView(props: { characters: CharacterData[]; selectedId: string; onSelect: (id: string) => void }) {
+export function AdventureView(props: {
+  characters: CharacterData[];
+  /** Characters the player built (the rest are ready-made). */
+  ownCharacterIds: Set<string>;
+  selectedId: string;
+  onSelect: (id: string) => void;
+  /** Go to the character builder. */
+  onCreate: () => void;
+  player: PlayerAccount | null;
+}) {
   const [server, setServer] = useState<ServerInfo | null | undefined>(undefined);
   const [choice, setChoice] = useState<string>("");
   const [client, setClient] = useState<DmClient | null>(null);
@@ -52,7 +66,45 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
   const [saved, setSaved] = useState<SavedRef | null>(readSaved);
   /** Narration streaming in while the DM writes. */
   const [live, setLive] = useState("");
+  /** Someone at a shared table is waiting on the DM (maybe not us). */
+  const [tableBusy, setTableBusy] = useState(false);
+  const [online, setOnline] = useState<string[]>([]);
+  const [joinCode, setJoinCode] = useState("");
+  const battleListeners = useRef(new Set<(u: BattleUpdate) => void>());
+  const subscribeBattle = useCallback((fn: (u: BattleUpdate) => void) => {
+    battleListeners.current.add(fn);
+    return () => void battleListeners.current.delete(fn);
+  }, []);
+  const adventureId = snap?.state.id;
+
+  // A server adventure: follow it live, so other players' moves and the DM's words show up here too.
+  useEffect(() => {
+    if (!(client instanceof RemoteClient) || !adventureId) return;
+    return client.connect({
+      story: (s) => setSnap((old) => (old && old.state.id !== s.state.id ? old : s)),
+      text: (delta) => {
+        setLive((t) => t + delta);
+        narrator.feed(delta);
+      },
+      battle: (u) => battleListeners.current.forEach((fn) => fn(u)),
+      online: setOnline,
+      busy: (b) => {
+        setTableBusy(b);
+        if (b) {
+          setLive("");
+          narrator.stop();
+        } else {
+          narrator.finish();
+          setLive("");
+        }
+      },
+    });
+  }, [client, adventureId]);
   const character = props.characters.find((c) => c.id === props.selectedId) ?? props.characters[0]!;
+  const characterGroups = [
+    { label: "Your characters", list: props.characters.filter((c) => props.ownCharacterIds.has(c.id)) },
+    { label: "Ready-made", list: props.characters.filter((c) => !props.ownCharacterIds.has(c.id)) },
+  ].filter((g) => g.list.length);
   /** Ids of characters coming along as AI companions. Empty: solo. */
   const [companionIds, setCompanionIds] = useState<string[]>([]);
   const companionOptions = props.characters.filter((c) => c.id !== character.id);
@@ -87,6 +139,18 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
     }
   };
 
+  const join = () => {
+    const c = new RemoteClient("", "DM");
+    setClient(c);
+    void run(async () => {
+      const s = await c.join(joinCode, character);
+      const ref = { mode: "remote" as const, provider: s.state.provider, id: s.state.id };
+      writeSaved(ref);
+      setSaved(ref);
+      return s;
+    });
+  };
+
   const begin = (resume?: SavedRef) => {
     const [mode, provider] = (resume ? `${resume.mode}:${resume.provider}` : choice).split(":") as ["remote" | "local", string];
     const c = clientFor(mode, provider);
@@ -115,17 +179,24 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <label>
               Character
               <select value={character.id} onChange={(e) => props.onSelect(e.target.value)}>
-                {props.characters.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
+                {characterGroups.map(({ label, list }) => (
+                  <optgroup key={label} label={label}>
+                    {list.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} · {content.classes.find((x) => x.id === c.class)?.name} {c.level}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </label>
+            <button type="button" className="secondary create-character" onClick={props.onCreate}>
+              Create a character
+            </button>
             <label>
               Dungeon Master
               <select value={choice} onChange={(e) => setChoice(e.target.value)} disabled={server === undefined}>
-                {server?.providers.includes("claude") && <option value="remote:claude">Claude (AI)</option>}
+                {server?.providers.includes("claude") && <option value="remote:claude">AI DM</option>}
                 {server && <option value="remote:demo">Demo DM (server)</option>}
                 <option value="local:demo">Demo DM (offline)</option>
               </select>
@@ -135,7 +206,7 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <legend>
               Party: {companions.length ? `${character.name} and ${companions.length} AI companion${companions.length > 1 ? "s" : ""}` : `${character.name}, solo`}
             </legend>
-            <p className="muted small">Bring up to {MAX_COMPANIONS} companions. The DM plays them in the story, and the computer fights for them on the grid.</p>
+            <p className="muted small">Up to {MAX_COMPANIONS} AI companions.</p>
             <div className="companion-list">
               {companionOptions.map((c) => {
                 const on = companionIds.includes(c.id);
@@ -159,20 +230,58 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
             <button className="primary" disabled={busy || server === undefined} onClick={() => begin()}>
               {busy ? "Starting…" : "Begin adventure"}
             </button>
-            {saved && (
+            {saved && !props.player?.adventures.some((a) => a.id === saved.id) && (
               <button className="secondary" disabled={busy} onClick={() => begin(saved)}>
                 Continue saved adventure
               </button>
             )}
           </div>
+          {server?.accounts && (
+            <section className="join-table">
+              <h3>Join a friend's table</h3>
+              {props.player ? (
+                <form
+                  className="row"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (joinCode.trim()) join();
+                  }}
+                >
+                  <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="Invite code" maxLength={6} aria-label="Invite code" />
+                  <button className="secondary" type="submit" disabled={busy || joinCode.trim().length < 6}>
+                    Join with {character.name}
+                  </button>
+                </form>
+              ) : (
+                <p className="muted small">Sign in to join a table.</p>
+              )}
+            </section>
+          )}
+          {props.player && props.player.adventures.length > 0 && server && (
+            <section className="my-adventures">
+              <h3>Your adventures</h3>
+              <ul>
+                {props.player.adventures.slice(0, 6).map((a) => (
+                  <li key={a.id}>
+                    <span>
+                      <strong>{a.hero}</strong> · {a.title} <span className="muted small">({new Date(a.updated).toLocaleDateString()})</span>
+                    </span>
+                    <button className="secondary small" disabled={busy || !server.providers.includes(a.provider)} onClick={() => begin({ mode: "remote", provider: a.provider, id: a.id })}>
+                      Continue
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           {server === null && (
             <p className="note">
-              The game server isn't running, so only the offline demo DM is available. To play with Claude, run <code>npm run dev</code> with your API key in <code>.env</code>.
+              Server offline. Offline demo DM only. For the AI DM: set <code>ANTHROPIC_API_KEY</code> in <code>.env</code> and run <code>npm run dev</code>.
             </p>
           )}
           {server && !server.providers.includes("claude") && (
             <p className="note">
-              The server is running without an API key, so only the demo DM is available. Run <code>npm run check-setup</code> in a terminal to see what's wrong, then restart <code>npm run dev</code>.
+              No API key on the server. Demo DM only. Run <code>npm run check-setup</code>, then restart <code>npm run dev</code>.
             </p>
           )}
           {busy && live && (
@@ -194,8 +303,11 @@ export function AdventureView(props: { characters: CharacterData[]; selectedId: 
     <Adventure
       client={client}
       snap={snap}
-      busy={busy}
+      busy={busy || tableBusy}
       live={live}
+      playerId={props.player?.id}
+      online={online}
+      subscribeBattle={subscribeBattle}
       error={error}
       run={run}
       onLeave={() => {
@@ -221,16 +333,35 @@ function Adventure(props: {
   run: (fn: () => Promise<AdventureSnapshot>) => Promise<void>;
   onLeave: () => void;
   onNew: () => void;
+  playerId: string | undefined;
+  online: string[];
+  subscribeBattle: (fn: (u: BattleUpdate) => void) => () => void;
 }) {
-  const { client, snap, busy, live, error, run } = props;
+  const { client, snap, busy, live, error, run, playerId } = props;
   const { state, pending } = snap;
-  const hero = state.party[0]!;
+  const members = state.members ?? [];
+  const memberOf = (characterId: string) => members.find((m) => m.characterId === characterId);
+  // At a shared table your character is the one you brought; otherwise the first in the party.
+  const hero = state.party.find((c) => c.id === members.find((m) => m.playerId === playerId)?.characterId) ?? state.party[0]!;
   const me = state.characters[hero.id]!;
-  const allies = state.party.slice(1);
+  const allies = state.party.filter((c) => c.id !== hero.id);
+  const isHost = !state.owner || state.owner === playerId;
+  /** Companions, and characters whose player stepped away, can be handled by anyone at the table. */
+  const mayHandle = (characterId: string) => {
+    const m = memberOf(characterId);
+    return !state.owner || !m || m.away ? true : m.playerId === playerId;
+  };
+  const remote = client instanceof RemoteClient ? client : null;
   const potionsOf = (id: string) => state.characters[id]?.inventory.find((i) => i.name === POTION_ITEM)?.quantity ?? 0;
   const [text, setText] = useState("");
   const [fighting, setFighting] = useState(false);
+  const [leveling, setLeveling] = useState(false);
   const feed = useRef<HTMLOListElement>(null);
+  // Everyone at a shared table goes to the grid when the server starts a fight.
+  const serverBattle = !!snap.battle;
+  useEffect(() => {
+    if (serverBattle) setFighting(true);
+  }, [serverBattle]);
 
   useEffect(() => {
     feed.current?.lastElementChild?.scrollIntoView({ block: "end", behavior: "smooth" });
@@ -248,7 +379,16 @@ function Adventure(props: {
     void run(() => client.finishCombat(outcome));
   };
 
-  if (fighting && pending?.type === "combat") {
+  // Stays on the grid after the server ends the fight, so everyone sees how it ended.
+  if (remote && fighting) {
+    return (
+      <main className="battle">
+        <RemoteBattle client={remote} playerId={playerId} subscribe={props.subscribeBattle} onFinish={() => setFighting(false)} />
+      </main>
+    );
+  }
+
+  if (!remote && fighting && pending?.type === "combat") {
     return (
       <main className="battle">
         <Battle
@@ -305,11 +445,18 @@ function Adventure(props: {
                 ))}
               </li>
             ) : (
-              <li className="thinking">The DM is thinking…</li>
+              <li className="thinking">DM is writing…</li>
             ))}
         </ol>
 
-        {pendingRequest && !busy && (
+        {pendingRequest && !busy && !mayHandle(pendingRequest.characterId) && (
+          <div className="prompt-card">
+            <p className="muted">
+              Waiting for {memberOf(pendingRequest.characterId)?.name ?? "another player"} to roll {pendingRequest.skill ? skillLabel(pendingRequest.skill) : ABILITY_LABELS[pendingRequest.ability]}.
+            </p>
+          </div>
+        )}
+        {pendingRequest && !busy && mayHandle(pendingRequest.characterId) && (
           <div className="prompt-card">
             <p>
               <strong>{pendingRequest.skill ? skillLabel(pendingRequest.skill) : ABILITY_LABELS[pendingRequest.ability]}</strong>{" "}
@@ -349,9 +496,13 @@ function Adventure(props: {
             <p>
               <strong>Session {state.session}</strong> is ready when you are. The DM will open with a recap.
             </p>
-            <button className="primary" disabled={busy} onClick={() => void run(() => client.begin())}>
-              Start session {state.session}
-            </button>
+            {isHost ? (
+              <button className="primary" disabled={busy} onClick={() => void run(() => client.begin())}>
+                Start session {state.session}
+              </button>
+            ) : (
+              <p className="muted small">Waiting on the host.</p>
+            )}
           </div>
         ) : (
         <form
@@ -365,7 +516,7 @@ function Adventure(props: {
             rows={2}
             value={text}
             maxLength={2000}
-            placeholder={pending ? "Resolve the roll or battle first" : `What does ${hero.name} do?`}
+            placeholder={pending ? "Finish the roll or battle first" : `What does ${hero.name} do?`}
             disabled={busy || !!pending}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {
@@ -384,7 +535,11 @@ function Adventure(props: {
 
       <aside className="adventure-side">
         <div className="hero-card">
-          <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${sheetFor(hero)}.png)` }} />
+          {portraitUrl(hero) ? (
+            <img className="hero-portrait picked" src={portraitUrl(hero)} alt="" />
+          ) : (
+            <div className="hero-portrait" aria-hidden="true" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/sprites/${sheetFor(hero)}.png)` }} />
+          )}
           <div>
             <strong>{hero.name}</strong>
             <p className="muted small">
@@ -396,7 +551,25 @@ function Adventure(props: {
             </p>
           </div>
         </div>
-        {level > hero.level && <p className="note">Level {level} reached! Leveling up arrives in Phase 5.</p>}
+        {level > hero.level &&
+          (hero.level < MAX_LEVEL ? (
+            <button className="primary level-up-button" disabled={busy || pending?.type === "combat"} onClick={() => setLeveling(true)}>
+              Level up to {hero.level + 1}
+            </button>
+          ) : (
+            <p className="note">Max level is {MAX_LEVEL} for now. XP still counts.</p>
+          ))}
+        {leveling && (
+          <LevelUp
+            character={hero}
+            busy={busy}
+            onCancel={() => setLeveling(false)}
+            onConfirm={(choice) => {
+              setLeveling(false);
+              void run(() => client.levelUp(hero.id, choice));
+            }}
+          />
+        )}
         {hero.class === "warlock" && hero.level >= 2 && (
           <button
             className="ghost small"
@@ -408,19 +581,28 @@ function Adventure(props: {
           </button>
         )}
 
+        {remote && playerId && state.owner && (
+          <TablePanel client={remote} state={state} playerId={playerId} online={props.online} busy={busy} run={run} onLeft={props.onLeave} />
+        )}
+
         {allies.length > 0 && (
-          <Section title="Companions">
+          <Section title={members.length > 1 ? "Party" : "Companions"}>
             <ul className="companions">
               {allies.map((c) => {
                 const s = state.characters[c.id]!;
                 return (
                   <li key={c.id}>
-                    <strong>{c.name}</strong> <span className="muted small">{content.classes.find((x) => x.id === c.class)?.name}</span>
+                    {portraitUrl(c) && <img className="ally-portrait" src={portraitUrl(c)} alt="" />}
+                    <strong>{c.name}</strong>{" "}
+                    <span className="muted small">
+                      {content.classes.find((x) => x.id === c.class)?.name}
+                      {memberOf(c.id) ? ` · ${memberOf(c.id)!.name}${memberOf(c.id)!.away ? " (away)" : ""}` : ""}
+                    </span>
                     <meter min={0} max={s.maxHp} value={s.hp} aria-label={`${c.name} hit points`} />
                     <span className="small">
                       {s.hp}/{s.maxHp} HP{potionsOf(c.id) ? ` · ${potionsOf(c.id)} potion${potionsOf(c.id) > 1 ? "s" : ""}` : ""}
                     </span>
-                    {potionsOf(c.id) > 0 && s.hp < s.maxHp && (
+                    {potionsOf(c.id) > 0 && s.hp < s.maxHp && mayHandle(c.id) && (
                       <button className="ghost small" disabled={busy || pending?.type === "combat"} onClick={() => void run(() => client.drinkPotion(c.id))}>
                         Give potion
                       </button>
@@ -516,12 +698,12 @@ function Adventure(props: {
             )}
           </p>
         </Section>
-        {state.sessionOpen && (
+        {state.sessionOpen && isHost && (
           <button
             className="secondary"
             disabled={busy || !!pending}
-            title={pending ? "Finish the roll or battle first" : "The DM writes a recap and remembers it next session"}
-            onClick={() => confirm("End this session? The DM will write a recap for next time.") && void run(() => client.endSession())}
+            title={pending ? "Finish the roll or battle first" : "Writes a recap for next session"}
+            onClick={() => confirm("End session?") && void run(() => client.endSession())}
           >
             End session {state.session}
           </button>
@@ -530,12 +712,64 @@ function Adventure(props: {
           <button className="ghost small" onClick={props.onLeave}>
             Back
           </button>
-          <button className="ghost small" onClick={() => confirm("Start over? This adventure stays saved on the server but won't be resumable from here.") && props.onNew()}>
+          <button className="ghost small" onClick={() => confirm("Start a new adventure? This one stays saved.") && props.onNew()}>
             New adventure
           </button>
         </div>
       </aside>
     </main>
+  );
+}
+
+/** Who's at a shared table, the invite code to bring more, and the way out. */
+function TablePanel(props: {
+  client: RemoteClient;
+  state: AdventureSnapshot["state"];
+  playerId: string;
+  online: string[];
+  busy: boolean;
+  run: (fn: () => Promise<AdventureSnapshot>) => Promise<void>;
+  onLeft: () => void;
+}) {
+  const { client, state, playerId, online, busy, run } = props;
+  const members = state.members ?? [];
+  const isHost = state.owner === playerId;
+  const seated = members.find((m) => m.playerId === playerId);
+  return (
+    <Section title="Table">
+      <ul className="table-members">
+        {members.map((m) => (
+          <li key={m.playerId}>
+            <span className={`dot ${online.includes(m.playerId) ? "on" : ""}`} aria-label={online.includes(m.playerId) ? "online" : "offline"} />
+            <strong>{m.name}</strong> <span className="muted small">{state.party.find((c) => c.id === m.characterId)?.name}</span>
+            {m.playerId === state.owner && <span className="tag">host</span>}
+            {m.away && <span className="tag">away</span>}
+          </li>
+        ))}
+      </ul>
+      {isHost &&
+        (state.invite ? (
+          <p className="small">
+            Invite code: <strong className="invite-code">{state.invite}</strong>
+            <br />
+            <span className="muted">Max 6 players.</span>
+          </p>
+        ) : (
+          <button className="secondary small" disabled={busy} onClick={() => void run(() => client.invite())}>
+            Invite friends
+          </button>
+        ))}
+      {seated && !seated.away && !isHost && (
+        <button
+          className="ghost small"
+          disabled={busy}
+          title="Sits your character out (half XP). Rejoin with the invite code."
+          onClick={() => confirm("Step away from the table?") && void run(() => client.leave()).then(props.onLeft)}
+        >
+          Step away
+        </button>
+      )}
+    </Section>
   );
 }
 
@@ -588,7 +822,13 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
         </li>
       );
     case "level_up":
-      return <li className="chip gold">{names(e.characterId)} reached level {e.level}!</li>;
+      return <li className="chip gold">{names(e.characterId)} has enough XP for level {e.level}!</li>;
+    case "leveled":
+      return (
+        <li className="chip gold">
+          {names(e.characterId)} is now level {e.level} (+{e.hpGain} HP){e.features.length ? `: ${e.features.join(", ")}` : ""}
+        </li>
+      );
     case "item":
       return (
         <li className="chip">
@@ -638,6 +878,8 @@ function StoryLine({ event: e, names }: { event: StoryEvent; names: (id: string)
       );
     case "notice":
       return <li className="system">{e.text}</li>;
+    case "table":
+      return <li className="system table-news">{e.text}</li>;
     case "session_start":
       return <li className="session-divider">Session {e.session}</li>;
     case "session_end":

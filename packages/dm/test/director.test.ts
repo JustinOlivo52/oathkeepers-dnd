@@ -423,3 +423,36 @@ describe("Out-of-battle class features", () => {
     expect(state.characters[pip.id]!.resources).toEqual({ "spell-slot-1": 0, "spell-slot-2": 1, "arcane-recovery": 0 });
   });
 });
+
+describe("Tactical Mind", () => {
+  it("a fighter's failed check can spend a Second Wind use for +1d10", async () => {
+    // d20 shows 10, Athletics +5 makes 15 against DC 20; the d10 rolls a 5.
+    const provider = new ScriptedProvider([turn([""], [check("c1", { dc: 20 })]), turn(["You make it."])]);
+    const state = Director.newAdventure(content, [bram], provider.name, "t");
+    const director = new Director(content, provider, state, scriptedRng(Array(20).fill(10)));
+    await director.act(bram.id, "I climb");
+    await director.roll();
+    const result = state.events.find((e) => e.type === "check_result") as { success: boolean; total: number };
+    expect(result.success).toBe(true);
+    expect(state.characters[bram.id]!.resources).toEqual({ "second-wind": 1 });
+  });
+});
+
+describe("Leveling up in an adventure", () => {
+  it("the player levels up with XP; companions level themselves", async () => {
+    const [, wren] = content.characters;
+    const provider = new ScriptedProvider([turn([""], [call("x1", "grant_xp", { amount: 1800, reason: "Saved the town" })]), turn(["Cheers ring out."])]);
+    const state = Director.newAdventure(content, [bram, wren!], provider.name, "lv", [wren!.id]);
+    const director = new Director(content, provider, state, seededRng(1));
+    expect(() => director.levelUp(bram.id, { hp: "average" })).toThrow(/XP/);
+    await director.act(bram.id, "We celebrate");
+    // Wren (companion) is level 4 already; Bram waits for the player.
+    expect(state.party[1]!.level).toBe(4);
+    expect(state.party[0]!.level).toBe(3);
+    const hpBefore = state.characters[bram.id]!.maxHp;
+    director.levelUp(bram.id, { hp: "average", feat: { id: "ability-score-improvement", increases: { str: 2 } }, weaponMasteries: [...bram.weaponMasteries, "greatsword"] });
+    expect(state.party[0]!.level).toBe(4);
+    expect(state.characters[bram.id]!.maxHp).toBe(hpBefore + 8);
+    expect(state.events.filter((e) => e.type === "leveled")).toHaveLength(2);
+  });
+});

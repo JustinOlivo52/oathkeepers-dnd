@@ -1,4 +1,5 @@
 import {
+  applyAction,
   areaSquares,
   Combat,
   distanceFt,
@@ -9,6 +10,10 @@ import {
   type AttackCheck,
   type Creature,
   type LoggedEvent,
+  type BattleAction,
+  type CombatSnapshot,
+  type SimpleAction,
+  type TargetFeature,
   type Point,
   type SpellDef,
 } from "@oathkeepers/engine";
@@ -26,6 +31,20 @@ function readAutoEnd(): boolean {
   }
 }
 
+/** A battle update from the server: the state now, and the log events since `from`. */
+export interface BattleUpdate {
+  snapshot: CombatSnapshot;
+  events: LoggedEvent[];
+  from: number;
+}
+
+/** How a browser plays a battle that runs on the server: send an action, get back what happened. */
+export interface BattleLink {
+  send(creatureId: string, action: BattleAction): Promise<BattleUpdate>;
+  /** The whole battle again, when updates were missed. */
+  refresh(): Promise<BattleUpdate>;
+}
+
 export type Mode =
   | { kind: "move" }
   | { kind: "attack"; attackId: string }
@@ -35,7 +54,7 @@ export type Mode =
   /** Casting a spell: pick targets (several for Bless) or a square. */
   | { kind: "spell"; spellId: string; slot?: number; picked: string[] };
 
-export type TargetedFeature = "lay-on-hands" | "hunters-mark" | "martial-arts" | "flurry-of-blows" | "spiritual-weapon" | "bardic-inspiration";
+export type TargetedFeature = TargetFeature | "lands-aid";
 export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "lay-on-hands": true,
   "hunters-mark": false,
@@ -43,12 +62,13 @@ export const TARGETS_ALLY: Record<TargetedFeature, boolean> = {
   "flurry-of-blows": false,
   "spiritual-weapon": false,
   "bardic-inspiration": true,
+  "divine-spark": false,
+  "lands-aid": false,
 };
+/** Features that can target anyone: Divine Spark heals allies or hurts enemies. */
+const TARGETS_ANYONE = new Set<TargetedFeature>(["divine-spark"]);
 
-export type QuickAction =
-  | "dash" | "disengage" | "dodge" | "second-wind" | "action-surge" | "potion"
-  | "bonus-dash" | "bonus-disengage" | "rage" | "reckless" | "steady-aim" | "sacred-weapon" | "patient-defense" | "step-of-the-wind"
-  | "innate-sorcery" | "make-slot-1" | "make-slot-2" | "slot-1-to-points" | "slot-2-to-points";
+export type QuickAction = SimpleAction;
 
 export interface LogLine {
   text: string;
@@ -68,6 +88,10 @@ export class BattleController {
   message: string | null = null;
   /** Paladin: cast Divine Smite on the next melee hit. */
   smiteNext = false;
+  /** Monk: try Stunning Strike on hits. */
+  stunNext = false;
+  /** Rogue: the Cunning Strike to use on the next Sneak Attack. */
+  cunningNext: "poison" | "trip" | "withdraw" | undefined;
   /** Sorcerer: Metamagic to add to the next spell. */
   metamagic: string[] = [];
   lines: LogLine[] = [];
@@ -78,11 +102,25 @@ export class BattleController {
   private played = 0;
   private listeners = new Set<() => void>();
 
+  /** Updates from the server, played one after another. */
+  private syncing: Promise<void> = Promise.resolve();
+
   constructor(
     readonly combat: Combat,
-    /** Creatures the person at the keyboard controls. Everyone else uses rule-based tactics. */
+    /** Creatures the person at the keyboard controls. Everyone else uses rule-based tactics (or other players). */
     readonly playerIds: Set<string>,
-  ) {}
+    /** Set when the battle runs on the server (multiplayer); otherwise it runs here. */
+    private readonly link?: BattleLink,
+  ) {
+    // Joining a shared battle midway: the board already shows where everyone stands, so only list the recent moves.
+    if (link) {
+      for (const e of combat.log.events.slice(-12)) {
+        const text = describeEvent(e, (id) => combat.get(id).name);
+        if (text) this.lines.push({ text, className: e.type });
+      }
+      this.played = combat.log.events.length;
+    }
+  }
 
   subscribe(fn: () => void): () => void {
     this.listeners.add(fn);
@@ -96,9 +134,52 @@ export class BattleController {
   async attach(scene: BattleScene): Promise<void> {
     this.scene = scene;
     await scene.whenReady;
+    if (this.link) {
+      await this.flush();
+      return;
+    }
     if (this.combat.round === 0) this.combat.start();
     await this.flush();
     await this.runOthers();
+  }
+
+  /** A server update (from this player's action, or from someone else's): catch up and play it. */
+  receive(update: BattleUpdate): Promise<void> {
+    this.syncing = this.syncing.then(async () => {
+      if (update.from > this.combat.log.events.length && this.link) update = await this.link.refresh();
+      this.combat.load(update.snapshot);
+      this.combat.log.append(update.events.filter((e) => e.seq >= this.combat.log.events.length));
+      await this.flush();
+    });
+    return this.syncing;
+  }
+
+  /** Do one action: on the server for a shared battle, here otherwise. Shows the rules' reason if it's refused. */
+  private async perform(action: BattleAction): Promise<boolean> {
+    const id = this.active!.id;
+    if (this.link) {
+      this.busy = true;
+      this.refresh();
+      try {
+        await this.receive(await this.link.send(id, action));
+        return true;
+      } catch (e) {
+        this.message = e instanceof Error ? e.message : String(e);
+        this.busy = false;
+        this.refresh();
+        return false;
+      }
+    }
+    try {
+      applyAction(this.combat, id, action);
+    } catch (e) {
+      this.message = e instanceof Error ? e.message : String(e);
+      await this.flush();
+      return false;
+    }
+    await this.flush();
+    if (action.type === "end-turn") await this.runOthers();
+    return true;
   }
 
   get active(): Creature | undefined {
@@ -149,28 +230,27 @@ export class BattleController {
       return;
     }
 
+    if (this.mode.kind === "feature" && this.mode.feature === "lands-aid") {
+      this.mode = { kind: "move" };
+      await this.perform({ type: "point", feature: "lands-aid", point: p });
+      return;
+    }
+
     if (this.mode.kind === "feature") {
       const feature = this.mode.feature;
-      if (!target || (TARGETS_ALLY[feature] ? target.side !== me.side : target.side === me.side)) {
+      if (!target || (!TARGETS_ANYONE.has(feature) && (TARGETS_ALLY[feature] ? target.side !== me.side : target.side === me.side))) {
         this.mode = { kind: "move" };
         this.refresh();
         return;
       }
       this.mode = { kind: "move" };
-      await this.tryRules(() => {
-        if (feature === "lay-on-hands") this.combat.layOnHands(me.id, target.id);
-        else if (feature === "hunters-mark") this.combat.huntersMark(me.id, target.id);
-        else if (feature === "martial-arts") this.combat.martialArts(me.id, target.id);
-        else if (feature === "spiritual-weapon") this.combat.spiritualWeaponAttack(me.id, target.id);
-        else if (feature === "bardic-inspiration") this.combat.bardicInspiration(me.id, target.id);
-        else this.combat.flurryOfBlows(me.id, target.id);
-      });
+      if (feature !== "lands-aid") await this.perform({ type: "target", feature, targetId: target.id });
       return;
     }
 
     if (target && target.side !== me.side) {
       const attackId = this.mode.kind === "move" ? this.defaultAttack(me, target)?.id : this.mode.attackId;
-      if (attackId && this.combat.turn!.actions > 0 && this.combat.checkAttack(me.id, target.id, attackId).ok) {
+      if (attackId && (this.combat.turn!.actions > 0 || !!this.combat.turn!.extraAttacks) && this.combat.checkAttack(me.id, target.id, attackId).ok) {
         this.mode = { kind: "confirm", attackId, targetId: target.id };
         this.refresh();
       }
@@ -182,8 +262,7 @@ export class BattleController {
       return;
     }
     if (samePoint(p, me.position!) || !this.combat.reachable(me.id).has(key(p))) return;
-    this.combat.move(me.id, this.combat.pathTo(me.id, p));
-    await this.flush();
+    await this.perform({ type: "move", path: this.combat.pathTo(me.id, p) });
   }
 
   /** The attack used when clicking an enemy directly: the first one that can hit it, preferring no disadvantage. */
@@ -245,9 +324,27 @@ export class BattleController {
     this.mode = { kind: "move" };
     const before = this.combat.log.events.length;
     const metamagic = this.metamagic;
-    await this.tryRules(() => this.combat.castSpell(this.active!.id, spellId, { ...opts, ...(slot ? { slotLevel: slot } : {}), ...(metamagic.length ? { metamagic } : {}) }));
+    await this.perform({ type: "cast", spellId, ...opts, ...(slot ? { slotLevel: slot } : {}), ...(metamagic.length ? { metamagic } : {}) });
     if (!this.message) this.metamagic = [];
     if (!this.message) this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
+  }
+
+  async wildShape(formId: string): Promise<void> {
+    if (!this.canAct) return;
+    this.mode = { kind: "move" };
+    this.message = null;
+    await this.perform({ type: "wild-shape", formId });
+  }
+
+  toggleStun(): void {
+    this.stunNext = !this.stunNext;
+    this.emit();
+  }
+
+  cycleCunning(): void {
+    const order = [undefined, "trip", "poison", "withdraw"] as const;
+    this.cunningNext = order[(order.indexOf(this.cunningNext) + 1) % order.length];
+    this.emit();
   }
 
   toggleMetamagic(option: string): void {
@@ -258,16 +355,6 @@ export class BattleController {
   toggleSmite(): void {
     this.smiteNext = !this.smiteNext;
     this.emit();
-  }
-
-  /** Run a rules call; if the rules refuse it, show why instead of failing. */
-  private async tryRules(fn: () => void): Promise<void> {
-    try {
-      fn();
-    } catch (e) {
-      this.message = e instanceof Error ? e.message : String(e);
-    }
-    await this.flush();
   }
 
   selectAttack(attackId: string): void {
@@ -288,42 +375,16 @@ export class BattleController {
     const before = this.combat.log.events.length;
     const smite = this.smiteNext;
     this.message = null;
-    this.combat.attack(this.active!.id, targetId, attackId, { smite });
     this.mode = { kind: "move" };
-    this.lastRoll = this.describeRoll(this.combat.log.events.slice(before));
-    await this.flush();
+    await this.perform({ type: "attack", targetId, attackId, options: { smite, ...(this.stunNext ? { stun: true } : {}), ...(this.cunningNext ? { cunning: this.cunningNext } : {}) } });
+    this.lastRoll = this.describeRoll(this.combat.log.events.slice(before)) || null;
   }
 
   async act(action: QuickAction): Promise<void> {
     if (!this.canAct) return;
-    const id = this.active!.id;
-    const c = this.combat;
     this.mode = { kind: "move" };
     this.message = null;
-    await this.tryRules(() => {
-      const run: Record<QuickAction, () => void> = {
-        dash: () => c.dash(id),
-        disengage: () => c.disengage(id),
-        dodge: () => c.dodge(id),
-        "second-wind": () => c.secondWind(id),
-        "action-surge": () => c.actionSurge(id),
-        potion: () => c.drinkPotion(id),
-        "bonus-dash": () => c.dash(id, { bonus: true }),
-        "bonus-disengage": () => c.disengage(id, { bonus: true }),
-        rage: () => c.rage(id),
-        reckless: () => c.recklessAttack(id),
-        "steady-aim": () => c.steadyAim(id),
-        "sacred-weapon": () => c.sacredWeapon(id),
-        "patient-defense": () => c.patientDefense(id),
-        "step-of-the-wind": () => c.stepOfTheWind(id),
-        "innate-sorcery": () => c.innateSorcery(id),
-        "make-slot-1": () => c.createSpellSlot(id, 1),
-        "make-slot-2": () => c.createSpellSlot(id, 2),
-        "slot-1-to-points": () => c.convertSpellSlot(id, 1),
-        "slot-2-to-points": () => c.convertSpellSlot(id, 2),
-      };
-      run[action]();
-    });
+    await this.perform({ type: "simple", action });
   }
 
   async endTurn(): Promise<void> {
@@ -334,9 +395,7 @@ export class BattleController {
     this.message = null;
     this.smiteNext = false;
     this.metamagic = [];
-    this.combat.endTurn();
-    await this.flush();
-    await this.runOthers();
+    await this.perform({ type: "end-turn" });
   }
 
   setAutoEnd(on: boolean): void {
@@ -429,16 +488,19 @@ export class BattleController {
             return { point: c.position!, size: c.footprint ?? 1, ok: inRange, picked: picked.has(c.id) };
           });
       }
+    } else if (this.mode.kind === "feature" && this.mode.feature === "lands-aid") {
+      if (this.hover && this.combat.map) o.area = areaSquares(this.combat.map, "sphere", 10, this.hover, me.position!, me.footprint ?? 1);
     } else if (this.mode.kind === "feature") {
       const ally = TARGETS_ALLY[this.mode.feature];
+      const anyone = TARGETS_ANYONE.has(this.mode.feature);
       o.targets = [...this.combat.creatures.values()]
-        .filter((c) => !c.dead && c.position && (ally ? c.side === me.side : c.side !== me.side))
+        .filter((c) => !c.dead && c.position && (anyone || (ally ? c.side === me.side : c.side !== me.side)))
         .map((c) => ({ point: c.position!, size: c.footprint ?? 1, ok: true }));
     } else {
       const attackId = this.mode.attackId;
       o.targets = this.combat
         .enemiesOf(me)
-        .map((e) => ({ point: e.position!, size: e.footprint ?? 1, ok: this.combat.turn!.actions > 0 && this.combat.checkAttack(me.id, e.id, attackId).ok }));
+        .map((e) => ({ point: e.position!, size: e.footprint ?? 1, ok: (this.combat.turn!.actions > 0 || !!this.combat.turn!.extraAttacks) && this.combat.checkAttack(me.id, e.id, attackId).ok }));
       if (this.mode.kind === "confirm") {
         o.targets = o.targets.filter((t) => samePoint(t.point, this.combat.get((this.mode as { targetId: string }).targetId).position!));
       }

@@ -1,0 +1,80 @@
+{
+  "packs": [
+    { "id": "burglars-pack", "name": "Burglar's Pack", "costGp": 16 },
+    { "id": "diplomats-pack", "name": "Diplomat's Pack", "costGp": 39 },
+    { "id": "dungeoneers-pack", "name": "Dungeoneer's Pack", "costGp": 12 },
+    { "id": "entertainers-pack", "name": "Entertainer's Pack", "costGp": 40 },
+    { "id": "explorers-pack", "name": "Explorer's Pack", "costGp": 10 },
+    { "id": "priests-pack", "name": "Priest's Pack", "costGp": 33 },
+    { "id": "scholars-pack", "name": "Scholar's Pack", "costGp": 40 }
+  ],
+  "classes": {
+    "barbarian": [
+      { "id": "A", "weapons": [{ "id": "greataxe" }, { "id": "handaxe", "count": 4 }], "gear": [{ "name": "Explorer's Pack" }], "gold": 15 },
+      { "id": "B", "gold": 75 }
+    ],
+    "bard": [
+      { "id": "A", "armor": "leather", "weapons": [{ "id": "dagger", "count": 2 }], "gear": [{ "name": "Musical Instrument (your choice)" }, { "name": "Entertainer's Pack" }], "gold": 19 },
+      { "id": "B", "gold": 90 }
+    ],
+    "cleric": [
+      { "id": "A", "armor": "chain-shirt", "shield": true, "weapons": [{ "id": "mace" }], "gear": [{ "name": "Holy Symbol" }, { "name": "Priest's Pack" }], "gold": 7 },
+      { "id": "B", "gold": 110 }
+    ],
+    "druid": [
+      { "id": "A", "armor": "leather", "shield": true, "weapons": [{ "id": "sickle" }, { "id": "quarterstaff" }], "gear": [{ "name": "Druidic Focus (Quarterstaff)" }, { "name": "Explorer's Pack" }, { "name": "Herbalism Kit" }], "gold": 9 },
+      { "id": "B", "gold": 50 }
+    ],
+    "fighter": [
+      { "id": "A", "armor": "chain-mail", "weapons": [{ "id": "greatsword" }, { "id": "flail" }, { "id": "javelin", "count": 8 }], "gear": [{ "name": "Dungeoneer's Pack" }], "gold": 4 },
+      { "id": "B", "armor": "studded-leather", "weapons": [{ "id": "scimitar" }, { "id": "shortsword" }, { "id": "longbow" }], "gear": [{ "name": "Arrows", "quantity": 20 }, { "name": "Quiver" }, { "name": "Dungeoneer's Pack" }], "gold": 11 },
+      { "id": "C", "gold": 155 }
+    ],
+    "monk": [
+      { "id": "A", "weapons": [{ "id": "spear" }, { "id": "dagger", "count": 5 }], "gear": [{ "name": "Artisan's Tools or Musical Instrument (your choice)" }, { "name": "Explorer's Pack" }], "gold": 11 },
+      { "id": "B", "gold": 50 }
+    ],
+    "paladin": [
+      { "id": "A", "armor": "chain-mail", "shield": true, "weapons": [{ "id": "longsword" }, { "id": "javelin", "count": 6 }], "gear": [{ "name": "Holy Symbol" }, { "name": "Priest's Pack" }], "gold": 9 },
+      { "id": "B", "gold": 150 }
+    ],
+    "ranger": [
+      { "id": "A", "armor": "studded-leather", "weapons": [{ "id": "scimitar" }, { "id": "shortsword" }, { "id": "longbow" }], "gear": [{ "name": "Arrows", "quantity": 20 }, { "name": "Quiver" }, { "name": "Druidic Focus (sprig of mistletoe)" }, { "name": "Explorer's Pack" }], "gold": 7 },
+      { "id": "B", "gold": 150 }
+    ],
+    "rogue": [
+      { "id": "A", "armor": "leather", "weapons": [{ "id": "dagger", "count": 2 }, { "id": "shortsword" }, { "id": "shortbow" }], "gear": [{ "name": "Arrows", "quantity": 20 }, { "name": "Quiver" }, { "name": "Thieves' Tools" }, { "name": "Burglar's Pack" }], "gold": 8 },
+      { "id": "B", "gold": 100 }
+    ],
+    "sorcerer": [
+      { "id": "A", "weapons": [{ "id": "spear" }, { "id": "dagger", "count": 2 }], "gear": [{ "name": "Arcane Focus (crystal)" }, { "name": "Dungeoneer's Pack" }], "gold": 28 },
+      { "id": "B", "gold": 50 }
+    ],
+    "warlock": [
+      { "id": "A", "armor": "leather", "weapons": [{ "id": "sickle" }, { "id": "dagger", "count": 2 }], "gear": [{ "name": "Arcane Focus (orb)" }, { "name": "Book (occult lore)" }, { "name": "Scholar's Pack" }], "gold": 15 },
+      { "id": "B", "gold": 100 }
+    ],
+    "wizard": [
+      { "id": "A", "weapons": [{ "id": "dagger", "count": 2 }, { "id": "quarterstaff" }], "gear": [{ "name": "Arcane Focus (Quarterstaff)" }, { "name": "Robe" }, { "name": "Spellbook" }, { "name": "Scholar's Pack" }], "gold": 5 },
+      { "id": "B", "gold": 55 }
+    ]
+  },
+  "backgrounds": {
+    "acolyte": [
+      { "id": "A", "gear": [{ "name": "Calligrapher's Supplies" }, { "name": "Book (prayers)" }, { "name": "Holy Symbol" }, { "name": "Parchment", "quantity": 10 }, { "name": "Robe" }], "gold": 8 },
+      { "id": "B", "gold": 50 }
+    ],
+    "criminal": [
+      { "id": "A", "weapons": [{ "id": "dagger", "count": 2 }], "gear": [{ "name": "Thieves' Tools" }, { "name": "Crowbar" }, { "name": "Pouch", "quantity": 2 }, { "name": "Traveler's Clothes" }], "gold": 16 },
+      { "id": "B", "gold": 50 }
+    ],
+    "sage": [
+      { "id": "A", "weapons": [{ "id": "quarterstaff" }], "gear": [{ "name": "Calligrapher's Supplies" }, { "name": "Book (history)" }, { "name": "Parchment", "quantity": 8 }, { "name": "Robe" }], "gold": 8 },
+      { "id": "B", "gold": 50 }
+    ],
+    "soldier": [
+      { "id": "A", "weapons": [{ "id": "spear" }, { "id": "shortbow" }], "gear": [{ "name": "Arrows", "quantity": 20 }, { "name": "Gaming Set (same as your proficiency)" }, { "name": "Healer's Kit" }, { "name": "Quiver" }, { "name": "Traveler's Clothes" }], "gold": 14 },
+      { "id": "B", "gold": 50 }
+    ]
+  }
+}
