@@ -1,0 +1,3 @@
+# Preserved alternate artwork
+
+These files are alternate versions from art/remaining-artwork-2026-10-24 (0bb241cc2e29beec4643e9adb35a9fe17930482a). Their relative paths mirror the repository. Newer active exports, the combined art catalog, and current documentation remain at their normal paths. Archived catalog and board files are historical evidence, not runtime inputs. Unique source images, export scripts, and review artifacts were added at their original paths. Spell/effect and icon source atlases from art/complete-artwork are preserved separately under packages/web/art/codex/source/completion; export and runtime integration remain unfinished.

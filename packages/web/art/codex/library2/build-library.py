@@ -30,7 +30,7 @@ SPECS = [
 ]
 
 
-def repack(name, target_height, size=192, prefix="monster", source_path=None):
+def repack(name, target_height, size=192, prefix="monster", source_path=None, attach_detached=False):
     atlas = Image.open(source_path or SOURCE / f'{name}-source.png').convert('RGBA')
     width, height = atlas.size
     # Extract whole connected poses before registering. Generated atlas baselines
@@ -55,6 +55,21 @@ def repack(name, target_height, size=192, prefix="monster", source_path=None):
             groups.append(group)
     groups.sort(key=len, reverse=True)
     assert len(groups) >= 11
+    if attach_detached:
+        # Preserve detached bow/string/magic pixels by attaching nearby components
+        # to an isolated full-body pose. The source grid is only approximate.
+        bodies = groups[:11]
+        bounds = [(min(x for x,y in g), min(y for x,y in g),
+                   max(x for x,y in g), max(y for x,y in g)) for g in bodies]
+        for part in groups[11:]:
+            if len(part) < 4:
+                continue
+            px=sum(x for x,y in part)/len(part); py=sum(y for x,y in part)/len(part)
+            distances=[max(l-px,0,px-r)**2+max(t-py,0,py-b)**2 for l,t,r,b in bounds]
+            nearest=min(range(11),key=lambda i:distances[i])
+            assert distances[nearest] < (width*.06)**2, (name,'unassigned component',len(part))
+            bodies[nearest].extend(part)
+        groups=bodies
     assert len(groups) == 11 or len(groups[11]) < len(groups[10]) * .02, (name, 'unexpected detached artwork')
     cells = [None] * 11
     for group in groups[:11]:

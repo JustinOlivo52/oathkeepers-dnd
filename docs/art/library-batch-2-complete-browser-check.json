@@ -1,0 +1,30 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "entries": 71,
+    "loaded": 75,
+    "errors": [],
+    "sprites": 18,
+    "boards": 2,
+    "ready": true,
+    "overflow": false,
+    "pageErrors": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "entries": 71,
+    "loaded": 75,
+    "errors": [],
+    "sprites": 18,
+    "boards": 2,
+    "ready": true,
+    "overflow": false,
+    "pageErrors": []
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "scene-thornwatch-gate-day",
+    "path": "/workspace/generated_images/exec-afa5a696-c7fd-46af-bf2d-30cef470be52.png"
+  },
+  {
+    "id": "scene-thornwatch-square",
+    "path": "/workspace/generated_images/exec-9e6f58da-3206-4bab-afb4-4f0b7ca0a922.png"
+  },
+  {
+    "id": "scene-tavern-quiet",
+    "path": "/workspace/generated_images/exec-d891413f-8461-4aaf-a197-c864599bc5d2.png"
+  },
+  {
+    "id": "scene-temple",
+    "path": "/workspace/generated_images/exec-c7bef39f-bc32-4745-a164-4bd2e662c049.png"
+  },
+  {
+    "id": "scene-smithy",
+    "path": "/workspace/generated_images/exec-077999c2-bc2a-4eab-b730-5ce4262a4ba1.png"
+  },
+  {
+    "id": "scene-forest-night",
+    "path": "/workspace/generated_images/exec-7fe28b3d-316a-480f-8965-1f8d7200d54a.png"
+  },
+  {
+    "id": "scene-river-crossing",
+    "path": "/workspace/generated_images/exec-853b8515-df46-46a0-a241-856c21836560.png"
+  },
+  {
+    "id": "scene-farmstead",
+    "path": "/workspace/generated_images/exec-0a5497d5-fdf1-4be5-b997-511cbd1063cf.png"
+  },
+  {
+    "id": "scene-goblin-camp",
+    "path": "/workspace/generated_images/exec-51b6b61e-c297-427d-96fa-6fd64a1115be.png"
+  },
+  {
+    "id": "scene-abbey-exterior",
+    "path": "/workspace/generated_images/exec-37d72488-7a07-40cb-8299-3e1072b6a806.png"
+  },
+  {
+    "id": "scene-cave-entrance",
+    "path": "/workspace/generated_images/exec-a68eff3c-08ba-41ac-b00a-a60624daff35.png"
+  },
+  {
+    "id": "scene-cave-depths",
+    "path": "/workspace/generated_images/exec-79507c4a-5d42-42bb-a052-9e64dc280d6f.png"
+  },
+  {
+    "id": "scene-crypt",
+    "path": "/workspace/generated_images/exec-f75829a4-7d5c-444e-8f79-528a2fc651ab.png"
+  },
+  {
+    "id": "scene-watchtower",
+    "path": "/workspace/generated_images/exec-5282c881-9057-49b6-b048-e7559064632b.png"
+  }
+]

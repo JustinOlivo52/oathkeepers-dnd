@@ -1,0 +1,128 @@
+[
+  {
+    "id": "scene-thornwatch-gate-day",
+    "bytes": 388068,
+    "quality": 84,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-thornwatch-square",
+    "bytes": 394826,
+    "quality": 81,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-tavern-quiet",
+    "bytes": 307066,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-temple",
+    "bytes": 311796,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-smithy",
+    "bytes": 380244,
+    "quality": 85,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-forest-night",
+    "bytes": 390168,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-river-crossing",
+    "bytes": 387004,
+    "quality": 84,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-farmstead",
+    "bytes": 388488,
+    "quality": 87,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-goblin-camp",
+    "bytes": 389520,
+    "quality": 85,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-abbey-exterior",
+    "bytes": 368296,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-cave-entrance",
+    "bytes": 384404,
+    "quality": 83,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-cave-depths",
+    "bytes": 360146,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-crypt",
+    "bytes": 325890,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  },
+  {
+    "id": "scene-watchtower",
+    "bytes": 269266,
+    "quality": 88,
+    "dimensions": [
+      1600,
+      900
+    ]
+  }
+]
