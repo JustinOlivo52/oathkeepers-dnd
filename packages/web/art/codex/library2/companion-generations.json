@@ -1,0 +1,62 @@
+[
+  {
+    "id": "wren-ashdown",
+    "design": "Wren Ashdown: adult woman HALFLING rogue with curly chestnut hair, warm brown eyes, dark hooded leather, green-grey short cloak, shortsword in right hand, compact shortbow slung on back. Short natural halfling proportions, NOT childlike. Quick low shortsword thrust for attack.",
+    "size": "small",
+    "height": 88,
+    "tags": [
+      "halfling",
+      "expert",
+      "hero"
+    ],
+    "path": "/workspace/generated_images/exec-aabd9cf2-469e-4795-911d-33721d063fb5.png"
+  },
+  {
+    "id": "brother-odric-vale",
+    "design": "Brother Odric Vale: older male DWARF paladin with stocky broad body and grey-streaked braided beard, chain mail, blue-grey tabard with original abstract star emblem, round shield and longsword. Grounded powerful sword slash for attack.",
+    "size": "medium",
+    "height": 112,
+    "tags": [
+      "dwarf",
+      "divine",
+      "hero"
+    ],
+    "path": "/workspace/generated_images/exec-a55ca507-72eb-41c1-a4be-23de4dcdaced.png"
+  },
+  {
+    "id": "tamsin-reed",
+    "design": "Tamsin Reed: adult woman wood ELF ranger, lean athletic body, pointed ears, auburn braided hair, studded leather, green-brown cloak, longbow in hands and shortsword sheathed at hip. Attack is a clear longbow draw, release, recovery; keep bow and string readable.",
+    "size": "medium",
+    "height": 128,
+    "tags": [
+      "elf",
+      "expert",
+      "hero"
+    ],
+    "path": "/workspace/generated_images/exec-ad88b309-9d5f-457e-91ec-4fa75be88df6.png"
+  },
+  {
+    "id": "sister-maren-holt",
+    "design": "Sister Maren Holt: young adult HUMAN woman cleric, brown skin, dark braided hair, chain mail, cream-and-ochre tabard with plain original sun disk, shield and mace. Attack is mace raised, clear horizontal strike, recovery.",
+    "size": "medium",
+    "height": 128,
+    "tags": [
+      "human",
+      "divine",
+      "hero"
+    ],
+    "path": "/workspace/generated_images/exec-b53cc393-b043-4a43-9f37-5b9205ca4bad.png"
+  },
+  {
+    "id": "pip-thistlewick",
+    "design": "Pip Thistlewick: adult male rock GNOME wizard, short body with expressive face, sandy wild hair, goggles pushed above forehead, teal robes with many pockets, belt satchels, wooden quarterstaff. Attack: casting windup, staff pointed right with tiny blue spark at tip, recovery.",
+    "size": "small",
+    "height": 84,
+    "tags": [
+      "gnome",
+      "arcane",
+      "hero"
+    ],
+    "path": "/workspace/generated_images/exec-372141d2-67f9-4f7b-a9e1-b6f03941b928.png"
+  }
+]

@@ -1484,5 +1484,559 @@
       "hostile"
     ],
     "image": "library/portraits/npc-bandit-leader.webp"
+  },
+  {
+    "id": "scene-thornwatch-gate-day",
+    "kind": "scene",
+    "title": "Thornwatch gate, morning",
+    "tags": [
+      "town",
+      "gate",
+      "day",
+      "clear",
+      "outdoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-thornwatch-gate-day.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-thornwatch-square",
+    "kind": "scene",
+    "title": "Thornwatch market square",
+    "tags": [
+      "town",
+      "market",
+      "day",
+      "outdoor",
+      "festive"
+    ],
+    "image": "library/scenes/scene-thornwatch-square.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-tavern-quiet",
+    "kind": "scene",
+    "title": "The Lantern after closing",
+    "tags": [
+      "tavern",
+      "town",
+      "night",
+      "indoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-tavern-quiet.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-temple",
+    "kind": "scene",
+    "title": "Thornwatch temple",
+    "tags": [
+      "temple",
+      "town",
+      "day",
+      "indoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-temple.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-smithy",
+    "kind": "scene",
+    "title": "Thornwatch forge",
+    "tags": [
+      "smithy",
+      "town",
+      "day",
+      "indoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-smithy.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-forest-night",
+    "kind": "scene",
+    "title": "Moonlit forest",
+    "tags": [
+      "forest",
+      "night",
+      "fog",
+      "outdoor",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-forest-night.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-river-crossing",
+    "kind": "scene",
+    "title": "The old river bridge",
+    "tags": [
+      "river",
+      "road",
+      "dusk",
+      "outdoor",
+      "calm"
+    ],
+    "image": "library/scenes/scene-river-crossing.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-farmstead",
+    "kind": "scene",
+    "title": "Abandoned farmstead",
+    "tags": [
+      "farm",
+      "day",
+      "rain",
+      "outdoor",
+      "somber"
+    ],
+    "image": "library/scenes/scene-farmstead.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-goblin-camp",
+    "kind": "scene",
+    "title": "Ravine encampment",
+    "tags": [
+      "camp",
+      "hills",
+      "dusk",
+      "outdoor",
+      "hostile"
+    ],
+    "image": "library/scenes/scene-goblin-camp.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-abbey-exterior",
+    "kind": "scene",
+    "title": "The fallen abbey",
+    "tags": [
+      "abbey",
+      "ruins",
+      "hills",
+      "dusk",
+      "outdoor",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-abbey-exterior.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-cave-entrance",
+    "kind": "scene",
+    "title": "Hillside cave entrance",
+    "tags": [
+      "cave",
+      "hills",
+      "day",
+      "outdoor",
+      "tense"
+    ],
+    "image": "library/scenes/scene-cave-entrance.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-cave-depths",
+    "kind": "scene",
+    "title": "The still pool",
+    "tags": [
+      "cave",
+      "underground",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-cave-depths.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-crypt",
+    "kind": "scene",
+    "title": "Ancient burial vaults",
+    "tags": [
+      "crypt",
+      "underground",
+      "eerie"
+    ],
+    "image": "library/scenes/scene-crypt.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "scene-watchtower",
+    "kind": "scene",
+    "title": "Frontier watchtower in the storm",
+    "tags": [
+      "watchtower",
+      "hills",
+      "dusk",
+      "storm",
+      "outdoor",
+      "tense"
+    ],
+    "image": "library/scenes/scene-watchtower.webp",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "hero-wren-ashdown",
+    "kind": "hero",
+    "title": "Wren Ashdown",
+    "sprite": {
+      "file": "sprites/hero-wren-ashdown.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 90
+    },
+    "tags": [
+      "halfling",
+      "expert",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "portrait-wren-ashdown",
+    "kind": "npc",
+    "title": "Wren Ashdown portrait",
+    "image": "library/portraits/companion-wren-ashdown.webp",
+    "tags": [
+      "halfling",
+      "expert",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "hero-brother-odric-vale",
+    "kind": "hero",
+    "title": "Brother Odric Vale",
+    "sprite": {
+      "file": "sprites/hero-brother-odric-vale.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 114
+    },
+    "tags": [
+      "dwarf",
+      "divine",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "portrait-brother-odric-vale",
+    "kind": "npc",
+    "title": "Brother Odric Vale portrait",
+    "image": "library/portraits/companion-brother-odric-vale.webp",
+    "tags": [
+      "dwarf",
+      "divine",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "hero-tamsin-reed",
+    "kind": "hero",
+    "title": "Tamsin Reed",
+    "sprite": {
+      "file": "sprites/hero-tamsin-reed.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 130
+    },
+    "tags": [
+      "elf",
+      "expert",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "portrait-tamsin-reed",
+    "kind": "npc",
+    "title": "Tamsin Reed portrait",
+    "image": "library/portraits/companion-tamsin-reed.webp",
+    "tags": [
+      "elf",
+      "expert",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "hero-sister-maren-holt",
+    "kind": "hero",
+    "title": "Sister Maren Holt",
+    "sprite": {
+      "file": "sprites/hero-sister-maren-holt.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "medium",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 131
+    },
+    "tags": [
+      "human",
+      "divine",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "portrait-sister-maren-holt",
+    "kind": "npc",
+    "title": "Sister Maren Holt portrait",
+    "image": "library/portraits/companion-sister-maren-holt.webp",
+    "tags": [
+      "human",
+      "divine",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "hero-pip-thistlewick",
+    "kind": "hero",
+    "title": "Pip Thistlewick",
+    "sprite": {
+      "file": "sprites/hero-pip-thistlewick.png",
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "size": "medium",
+      "rulesSize": "small",
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "anchor": {
+        "x": 96,
+        "y": 166
+      },
+      "visibleHeight": 86
+    },
+    "tags": [
+      "gnome",
+      "arcane",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "id": "portrait-pip-thistlewick",
+    "kind": "npc",
+    "title": "Pip Thistlewick portrait",
+    "image": "library/portraits/companion-pip-thistlewick.webp",
+    "tags": [
+      "gnome",
+      "arcane",
+      "hero"
+    ],
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "tiles-cave",
+    "kind": "tileset",
+    "title": "Cave terrain",
+    "tags": [
+      "cave",
+      "underground",
+      "eerie"
+    ],
+    "tiles": "sprites/tiles-cave.png",
+    "props": "sprites/props-cave.png"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "board-cave",
+    "kind": "board",
+    "title": "Winding Cave Chambers",
+    "tags": [
+      "cave",
+      "underground",
+      "eerie"
+    ],
+    "tiles": "tiles-cave",
+    "board": "boards/board-cave.json"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "tiles-crypt",
+    "kind": "tileset",
+    "title": "Crypt terrain",
+    "tags": [
+      "crypt",
+      "underground",
+      "dungeon"
+    ],
+    "tiles": "sprites/tiles-crypt.png",
+    "props": "sprites/props-crypt.png"
+  },
+  {
+    "source": "codex-imagegen",
+    "added": "2026-10-24",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "id": "board-crypt",
+    "kind": "board",
+    "title": "The Burial Halls",
+    "tags": [
+      "crypt",
+      "underground",
+      "dungeon"
+    ],
+    "tiles": "tiles-crypt",
+    "board": "boards/board-crypt.json"
   }
 ]

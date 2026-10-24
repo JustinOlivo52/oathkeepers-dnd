@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oathkeepers — Batch 2 review</title>
+<style>body{margin:0;background:#122126;color:#e5dfcc;font:16px system-ui}header{padding:24px;position:sticky;top:0;background:#122126;z-index:2;border-bottom:1px solid #52615b}h1{font-size:24px;margin:0 0 12px}select,button{font:inherit;margin:4px;padding:8px;background:#30423f;color:inherit;border:1px solid #758078;border-radius:4px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px;padding:20px}article{background:#213135;border:1px solid #415452;border-radius:8px;padding:12px;min-width:0}h2{font-size:15px;overflow-wrap:anywhere}img,canvas{max-width:100%;height:auto;display:block;margin:auto}canvas{background:#2b3d40}p{font-size:13px;color:#c1c8b6}#status{margin-left:12px}a{color:#e6c482}</style>
+<header><h1>Oathkeepers — Batch 2 asset review</h1><label>Animation <select id="animation"><option>idle</option><option>walk</option><option>attack</option><option>hit</option><option>down</option></select></label><button id="pause">Pause</button><button id="step">Step</button><button id="mirror">Mirror</button><span id="status">Loading…</span><p>Art review only. Mechanics and runtime integration remain pending.</p></header><main></main>
+<script type="module">
+const base='../../packages/web/public/assets/',catalog=await fetch('../../packages/content/data/art-catalog.json').then(r=>r.json());
+const entries=catalog.filter(e=>e.integrationStatus==='pending'),main=document.querySelector('main');
+const animations={idle:[0,1],walk:[2,3,4,5],attack:[6,7,8],hit:[9],down:[10]};
+let tick=0,paused=false,mirror=false;const sprites=[],errors=[];
+window.review={entries:entries.length,loaded:0,errors,sprites:0,boards:0};
+const load=src=>new Promise((resolve,reject)=>{const i=new Image;i.onload=()=>{window.review.loaded++;resolve(i)};i.onerror=()=>{errors.push(src);reject(new Error(src))};i.src=base+src});
+for(const e of entries){const a=document.createElement('article'),h=document.createElement('h2');h.textContent=e.id;a.append(h);main.append(a);const p=document.createElement('p');p.textContent=`${e.kind} · art ${e.artStatus} · mechanics ${e.mechanicsStatus} · integration ${e.integrationStatus}`;a.append(p);
+try{if(e.sprite){const s=e.sprite,i=await load(s.file),c=document.createElement('canvas');c.width=s.frameWidth;c.height=s.frameHeight;a.append(c);sprites.push({i,c,s});window.review.sprites++}
+else if(e.image){const i=await load(e.image);i.alt=e.title;a.append(i)}
+else if(e.kind==='tileset'){const i=await load(e.tiles);i.alt=e.title;a.append(i);if(e.props){const props=await load(e.props);props.alt=e.title+' props';a.append(props)}}
+else if(e.kind==='board'){const b=await fetch(base+e.board).then(r=>r.json()),t=catalog.find(t=>t.id===e.tiles),i=await load(t.tiles),props=t.props?await load(t.props):null,c=document.createElement('canvas');c.width=b.rows[0].length*32;c.height=b.rows.length*32;a.append(c);const ctx=c.getContext('2d');for(let y=0;y<b.rows.length;y++)for(let x=0;x<b.rows[y].length;x++){const v=b.rows[y][x],f=v==='#'?3:v==='~'?4:(x*7+y*3)%3;ctx.drawImage(i,f*128,0,128,128,x*32,y*32,32,32)}if(props)for(const v of b.props)ctx.drawImage(props,v.prop%2*128,Math.floor(v.prop/2)*128,128,128,v.x*32,v.y*32,32,32);window.review.boards++}
+}catch(error){errors.push(e.id+': '+error.message)}}
+function draw(){for(const {i,c,s}of sprites){const ctx=c.getContext('2d'),frames=animations[document.querySelector('#animation').value],f=frames[tick%frames.length];ctx.clearRect(0,0,c.width,c.height);ctx.save();if(mirror){ctx.translate(c.width,0);ctx.scale(-1,1)}ctx.drawImage(i,f*s.frameWidth,0,s.frameWidth,s.frameHeight,0,0,c.width,c.height);ctx.restore()}}
+document.querySelector('#animation').onchange=()=>{tick=0;draw()};document.querySelector('#pause').onclick=()=>{paused=!paused};document.querySelector('#step').onclick=()=>{paused=true;tick++;draw()};document.querySelector('#mirror').onclick=()=>{mirror=!mirror;draw()};
+setInterval(()=>{if(!paused){tick++;draw()}},180);draw();window.review.ready=true;document.querySelector('#status').textContent=`${entries.length} entries · ${errors.length} errors`;document.body.dataset.ready='true';
+</script></html>
