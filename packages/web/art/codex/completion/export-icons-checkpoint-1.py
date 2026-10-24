@@ -1,0 +1,76 @@
+"""Export four existing spell illustrations. Requires Python and Pillow; no generation.
+
+Run from any directory. Reviewed crop boxes follow the painted cards, rather than
+assuming the generated atlas obeys the requested equal-cell grid.
+"""
+from pathlib import Path
+import hashlib
+import json
+from PIL import Image
+
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parents[4]
+SOURCE = HERE.parent / 'source/completion/icons-0.png'
+OUTPUT = REPO / 'packages/web/public/assets/library/icons'
+DOCS = REPO / 'docs/art'
+ITEMS = [
+    ('fire-bolt', 'Fire Bolt', (32, 12, 281, 259)),
+    ('ray-of-frost', 'Ray of Frost', (303, 12, 551, 259)),
+    ('shocking-grasp', 'Shocking Grasp', (570, 13, 821, 259)),
+    ('acid-splash', 'Acid Splash', (842, 13, 1090, 259)),
+]
+
+
+def main():
+    source_bytes = SOURCE.read_bytes()
+    source = Image.open(SOURCE).convert('RGBA')
+    assert source.size == (1122, 1402), 'Source changed; review crop boxes first'
+    assert hashlib.sha256(source_bytes).hexdigest() == SOURCE_SHA256, 'Source changed; review first'
+    OUTPUT.mkdir(parents=True, exist_ok=True)
+    DOCS.mkdir(parents=True, exist_ok=True)
+    catalog_path = REPO / 'packages/content/data/art-catalog.json'
+    catalog = json.loads(catalog_path.read_text())
+    report = {'source': str(SOURCE.relative_to(REPO)), 'sourceSha256': SOURCE_SHA256, 'icons': []}
+    preview = Image.new('RGB', (640, 210), '#24262b')
+    from PIL import ImageDraw
+    draw = ImageDraw.Draw(preview)
+    for index, (spell, title, box) in enumerate(ITEMS):
+        # Crop to the reviewed painted card border, then retain transparent margins.
+        crop = source.crop(box)
+        crop.thumbnail((60, 60), Image.Resampling.LANCZOS)
+        icon = Image.new('RGBA', (64, 64))
+        icon.alpha_composite(crop, ((64-crop.width)//2, (64-crop.height)//2))
+        asset_id = 'icon-' + spell
+        path = OUTPUT / (asset_id + '.png')
+        icon.save(path, optimize=True)
+        bounds = icon.getbbox()
+        assert bounds and all(v > 0 for v in bounds[:2]) and all(v < 64 for v in bounds[2:]), asset_id
+        assert icon.getchannel('A').getextrema() == (0, 255), asset_id
+        assert path.stat().st_size < 20000, asset_id
+        relative = str(path.relative_to(REPO / 'packages/web/public/assets'))
+        existing = next((e for e in catalog if e['id'] == asset_id), None)
+        entry = dict(id=asset_id, kind='icon', title=title + ' icon', tags=[], image=relative,
+                     artStatus='ready', mechanicsStatus='not-required', integrationStatus='pending',
+                     source='codex-imagegen', added='2026-10-24')
+        if existing:
+            assert existing['image'] == relative, 'Refusing conflicting catalog path'
+        else:
+            catalog.append(entry)
+        report['icons'].append(dict(id=asset_id, image=relative, sourceCrop=list(box),
+                                   width=64, height=64, bytes=path.stat().st_size,
+                                   sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+        x = index * 160 + 48
+        preview.paste(icon, (x, 30), icon)
+        tiny = icon.resize((20, 20), Image.Resampling.LANCZOS)
+        preview.paste(tiny, (x+22, 115), tiny)
+        draw.text((index*160+8, 160), title, fill='white')
+    assert len({e['id'] for e in catalog}) == len(catalog), 'Duplicate catalog id'
+    catalog_path.write_text(json.dumps(catalog, indent=2)+'\n')
+    preview.save(DOCS / 'spell-icons-checkpoint-1.png')
+    (DOCS / 'spell-icons-checkpoint-1.json').write_text(json.dumps(report, indent=2)+'\n')
+    print(json.dumps(report, indent=2))
+
+
+SOURCE_SHA256 = '783874062c33a9fcb42f3db12cdff969b2b899decc8974e747e51b3ba0b9db88'
+if __name__ == '__main__':
+    main()

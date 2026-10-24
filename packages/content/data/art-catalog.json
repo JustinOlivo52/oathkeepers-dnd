@@ -3910,5 +3910,53 @@
       "leader"
     ],
     "image": "library/portraits/companion-bram-holloway.webp"
+  },
+  {
+    "id": "icon-fire-bolt",
+    "kind": "icon",
+    "title": "Fire Bolt icon",
+    "tags": [],
+    "image": "library/icons/icon-fire-bolt.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-ray-of-frost",
+    "kind": "icon",
+    "title": "Ray of Frost icon",
+    "tags": [],
+    "image": "library/icons/icon-ray-of-frost.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-shocking-grasp",
+    "kind": "icon",
+    "title": "Shocking Grasp icon",
+    "tags": [],
+    "image": "library/icons/icon-shocking-grasp.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
+  },
+  {
+    "id": "icon-acid-splash",
+    "kind": "icon",
+    "title": "Acid Splash icon",
+    "tags": [],
+    "image": "library/icons/icon-acid-splash.png",
+    "artStatus": "ready",
+    "mechanicsStatus": "not-required",
+    "integrationStatus": "pending",
+    "source": "codex-imagegen",
+    "added": "2026-10-24"
   }
 ]
