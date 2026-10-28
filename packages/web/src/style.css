@@ -175,7 +175,6 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 @media (max-width: 900px) { .battle-layout { grid-template-columns: minmax(0, 1fr); } }
 .board { position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .canvas-scroll { overflow-x: auto; border-radius: 8px; }
-@media (max-width: 700px) { .canvas-scroll .canvas { width: 680px; } }
 .canvas { width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #121110; }
 .canvas canvas { display: block; touch-action: manipulation; }
 .initiative { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; overflow-x: auto; }
@@ -243,3 +242,34 @@ fieldset.radios legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .step-dots button.on { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
 .step-help { margin: 0 0 12px; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 4px; font-size: 14px; }
 .step-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }
+
+/* Header tools */
+.header-tools { display: flex; gap: 6px; align-items: center; }
+
+/* Phone held upright */
+.rotate-notice {
+  position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  padding: 24px; text-align: center; background: rgba(12, 18, 20, 0.97); color: #efe7d8;
+}
+.rotate-notice h2 { margin: 0; font: 26px Georgia, serif; }
+.rotate-notice p { margin: 0; max-width: 30ch; color: #c9c1b2; }
+.rotate-notice .ghost { color: #c9c1b2; }
+.rotate-icon { font-size: 56px; animation: rotate-hint 2.4s ease-in-out infinite; }
+@keyframes rotate-hint { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+@media (prefers-reduced-motion: reduce) { .rotate-icon { animation: none; transform: rotate(-90deg); } }
+
+/* How to play */
+.how-to-play-backdrop { position: fixed; inset: 0; z-index: 90; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.how-to-play {
+  width: min(680px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; background: var(--panel); color: var(--text);
+  border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px 22px; outline: none;
+}
+.how-to-play header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: -18px; background: var(--panel); padding: 4px 0 8px; }
+.how-to-play h2 { margin: 0; font: 26px Georgia, serif; }
+.how-to-play h3 { margin: 14px 0 4px; font: 17px Georgia, serif; color: var(--accent); }
+.how-to-play p, .how-to-play li { line-height: 1.5; font-size: 15px; }
+.how-to-play ul { padding-left: 18px; margin: 4px 0; }
+.how-to-play > .primary { margin-top: 16px; width: 100%; }
+
+/* Game screens are dark edge to edge (no light strip past the end of the page on phones). */
+body:has(.app-battle) { background: #0f1517; }

@@ -60,13 +60,13 @@ Done:
 - [x] Multiplayer: invite codes, live tables, shared server-run battles, drop in/out at breaks
 - [x] Deployable: Docker image, Postgres saves, group code for signups, Render config
 - [x] Builder: guided mode, quick build, starting gear and gold, portraits, backstory for the DM
+- [x] Phones and tablets: touch controls (tap to move, drag, pinch), sideways layouts, a turn-sideways prompt, How to Play guide
 - [x] Art: class and companion sprites, player portraits, builder cards, 47 NPC portraits, 16 scenes, 22 monsters, cave and crypt maps, 50 spell effects
 
 Next:
 
 - [ ] Deploy to Render and playtest with friends
 - [ ] Tune the DM prompt from real playtests
-- [ ] Touch controls for the battle map (drag, pinch) and a phone-friendly battle layout
 - [ ] Art batch 1 fixes (forest tiles, spider legs, ogre club)
 
 Later:

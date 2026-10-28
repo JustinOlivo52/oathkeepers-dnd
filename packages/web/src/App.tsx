@@ -8,6 +8,8 @@ const AdventureView = lazy(() => import("./adventure/AdventureView").then((m) =>
 import { content } from "./content";
 import { loadCharacters, saveCharacters } from "./storage";
 import { PlayerBar } from "./PlayerBar";
+import { firstVisit, HowToPlay } from "./HowToPlay";
+import { FullscreenButton, RotateNotice } from "./PhoneNotice";
 import { currentPlayer, deleteRemoteCharacter, saveRemoteCharacter, signIn, signOut, type PlayerAccount } from "./player";
 import { findServer } from "./adventure/client";
 
@@ -20,6 +22,7 @@ export function App() {
   /** undefined: still checking; false: no account system (no server); null: signed out. */
   const [player, setPlayer] = useState<PlayerAccount | null | false | undefined>(undefined);
   const [needsGroupCode, setNeedsGroupCode] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(firstVisit);
 
   // Signed in: characters live on the server, with this browser's copy as a cache.
   const applyPlayer = (p: PlayerAccount) => {
@@ -65,8 +68,16 @@ export function App() {
 
   return (
     <div className={`app ${tab === "battle" || tab === "adventure" ? "app-battle" : ""}`}>
+      <RotateNotice />
+      {guideOpen && <HowToPlay onClose={() => setGuideOpen(false)} />}
       <header className="top">
         <h1>Oathkeepers</h1>
+        <div className="header-tools">
+          <button className="ghost small" onClick={() => setGuideOpen(true)}>
+            How to play
+          </button>
+          <FullscreenButton />
+        </div>
         {player !== undefined && player !== false && (
           <PlayerBar
             player={player}

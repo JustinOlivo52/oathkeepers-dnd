@@ -95,3 +95,18 @@
 .table-news { font-style: italic; }
 .hero-portrait.picked { object-fit: cover; border-radius: 8px; background: none; }
 .ally-portrait { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 6px; }
+
+/* Phones held sideways: the story fills the screen height, the typing box stays in view. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .adventure-play { grid-template-columns: minmax(0, 1fr) minmax(220px, 32vw); gap: 10px; align-items: stretch; }
+  .story { height: calc(100dvh - 58px); gap: 6px; }
+  .story-head { padding-bottom: 4px; }
+  .story-head .eyebrow { display: none; }
+  .story-head h2 { font-size: 18px; margin: 0; }
+  .feed { flex: 1; min-height: 0; max-height: none; }
+  .feed .narration { font-size: 15px; line-height: 1.5; }
+  .feed .art-scene img { max-height: 40dvh; }
+  .composer textarea { min-height: 40px; }
+  .adventure-side { max-height: calc(100dvh - 58px); overflow-y: auto; }
+  .adventure-setup { padding-top: 0; }
+}

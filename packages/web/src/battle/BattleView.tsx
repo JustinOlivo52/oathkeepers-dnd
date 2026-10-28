@@ -7,6 +7,7 @@ import { battleOutcome, createEncounter, type BattleOutcome, type CharacterData,
 import { content, signed } from "../content";
 import { BattleController, TARGETS_ALLY, type QuickAction, type TargetedFeature } from "./controller";
 import { BattleScene, type VfxInfo } from "./scene";
+import { RotateNotice } from "../PhoneNotice";
 
 /** Reviewed spell effect art from the library; spells without any use effects drawn in code. */
 const SPELL_EFFECTS: VfxInfo[] = content.art
@@ -422,6 +423,7 @@ export function BattleBoard({ battle, seedNote = "", onRestart, onFinish }: { ba
 
   return (
     <div className="battle-layout">
+      <RotateNotice always />
       <div className="board">
         <div className="board-toolbar">
           <span className="round-label">Round {combat.round || 1} <span> / {myTurn ? "Your turn" : controller.busy ? "In motion" : turn && combat.current.side === "party" ? "Ally's turn" : "Enemy turn"}</span></span>
@@ -451,7 +453,11 @@ export function BattleBoard({ battle, seedNote = "", onRestart, onFinish }: { ba
           {!boardReady && <p className="board-loading" role="status">{boardError ?? "Preparing the battlefield…"}</p>}
           {boardReady && boardError && <p className="board-loading" role="alert">{boardError}</p>}
         </div>
-        <p className="board-help">Scroll to zoom · Shift-drag or right-drag to pan · Arrow keys when board is focused · Gold: active · Blue: movement · Red: target</p>
+        <p className="board-help">
+          <span className="help-mouse">Scroll to zoom · Drag to pan · Arrow keys when the board is focused</span>
+          <span className="help-touch">Tap a square to see the path, tap again to move · Tap a foe to attack · Drag to pan · Pinch to zoom</span>
+          {" · "}Gold: active · Blue: movement · Red: target
+        </p>
         {combat.isOver && !controller.busy && (
           <div className={`banner ${combat.winner}`}>
             <strong>{combat.winner === "party" ? "Victory!" : "Defeat"}</strong>

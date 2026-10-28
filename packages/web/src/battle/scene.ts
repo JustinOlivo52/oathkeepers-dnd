@@ -101,6 +101,12 @@ export class BattleScene extends Phaser.Scene {
   private ready!: () => void;
   private panStart?: { x: number; y: number; scrollX: number; scrollY: number };
   private pointerDown?: { x: number; y: number };
+  /** Two fingers on the board: zoom around the point between them. */
+  private pinch?: { distance: number; zoom: number };
+  /** A pinch just ended: ignore the lifting fingers instead of treating them as a tap. */
+  private suppressTap = false;
+  /** Touch: the empty square tapped once (showing the path); a second tap there moves. */
+  private touchPreview?: Point;
   private cameraReady = false;
   private activeCell?: string;
   readonly whenReady = new Promise<void>((resolve) => (this.ready = resolve));
@@ -155,30 +161,64 @@ export class BattleScene extends Phaser.Scene {
     this.focusHero();
     this.cameraReady = true;
     this.input.mouse?.disableContextMenu();
+    this.input.addPointer(1); // a second finger, for pinch zoom
+    const fingers = () => [this.input.pointer1, this.input.pointer2].filter((p) => p.isDown);
+    const DRAG = 8; // pixels a finger or mouse moves before a press becomes a drag
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
       this.game.canvas.focus();
+      const down = fingers();
+      if (down.length === 2) {
+        // Second finger: pinch instead of pan or tap.
+        this.pinch = { distance: Phaser.Math.Distance.BetweenPoints(down[0]!, down[1]!), zoom: camera.zoom };
+        this.panStart = undefined;
+        this.pointerDown = undefined;
+        this.suppressTap = true;
+        return;
+      }
       this.pointerDown = { x: p.x, y: p.y };
       if (p.rightButtonDown() || p.middleButtonDown() || p.event.shiftKey) {
         this.panStart = { x: p.x, y: p.y, scrollX: camera.scrollX, scrollY: camera.scrollY };
       }
     });
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
+      const down = fingers();
+      if (this.pinch && down.length === 2) {
+        const [a, b] = [down[0]!, down[1]!];
+        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        const before = camera.getWorldPoint(mid.x, mid.y);
+        this.setZoom(this.pinch.zoom * (Phaser.Math.Distance.BetweenPoints(a, b) / Math.max(1, this.pinch.distance)));
+        const after = camera.getWorldPoint(mid.x, mid.y);
+        camera.scrollX += before.x - after.x;
+        camera.scrollY += before.y - after.y;
+        return;
+      }
+      // A press that moves becomes a drag: one finger (or the left mouse button) pans the board.
+      if (p.isDown && this.pointerDown && !this.panStart && !this.suppressTap && Math.hypot(p.x - this.pointerDown.x, p.y - this.pointerDown.y) > DRAG) {
+        this.panStart = { x: this.pointerDown.x, y: this.pointerDown.y, scrollX: camera.scrollX, scrollY: camera.scrollY };
+      }
       if (this.panStart && p.isDown) {
         camera.scrollX = this.panStart.scrollX + (this.panStart.x - p.x) / camera.zoom;
         camera.scrollY = this.panStart.scrollY + (this.panStart.y - p.y) / camera.zoom;
-        this.callbacks.onHover(null);
-      } else this.callbacks.onHover(this.toGrid(p));
+        if (!p.wasTouch) this.callbacks.onHover(null);
+      } else if (!p.wasTouch) this.callbacks.onHover(this.toGrid(p));
     });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => {
       const wasPan = !!this.panStart;
       this.panStart = undefined;
-      if (!wasPan && this.pointerDown && Math.hypot(p.x - this.pointerDown.x, p.y - this.pointerDown.y) < 6) {
+      if (this.pinch || this.suppressTap) {
+        this.pinch = undefined;
+        if (!fingers().length) this.suppressTap = false;
+        this.pointerDown = undefined;
+        return;
+      }
+      if (!wasPan && this.pointerDown && Math.hypot(p.x - this.pointerDown.x, p.y - this.pointerDown.y) < DRAG) {
         const grid = this.toGrid(p);
-        if (grid) this.callbacks.onClick(grid);
+        if (grid) this.tap(grid, p.wasTouch);
       }
       this.pointerDown = undefined;
     });
-    this.input.on("pointerout", () => {
+    this.input.on("pointerout", (p: Phaser.Input.Pointer) => {
+      if (p.wasTouch) return; // fingers leave the canvas all the time; only the mouse "hovers"
       this.panStart = undefined;
       this.pointerDown = undefined;
       this.callbacks.onHover(null);
@@ -214,7 +254,33 @@ export class BattleScene extends Phaser.Scene {
   }
 
   zoomBy(amount: number): void {
-    this.cameras.main.setZoom(Phaser.Math.Clamp(this.cameras.main.zoom + amount, 0.35, 1.6));
+    this.setZoom(this.cameras.main.zoom + amount);
+  }
+
+  /** Zoom within limits: close enough to read a token, far enough to see the whole board on a phone. */
+  private setZoom(zoom: number): void {
+    const camera = this.cameras.main;
+    const fit = Math.min(camera.width / (this.map.width * TILE), camera.height / (this.map.height * TILE));
+    camera.setZoom(Phaser.Math.Clamp(zoom, Math.min(0.35, fit), 1.6));
+  }
+
+  /**
+   * A tap or click on a square. With the mouse, hovering already shows the path, so a click acts.
+   * With a finger there's no hover: the first tap on an empty square shows the path, a second tap there moves.
+   */
+  private tap(grid: Point, touch: boolean): void {
+    const occupied = this.creatures.some((c) => {
+      const at = c.position;
+      const size = c.footprint ?? 1;
+      return at && grid.x >= at.x && grid.x < at.x + size && grid.y >= at.y && grid.y < at.y + size && !c.dead;
+    });
+    if (touch && !occupied && (!this.touchPreview || this.touchPreview.x !== grid.x || this.touchPreview.y !== grid.y)) {
+      this.touchPreview = grid;
+      this.callbacks.onHover(grid);
+      return;
+    }
+    this.touchPreview = undefined;
+    this.callbacks.onClick(grid);
   }
 
   fitBoard(): void {
